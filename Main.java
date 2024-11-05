@@ -52,9 +52,8 @@ public class Main{
             ASTC ast = parser.parse();
 
             // compile Hades code
-            String eBinCode;
             Compiler compiler = new Compiler(ast);
-            eBinCode = compiler.compile();
+            String eBinCode = compiler.compile();
 
             // write eBin code to file
             File inputFile = new File(args[1]);
@@ -63,7 +62,7 @@ public class Main{
             java.io.FileWriter fw = new java.io.FileWriter(outputFile);
             fw.write(eBinCode);
             fw.close();
-            System.out.println("Completed writting eBin code to " + outputFile.getName());
+            System.out.println("Completed writing eBin code to " + outputFile.getName());
 
         } catch(Exception e) { e.printStackTrace(); }
     }
