@@ -1,0 +1,32 @@
+; Hades instruction set: ;
+; Misc cmds ;
+MOV [position] ; move to position ;
+SET [value] ; set pointer to value ;
+WRT [value] ; write hard coded value ;
+NOP
+HLT ; END equivalent ;
+INT [conditional] [dependency] ; interrupt/conditional ;
+SYS [params 1-5] ; syscall ;
+; ptr cmds ;
+WTP ; write position to RAM ;
+RDP ; read position from RAM ;
+INCP ; increment position ;
+DECP ; decrement position ;
+; ptr val cmds ;
+WTV ; write value to RAM ;
+RDV ; read value from RAM ;
+INCV ; increment value ;
+DECV ; decrement value ;
+; stack cmds ;
+PUSH ; push pointer value to stack ;
+POP ; pop from stack into pointer value ;
+; label cmds ;
+CLB [label] ; create label ;
+DLB [label] ; delete label ;
+JLB [label] ; jump to label ;
+; dependency cmds ;
+CDP [position/file] [dependency] ; create dependency ;
+CALL [dependency] ; call dependency ;
+LOOP [
+  ...
+] ; loops ;
