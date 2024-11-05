@@ -68,6 +68,7 @@ public class Lexer {
                 } else {
                     tok = new Token(Token.TokenType.LESS, "<");
                 }
+                break;
             case '>':
                 if(this.peekChar() == '='){
                     this.readChar();
@@ -75,6 +76,7 @@ public class Lexer {
                 } else {
                     tok = new Token(Token.TokenType.GREATER, ">");
                 }
+                break;
             case '=':
                 if(this.peekChar() == '='){
                     this.readChar();
@@ -82,6 +84,7 @@ public class Lexer {
                 } else {
                     tok = new Token(Token.TokenType.INVALID, this.ch);
                 }
+                break;
             case '!':
                 if(this.peekChar() == '='){
                     this.readChar();
@@ -89,6 +92,7 @@ public class Lexer {
                 } else {
                     tok = new Token(Token.TokenType.INVALID, this.ch);
                 }
+                break;
             case '.':
                 tok = new Token(Token.TokenType.FILEINDENTIFIER, this.ch);
                 break;
@@ -102,6 +106,7 @@ public class Lexer {
                 } else {
                     tok = new Token(Token.TokenType.INVALID, this.ch);
                 }
+                break;
         }
 
         this.readChar();
