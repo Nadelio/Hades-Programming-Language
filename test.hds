@@ -3,6 +3,7 @@ CALL [foo]
 CLB [lblA]
 INCP
 CLB [lblB]
+SYS [1 0 lblB 0 lblA]
 INT [lblA == lblB] [foo]
 ; INTERRUPT LBRACKET ALIAS EQUAL ALIAS RBRACKET LBRACKET ALIAS RBRACKET ; ;lexer output;
 ; INT CONDITIONAL DEPENDENCY ; ;parser output;
