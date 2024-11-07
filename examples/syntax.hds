@@ -4,7 +4,8 @@ MOV [position] ; move to position ;
 SET [value] ; set pointer to value ;
 WRT [value] ; write hard coded value ;
 NOP
-HLT ; END equivalent ;
+OUT ; write to terminal ;
+IN ; ask for input from user ;
 INT [conditional] [dependency] ; interrupt/conditional ;
 SYS [params 1-5] ; syscall ;
 ; ptr cmds ;
@@ -30,3 +31,6 @@ CALL [dependency] ; call dependency ;
 LOOP [
   ...
 ] ; loops ;
+
+; END equivalent ;
+HLT
