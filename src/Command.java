@@ -1,5 +1,4 @@
 package src;
-import src.Token.TokenType;
 
 public class Command {
     public Token.TokenType kind;

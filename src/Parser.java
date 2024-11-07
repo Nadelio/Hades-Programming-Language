@@ -1,7 +1,6 @@
 package src;
-import java.util.ArrayList;
 
-import src.Token.TokenType;
+import java.util.ArrayList;
 
 public class Parser {
 
