@@ -61,7 +61,7 @@ CLB [bar] ; create label called "bar" ;
 JLB [foo] ; jump to foo label ;
 WRT [1] ; write 1 to foo ;
 JLB [bar] ; jump back to bar label ;
-WRT [2] ; write 2 to foo ;
+WRT [2] ; write 2 to bar ;
 DLB [foo] ; delete foo label ;
 DLB [bar] ; delete bar label ;
 ; end program ;
