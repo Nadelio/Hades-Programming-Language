@@ -1,4 +1,7 @@
+package src;
 import java.util.ArrayList;
+
+import src.Token.TokenType;
 
 public class Parser {
 
@@ -67,6 +70,10 @@ public class Parser {
                 return new Command(Token.TokenType.NOP);
             case Token.TokenType.END:
                 return new Command(Token.TokenType.END);
+            case Token.TokenType.OUT:
+                return new Command(Token.TokenType.OUT);
+            case Token.TokenType.IN:
+                return new Command(Token.TokenType.IN);
             case Token.TokenType.WRITEPOS:
                 return new Command(Token.TokenType.WRITEPOS);
             case Token.TokenType.READPOS:
@@ -162,25 +169,29 @@ public class Parser {
                 }
                 return new UnaryCommand(Token.TokenType.COMMENT, content.toArray(new Token[content.size()]));
             case Token.TokenType.CREATEDEPENDENCY:
-                field1 = new Token[5];
-                field2 = new Token[3];
-
-                // build field1
-                if(this.peekToken().getType() == Token.TokenType.LBRACKET){
-                    this.readToken();
-                    field1[0] = tok;
-                    if(this.peekToken().getType() == Token.TokenType.ALIAS){
+            field2 = new Token[3];
+            
+            // build field1
+            if(!Main.EPU_FLAG){
+                    field1 = new Token[5];
+                    if(this.peekToken().getType() == Token.TokenType.LBRACKET){
                         this.readToken();
-                        field1[1] = tok;
-                        if(this.peekToken().getType() == Token.TokenType.FILEINDENTIFIER){
+                        field1[0] = tok;
+                        if(this.peekToken().getType() == Token.TokenType.ALIAS){
                             this.readToken();
-                            field1[2] = tok;
-                            if(this.peekToken().getType() == Token.TokenType.EXTENSION){
+                            field1[1] = tok;
+                            if(this.peekToken().getType() == Token.TokenType.FILEINDENTIFIER){
                                 this.readToken();
-                                field1[3] = tok;
-                                if(this.peekToken().getType() == Token.TokenType.RBRACKET){
+                                field1[2] = tok;
+                                if(this.peekToken().getType() == Token.TokenType.EXTENSION){
                                     this.readToken();
-                                    field1[4] = tok;
+                                    field1[3] = tok;
+                                    if(this.peekToken().getType() == Token.TokenType.RBRACKET){
+                                        this.readToken();
+                                        field1[4] = tok;
+                                    } else {
+                                        exitWithError(this.peekToken().getType());
+                                    }
                                 } else {
                                     exitWithError(this.peekToken().getType());
                                 }
@@ -194,7 +205,31 @@ public class Parser {
                         exitWithError(this.peekToken().getType());
                     }
                 } else {
-                    exitWithError(this.peekToken().getType());
+                    field1 = new Token[4];
+                    if(this.peekToken().getType() == Token.TokenType.LBRACKET){
+                        this.readToken();
+                        field1[0] = tok;
+                        if(this.peekToken().getType() == Token.TokenType.NUMBER){
+                            this.readToken();
+                            field1[1] = tok;
+                            if(this.peekToken().getType() == Token.TokenType.NUMBER){
+                                this.readToken();
+                                field1[2] = tok;
+                                if(this.peekToken().getType() == Token.TokenType.RBRACKET){
+                                    this.readToken();
+                                    field1[3] = tok;
+                                } else {
+                                    exitWithError(this.peekToken().getType());
+                                }
+                            } else {
+                                exitWithError(this.peekToken().getType());
+                            }
+                        } else {
+                            exitWithError(this.peekToken().getType());
+                        }
+                    } else {
+                        exitWithError(this.peekToken().getType());
+                    }
                 }
 
                 // build field2

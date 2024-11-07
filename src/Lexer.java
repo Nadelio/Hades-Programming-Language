@@ -1,3 +1,6 @@
+package src;
+import src.Token.TokenType;
+
 public class Lexer {
     
     private String input;
@@ -137,6 +140,10 @@ public class Lexer {
                 return new Token(Token.TokenType.SET, literal);
             case "WRT":
                 return new Token(Token.TokenType.WRITE, literal);
+            case "OUT":
+                return new Token(Token.TokenType.OUT, literal);
+            case "IN":
+                return new Token(Token.TokenType.IN, literal);
             case "NOP":
                 return new Token(Token.TokenType.NOP, literal);
             case "HLT":

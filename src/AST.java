@@ -1,3 +1,4 @@
+package src;
 public class AST {
     private Token[] tree;
     public AST(Token[] tree) { this.tree = tree; }

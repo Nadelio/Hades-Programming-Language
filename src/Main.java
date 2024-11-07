@@ -1,16 +1,18 @@
+package src;
 import java.io.File;
 
 public class Main{
 
     public static boolean DEBUG_FLAG = false;
+    public static boolean EPU_FLAG = false;
 
     public static void main(String[] args) {
         
         String hadesCode = "";
 
         // get eBF code from user
-        if(args.length == 2){
-            if(args[0].contains("-f")){
+        if(args.length == 2 && args[0].startsWith("-")){
+            if(args[0].contains("f")){
                 try{
                     java.io.File file = new java.io.File(args[1]);
 
@@ -30,8 +32,12 @@ public class Main{
                 }
             }
 
-            if(args[0].contains("-d")){
+            if(args[0].contains("d")){
                 DEBUG_FLAG = true;
+            }
+
+            if(args[0].contains("e")){
+                EPU_FLAG = true;
             }
 
         } else if(args.length <= 1){

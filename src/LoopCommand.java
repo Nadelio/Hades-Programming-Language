@@ -1,3 +1,5 @@
+package src;
+import src.Token.TokenType;
 public class LoopCommand extends Command {
     private Command[] body;
 

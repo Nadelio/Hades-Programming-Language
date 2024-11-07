@@ -1,8 +1,11 @@
+package src;
 public class Token {
     public static enum TokenType {
         MOVE,
         SET,
         WRITE,
+        OUT,
+        IN,
         NOP,
         INTERRUPT,
         SYSCALL,

@@ -1,3 +1,6 @@
+package src;
+import src.Token.TokenType;
+
 public class BinaryCommand extends Command {
     private Token[] field1;
     private Token[] field2;
