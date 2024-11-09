@@ -1,5 +1,3 @@
-; change terminal out behavior to not add 32 to value before printing ;
-
 CDP [escapeLoop.ebin] [escapeLoop]
 
 WRT [1]
