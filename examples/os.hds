@@ -4,7 +4,7 @@ WRT [1]
 CLB input
 INCP
 CLB checkForEscape
-WRT [0] ; EOF char ;
+WRT [26] ; ^Z char ;
 DECP
 LOOP [
     IN
