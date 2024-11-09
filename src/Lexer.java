@@ -16,6 +16,7 @@ public class Lexer {
     }
 
     private void readChar() {
+        if(Main.DEBUG_FLAG){System.out.println("Reading Character: " + this.input.charAt(this.readPosition));}
         if (this.readPosition >= this.input.length()) {
             this.ch = '\u0000';
         } else {
@@ -26,6 +27,7 @@ public class Lexer {
     }
 
     private char peekChar() {
+        if(Main.DEBUG_FLAG){System.out.println("Peeking Character: " + this.input.charAt(this.readPosition));}
         if (this.readPosition >= this.input.length()) {
             return '\u0000';
         } else {
@@ -37,6 +39,7 @@ public class Lexer {
         java.util.ArrayList<Token> tokens = new java.util.ArrayList<Token>();
         while(this.ch != '\u0000'){
             Token tok = this.nextToken();
+            if(Main.DEBUG_FLAG){System.out.println("Completed Token: " + tok.toString());}
             tokens.add(tok);
             this.readChar();
         }
@@ -124,11 +127,15 @@ public class Lexer {
     }
 
     private String readIdentifier(){
+        if(Main.DEBUG_FLAG){System.out.println("Position of string: " + this.position);}
         int pos = this.position;
         while(isLetter(this.ch)){
             this.readChar();
         }
-        return this.input.substring(pos, this.position);
+        String keyword = this.input.substring(pos, this.position);
+        if(Main.DEBUG_FLAG){System.out.println("Position of last character: " + this.position);}
+        if(Main.DEBUG_FLAG){System.out.println("String: \"" + keyword + "\"");}
+        return keyword;
     }
 
     private Token matchKeyword(String literal){
@@ -186,6 +193,8 @@ public class Lexer {
             case "ebin":
                 return new Token(Token.TokenType.EXTENSION, literal);
             case "ebf":
+                return new Token(Token.TokenType.EXTENSION, literal);
+            case "hds":
                 return new Token(Token.TokenType.EXTENSION, literal);
             default:
                 return new Token(Token.TokenType.ALIAS, literal);

@@ -1,0 +1,1 @@
+java -jar --enable-preview HadesCompiler.jar $1 $2

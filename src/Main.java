@@ -50,21 +50,24 @@ public class Main{
         
         try {
             // lex Hades code
+            System.out.println("Lexing Hades code...");
             Lexer lexer = new Lexer(hadesCode);
             Token[] tokens = lexer.lex();
-
+            
             // parse Hades code
+            System.out.println("Parsing Hades code...");
             Parser parser = new Parser(tokens);
             ASTC ast = parser.parse();
 
             // compile Hades code
+            System.out.println("Compiling Hades code...");
             Compiler compiler = new Compiler(ast);
             String eBinCode = compiler.compile();
 
             // write eBin code to file
             File inputFile = new File(args[1]);
             File outputFile = new File(inputFile.getName().substring(0, inputFile.getName().length() - 4) + ".ebin");
-            System.out.println("Writing eBin code to " + outputFile.getName());
+            System.out.println("Writing eBin code to " + outputFile.getName() + "...");
             java.io.FileWriter fw = new java.io.FileWriter(outputFile);
             fw.write(eBinCode);
             fw.close();

@@ -2,6 +2,8 @@ package src;
 
 import java.util.ArrayList;
 
+import src.Token.TokenType;
+
 public class Parser {
 
     private AST ast;
@@ -21,6 +23,7 @@ public class Parser {
     Reads the next token from the AST and increments read pointer
     */
     private void readToken() {
+        if(Main.DEBUG_FLAG){ System.out.println("Reading Token: " + this.ast.getTree()[this.readPosition].getLiteral()); }
         if (this.readPosition >= this.ast.getTree().length) {
             this.tok = new Token(Token.TokenType.EOF, '\u0000');
         } else {
@@ -35,6 +38,7 @@ public class Parser {
     @return Token
     */
     private Token peekToken() {
+        if(Main.DEBUG_FLAG){ System.out.println("Peeking Token: " + this.ast.getTree()[this.readPosition].getLiteral()); }
         if (this.readPosition >= this.ast.getTree().length) {
             return new Token(Token.TokenType.EOF, '\u0000');
         } else {
@@ -50,6 +54,7 @@ public class Parser {
         java.util.ArrayList<Command> commands = new java.util.ArrayList<Command>();
         while(this.tok.getType() != Token.TokenType.EOF){
             Command cmd = this.nextCommand();
+            if(Main.DEBUG_FLAG){System.out.println("Completed Command: " + cmd.toString());}
             commands.add(cmd);
             this.readToken();
         }
@@ -139,25 +144,25 @@ public class Parser {
                                             field1[6] = tok;
                                             return new UnaryCommand(Token.TokenType.SYSCALL, field1);
                                         } else {
-                                            exitWithError(this.peekToken().getType());
+                                            exitWithError(Token.TokenType.RBRACKET);
                                         }
                                     } else {
-                                        exitWithError(this.peekToken().getType());
+                                        exitWithError(TokenType.ALIAS, Token.TokenType.NUMBER);
                                     }
                                 } else {
-                                    exitWithError(this.peekToken().getType());
+                                    exitWithError(TokenType.ALIAS, Token.TokenType.NUMBER);
                                 }
                             } else {
-                                exitWithError(this.peekToken().getType());
+                                exitWithError(TokenType.ALIAS, Token.TokenType.NUMBER);
                             }
                         } else {
-                            exitWithError(this.peekToken().getType());
+                            exitWithError(TokenType.ALIAS, Token.TokenType.NUMBER);
                         }
                     } else {
-                        exitWithError(this.peekToken().getType());
+                        exitWithError(TokenType.ALIAS, Token.TokenType.NUMBER);
                     }
                 } else {
-                    exitWithError(this.peekToken().getType());
+                    exitWithError(Token.TokenType.LBRACKET);
                 }
                 break;
             case Token.TokenType.COMMENT:
@@ -189,19 +194,19 @@ public class Parser {
                                         this.readToken();
                                         field1[4] = tok;
                                     } else {
-                                        exitWithError(this.peekToken().getType());
+                                        exitWithError(Token.TokenType.RBRACKET);
                                     }
                                 } else {
-                                    exitWithError(this.peekToken().getType());
+                                    exitWithError(Token.TokenType.EXTENSION);
                                 }
                             } else {
-                                exitWithError(this.peekToken().getType());
+                                exitWithError(Token.TokenType.FILEINDENTIFIER);
                             }
                         } else {
-                            exitWithError(this.peekToken().getType());
+                            exitWithError(Token.TokenType.ALIAS);
                         }
                     } else {
-                        exitWithError(this.peekToken().getType());
+                        exitWithError(Token.TokenType.LBRACKET);
                     }
                 } else {
                     field1 = new Token[4];
@@ -218,16 +223,16 @@ public class Parser {
                                     this.readToken();
                                     field1[3] = tok;
                                 } else {
-                                    exitWithError(this.peekToken().getType());
+                                    exitWithError(Token.TokenType.RBRACKET);
                                 }
                             } else {
-                                exitWithError(this.peekToken().getType());
+                                exitWithError(Token.TokenType.NUMBER);
                             }
                         } else {
-                            exitWithError(this.peekToken().getType());
+                            exitWithError(Token.TokenType.NUMBER);
                         }
                     } else {
-                        exitWithError(this.peekToken().getType());
+                        exitWithError(Token.TokenType.LBRACKET);
                     }
                 }
 
@@ -256,19 +261,19 @@ public class Parser {
                                     this.readToken();
                                     field1[4] = tok;
                                 } else {
-                                    exitWithError(this.peekToken().getType());
+                                    exitWithError(Token.TokenType.RBRACKET);
                                 }
                             } else {
-                                exitWithError(this.peekToken().getType());
+                                exitWithError(Token.TokenType.ALIAS);
                             }
                         } else {
-                            exitWithError(this.peekToken().getType());
+                            exitWithError("Comparision");
                         }
                     } else {
-                        exitWithError(this.peekToken().getType());
+                        exitWithError(Token.TokenType.ALIAS);
                     }
                 } else {
-                    exitWithError(this.peekToken().getType());
+                    exitWithError(Token.TokenType.LBRACKET);
                 }
 
                 // build field2
@@ -277,11 +282,11 @@ public class Parser {
                 return new BinaryCommand(Token.TokenType.INTERRUPT, field1, field2);
             case Token.TokenType.LOOP:
                 ArrayList<Command> loopBody = new ArrayList<Command>();
-                if(this.peekToken().getType() == Token.TokenType.LBRACKET){ this.readToken(); } else { exitWithError(this.peekToken().getType()); }
+                if(this.peekToken().getType() == Token.TokenType.LBRACKET){ this.readToken(); } else { exitWithError(Token.TokenType.LBRACKET); }
                 while(this.peekToken().getType() != Token.TokenType.RBRACKET){ loopBody.add(this.nextCommand()); }
                 if(this.peekToken().getType() == Token.TokenType.RBRACKET){ this.readToken();
                     return new LoopCommand(loopBody.toArray(new Command[loopBody.size()]));
-                } else { exitWithError(this.peekToken().getType()); }
+                } else { exitWithError(Token.TokenType.RBRACKET); }
                 break;
             default: break;
         }
@@ -289,7 +294,19 @@ public class Parser {
     }
 
     private void exitWithError(Token.TokenType type){
-        System.out.println("Syntax error: expected " + type + " @ " + this.position);
+        System.out.println("Syntax error: expected " + type + " @ " + (this.position + 1));
+        System.out.println("Recieved: " + this.peekToken().getType());
+        System.exit(1);
+    }
+
+    private void exitWithError(String type){
+        System.out.println("Syntax error: expected " + type + " @ " + (this.position + 1));
+        System.out.println("Recieved: " + this.peekToken().getType());
+        System.exit(1);
+    }
+
+    private void exitWithError(Token.TokenType type1, Token.TokenType type2){
+        System.out.println("Syntax error: expected " + type1 + " or " + type2 + " @ " + (this.position + 1));
         System.out.println("Recieved: " + this.peekToken().getType());
         System.exit(1);
     }
