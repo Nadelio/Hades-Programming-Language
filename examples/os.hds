@@ -1,0 +1,22 @@
+; change terminal out behavior to not add 32 to value before printing ;
+
+CDP [escapeLoop.ebin] [escapeLoop]
+
+WRT [1]
+CLB input
+INCP
+CLB checkForEscape
+WRT [0] ; EOF char ;
+DECP
+LOOP [
+    IN
+    SYS [14 0 0 0 0] ; output to terminal ;
+    INCP
+    INCP
+    WRT [10] ; set to newline char ;
+    SYS [14 0 0 0 0] ; output to terminal ;
+    DECP
+    DECP
+    INT [input == checkForEscape] [escapeLoop]
+]
+HLT
