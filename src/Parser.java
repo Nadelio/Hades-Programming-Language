@@ -168,10 +168,10 @@ public class Parser {
                 }
                 return new UnaryCommand(Token.TokenType.COMMENT, content.toArray(new Token[content.size()]));
             case Token.TokenType.CREATEDEPENDENCY:
-            field2 = new Token[3];
-            
-            // build field1
-            if(!Main.EPU_FLAG){
+                field2 = new Token[3];
+                
+                // build field1
+                if(!Main.EPU_FLAG){
                     field1 = new Token[5];
                     if(this.peekToken().getType() == Token.TokenType.LBRACKET){
                         this.readToken();
