@@ -81,9 +81,11 @@ Using Syscalls in Hades (ePU only):
 ; syscalls always need 5 parameters, they can be labels or numbers ;
 SYS [14 0 0 0 0] ; print to terminal syscall ;
 
+CLB[zero]
+INCP
 CLB [foo]
 WRT [14]
-SYS [foo 0 0 0 0] ; print to terminal syscall but using label called "foo" ;
+SYS [foo zero zero zero zero] ; print to terminal syscall but using labels called "foo" and "zero" ;
 
 ; check the ePUx16 syscall documentation for help on the syscall arguments ;
 
