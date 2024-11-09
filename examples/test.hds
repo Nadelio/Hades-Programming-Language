@@ -1,9 +1,10 @@
 CDP [someFile.ebf] [foo]
 CALL [foo]
 CLB [lblA]
+INCV
 INCP
 CLB [lblB]
-SYS [1 0 lblB 0 lblA]
+SYS [lblA lblB lblB lblB lblB]
 INT [lblA == lblB] [foo]
 ; INTERRUPT LBRACKET ALIAS EQUAL ALIAS RBRACKET LBRACKET ALIAS RBRACKET ; ;lexer output;
 ; INT CONDITIONAL DEPENDENCY ; ;parser output;
@@ -11,7 +12,7 @@ MOV [2]
 SET [100]
 WTV
 LOOP [ ;NOP until 0;
-    NOP
+    NOP ; wait 10ms ;
     RDV
     DECP
     WTV
