@@ -128,8 +128,31 @@ public class Compiler {
                 }
             case READVAL:
                 return bytecode[12];
-            case SYSCALL: // unary // different unary format from rest // TODO: finish this
-                return bytecode[13];
+            case SYSCALL: // unary // different unary format from rest
+                if(cmd instanceof UnaryCommand){
+                    UnaryCommand unary = (UnaryCommand) cmd;
+                    Token[] field = unary.getField();
+                    String syscallCode = bytecode[13] + " ";
+                    if(field[1].getType() == Token.TokenType.ALIAS){
+                        syscallCode += bytecode[25] + " ";
+                        syscallCode += binFromAlias(field[1].getLiteral(), true) + " ";
+                        syscallCode += binFromAlias(field[2].getLiteral(), true) + " ";
+                        syscallCode += binFromAlias(field[3].getLiteral(), true) + " ";
+                        syscallCode += binFromAlias(field[4].getLiteral(), true) + " ";
+                        syscallCode += binFromAlias(field[5].getLiteral(), true) + " ";
+                        syscallCode += bytecode[26] + " ";
+                        return syscallCode;
+                    } else if(field[1].getType() == Token.TokenType.NUMBER){
+                        syscallCode += intToBin(Integer.parseInt(field[1].getLiteral())) + " ";
+                        syscallCode += intToBin(Integer.parseInt(field[2].getLiteral())) + " ";
+                        syscallCode += intToBin(Integer.parseInt(field[3].getLiteral())) + " ";
+                        syscallCode += intToBin(Integer.parseInt(field[4].getLiteral())) + " ";
+                        syscallCode += intToBin(Integer.parseInt(field[5].getLiteral())) + " ";
+                        return syscallCode;
+                    }
+                } else {
+                    throw new IllegalArgumentException("Invalid command type.");
+                }
             case CREATELABEL: // unary
                 if(cmd instanceof UnaryCommand){
                     UnaryCommand unary = (UnaryCommand) cmd;
@@ -174,8 +197,20 @@ public class Compiler {
                 } else {
                     throw new IllegalArgumentException("Invalid command type.");
                 }
-            case INTERRUPT: // binary // TODO: finish this
-                return bytecode[23];
+            case INTERRUPT: // binary
+                String interruptCode = bytecode[23] + " ";
+                if(cmd instanceof BinaryCommand){
+                    BinaryCommand binary = (BinaryCommand) cmd;
+                    Token[] field1 = binary.getField1();
+                    Token[] field2 = binary.getField2();
+                    interruptCode += binFromAlias(field1[1].getLiteral(), true) + " ";
+                    interruptCode += binFromComparison(field1[2].getType()) + " ";
+                    interruptCode += binFromAlias(field1[3].getLiteral(), true) + " ";
+                    interruptCode += binFromAlias(field2[1].getLiteral(), false) + " ";
+                    return interruptCode;
+                } else {
+                    throw new IllegalArgumentException("Invalid command type.");
+                }
             case NOP:
                 return bytecode[24];
             case WRITE: // unary
@@ -212,6 +247,25 @@ public class Compiler {
             return intToBin(labels.get(alias));
         }
         return intToBin(dependencies.get(alias));
+    }
+
+    private String binFromComparison(Token.TokenType comparision){
+        switch(comparision){
+            case NOTEQUAL:
+                return "0000000000000001";
+            case EQUAL:
+                return "0000000000000010";
+            case GREATER:
+                return "0000000000000011";
+            case LESS:
+                return "0000000000000100";
+            case GREATEREQUAL:
+                return "0000000000000101";
+            case LESSEQUAL:
+                return "0000000000000110";
+            default:
+                throw new IllegalArgumentException("Invalid comparison type.");
+        }
     }
 
     private String intToBin(int num){
