@@ -129,10 +129,13 @@ public class Lexer {
     private String readIdentifier(){
         if(Main.DEBUG_FLAG){System.out.println("Position of string: " + this.position);}
         int pos = this.position;
+        int count = 0;
         while(isLetter(this.ch)){
             this.readChar();
+            count++;
         }
         String keyword = this.input.substring(pos, this.position);
+        if(Main.DEBUG_FLAG){System.out.println("While loop iteration count: " + count);}
         if(Main.DEBUG_FLAG){System.out.println("Position of last character: " + this.position);}
         if(Main.DEBUG_FLAG){System.out.println("String: \"" + keyword + "\"");}
         return keyword;
