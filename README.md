@@ -67,12 +67,12 @@ DLB [bar] ; delete bar label ;
 ; end program ;
 HLT
 ```
-Using Dependencies in Hades:
+Using functions in Hades:
 ```nasm
-CDP [someFile.eBin] [foo] ; create dependency from file "someFile.eBin" and call it "foo" ;
+CDP [someFile.eBin] [foo] ; create function from file "someFile.eBin" and call it "foo" ;
 ; for ePU development ;
-CDP [0 0] [foo] ; create dependency from position in ROM, follows [X Y] format;
-CALL [foo] ; run "foo" dependency ;
+CDP [0 0] [foo] ; create function from position in ROM, follows [X Y] format;
+CALL [foo] ; run "foo" function ;
 ; end program ;
 HLT
 ```
