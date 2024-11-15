@@ -4,10 +4,11 @@ public class Result {
     private String result;
     private boolean success;
 
-    private enum Errors {
+    public enum Errors {
         INVALID_COMMAND("Invalid command: "),
         NONEXISTENT_LABEL("Non-existent label: "),
         NONEXISTENT_FUNCTION("Non-existent function: "),
+        INVALID_VALUE("Invalid Value"),
         INVALID_COMPARISON("Invalid comparison: "),
         FILE_NOT_FOUND("Cannot find file: "),
         SYNTAX_ERROR("Syntax error: ");

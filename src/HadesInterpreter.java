@@ -2,6 +2,7 @@ package src;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Scanner;
 import java.util.Stack;
 
 public class HadesInterpreter {
@@ -47,22 +48,58 @@ public class HadesInterpreter {
         }
     }
 
-    public Result interpretCommand(Command cmd){ //TODO: add try-catches to the Integer.parseInt code
+    public Result interpretCommand(Command cmd){
         switch(cmd.getKind()){
             case MOVE:
                 UnaryCommand move = (UnaryCommand) cmd;
-                return this.move(Integer.parseInt(move.getField()[1].getLiteral()));
+                return this.move(move);
             case SET:
                 UnaryCommand set = (UnaryCommand) cmd;
-                return this.set(Integer.parseInt(set.getField()[1].getLiteral()));
-            case 
+                return this.set(set);
+            case WRITE:
+                UnaryCommand write = (UnaryCommand) cmd;
+                return this.write(write);
+            case OUT:
+                System.out.println((char) memory[ptr]);
+                return Result.Success();
+            case IN:
+                Scanner sc = new Scanner(System.in);
+                int val = (int) sc.next().charAt(0);
+                sc.close();
+                this.memory[ptr] = val;
+                return Result.Success();
+            default:
+                return Result.Error(Result.Errors.INVALID_COMMAND, cmd.getKind() + " at position: " + pos);
         }
-
-        return Result.Success();
     }
 
-    private Result move(int val){
-        this.ptr = val;
-        return Result.Success();
+    private Result move(UnaryCommand cmd){
+        try{
+            int val = Integer.parseInt(cmd.getField()[1].getLiteral());
+            this.ptr = val;
+            return Result.Success();
+        } catch(Exception e){
+            return Result.Error(Result.Errors.INVALID_VALUE, cmd.getField()[1].getLiteral() + " at position: " + pos);
+        }
+    }
+
+    private Result set(UnaryCommand cmd){
+        try{
+            int val = Integer.parseInt(cmd.getField()[1].getLiteral());
+            this.ptrVal = val;
+            return Result.Success();
+        } catch(Exception e){
+            return Result.Error(Result.Errors.INVALID_VALUE, cmd.getField()[1].getLiteral() + " at position: " + pos);
+        }
+    }
+
+    private Result write(UnaryCommand cmd){
+        try{
+            int val = Integer.parseInt(cmd.getField()[1].getLiteral());
+            this.memory[ptr] = val;
+            return Result.Success();
+        } catch(Exception e){
+            return Result.Error(Result.Errors.INVALID_VALUE, cmd.getField()[1].getLiteral() + " at position: " + pos);
+        }
     }
 }
