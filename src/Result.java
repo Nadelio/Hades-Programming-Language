@@ -1,0 +1,35 @@
+package src;
+
+public class Result {
+    private String result;
+    private boolean success;
+
+    private enum Errors {
+        INVALID_COMMAND("Invalid command: "),
+        NONEXISTENT_LABEL("Non-existent label: "),
+        NONEXISTENT_FUNCTION("Non-existent function: "),
+        INVALID_COMPARISON("Invalid comparison: "),
+        FILE_NOT_FOUND("Cannot find file: "),
+        SYNTAX_ERROR("Syntax error: ");
+
+        private String errmsg;
+        private Errors(String errmsg) { this.errmsg = errmsg; }
+        public String getError() { return this.errmsg; }
+    }
+
+    private Result(String result, boolean success){
+        this.result = result;
+        this.success = success;
+    }
+
+    public static Result Error(Result.Errors err, String context){return new Result(err.getError() + context, false);}
+    public static Result Success(){return new Result("Command Succeeded", true);}
+    
+    public void handleError(){
+        System.out.println(this.result);
+        System.exit(1);
+    }
+    
+    public String getResult(){ return this.result; }
+    public boolean getSuccess(){ return this.success; }
+}
