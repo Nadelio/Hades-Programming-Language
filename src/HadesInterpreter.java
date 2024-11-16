@@ -3,7 +3,6 @@ package src;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.Stack;
 
 public class HadesInterpreter {
     // ast tree variables
@@ -13,12 +12,13 @@ public class HadesInterpreter {
     private Command cmd;
 
     // interpreter variables
-    private HashMap<String, Integer> labels = new HashMap<String, Integer>();
-    private HashMap<String, File> functions = new HashMap<String, File>();
-    private int[] memory = new int[65536];
-    private int[] stack = new int[256];
-    private int ptr = 0;
-    private int ptrVal = 0;
+    public HashMap<String, Integer> labels = new HashMap<String, Integer>();
+    public HashMap<String, File> functions = new HashMap<String, File>();
+    public int[] memory = new int[65536];
+    public int[] stack = new int[256];
+    public int stackPtr = 0;
+    public int ptr = 0;
+    public int ptrVal = 0;
 
     public HadesInterpreter(ASTC ast) {
         this.ast = ast;
@@ -29,7 +29,10 @@ public class HadesInterpreter {
 
     public void interpret(){
         while(this.cmd.getKind() != Token.TokenType.END){
-            this.interpretCommand(this.cmd);
+            Result r = this.interpretCommand(this.cmd);
+            if(!r.getSuccess()){
+                r.handleError();
+            }
             this.readCommand();
         }
     }
@@ -60,13 +63,60 @@ public class HadesInterpreter {
                 UnaryCommand write = (UnaryCommand) cmd;
                 return this.write(write);
             case OUT:
-                System.out.println((char) memory[ptr]);
+                System.out.print((char) memory[ptr]);
                 return Result.Success();
             case IN:
                 Scanner sc = new Scanner(System.in);
                 int val = (int) sc.next().charAt(0);
                 sc.close();
                 this.memory[ptr] = val;
+                return Result.Success();
+            case NOP:
+                try{Thread.sleep(10);}catch(Exception e){}
+                return Result.Success();
+            case INTERRUPT:
+                BinaryCommand interrupt = (BinaryCommand) cmd;
+                return this.interrupt(interrupt);
+            case WRITEPOS:
+                return this.writePosition();
+            case READPOS:
+                return this.readPosition();
+            case INCPOS:
+                return this.incrementPosition();
+            case DECPOS:
+                return this.decrementPosition();
+            case WRITEVAL:
+                return this.writeValue();
+            case READVAL:
+                return this.readValue();
+            case INCVAL:
+                return this.incrementValue();
+            case DECVAL:
+                return this.decrementValue();
+            case PUSH:
+                return this.push();
+            case POP:
+                return this.pop();
+            case CREATELABEL:
+                UnaryCommand cLabel = (UnaryCommand) cmd;
+                return this.createLabel(cLabel);
+            case DELETELABEL:
+                UnaryCommand dLabel = (UnaryCommand) cmd;
+                return this.deleteLabel(dLabel);
+            case JUMPLABEL:
+                UnaryCommand jLabel = (UnaryCommand) cmd;
+                return this.jumpLabel(jLabel);
+            case CREATEDEPENDENCY:
+                BinaryCommand cFunc = (BinaryCommand) cmd;
+                return this.createDependency(cFunc);
+            case CALLDEPENDENCY:
+                UnaryCommand callFunc = (UnaryCommand) cmd;
+                return this.callDependency(callFunc);
+            case LOOP:
+                LoopCommand loop = (LoopCommand) cmd;
+                return this.loop(loop);
+            case END:
+            case EOF:
                 return Result.Success();
             default:
                 return Result.Error(Result.Errors.INVALID_COMMAND, cmd.getKind() + " at position: " + pos);
@@ -100,6 +150,229 @@ public class HadesInterpreter {
             return Result.Success();
         } catch(Exception e){
             return Result.Error(Result.Errors.INVALID_VALUE, cmd.getField()[1].getLiteral() + " at position: " + pos);
+        }
+    }
+
+    private Result interrupt(BinaryCommand cmd){
+        int val1;
+        int val2;
+        String lab1;
+        String lab2;
+        if(cmd.getField1()[1].getType() == Token.TokenType.NUMBER){
+            try{
+                val1 = Integer.parseInt(cmd.getField1()[1].getLiteral());
+            } catch(Exception e){
+                return Result.Error(Result.Errors.INVALID_VALUE, cmd.getField1()[1].getLiteral() + " at position: " + pos);
+            }
+        } else {
+            lab1 = cmd.getField1()[1].getLiteral();
+            if(this.labels.containsKey(lab1)){
+                val1 = this.labels.get(lab1);
+            } else {
+                return Result.Error(Result.Errors.NONEXISTENT_LABEL, lab1 + " at position: " + pos);
+            }
+        }
+
+        if(cmd.getField1()[3].getType() == Token.TokenType.NUMBER){
+            try{
+                val2 = Integer.parseInt(cmd.getField1()[3].getLiteral());
+            } catch(Exception e){
+                return Result.Error(Result.Errors.INVALID_VALUE, cmd.getField1()[3].getLiteral() + " at position: " + pos);
+            }
+        } else {
+            lab2 = cmd.getField1()[3].getLiteral();
+            if(this.labels.containsKey(lab2)){
+                val2 = this.labels.get(lab2);
+            } else {
+                return Result.Error(Result.Errors.NONEXISTENT_LABEL, lab2 + " at position: " + pos);
+            }
+        }
+
+        switch(cmd.getField1()[2].getType()){
+            case LESSEQUAL:
+                if(val1 <= val2){
+                    return callFunction(cmd.getField2()[1].getLiteral());
+                }
+                break;
+            case GREATEREQUAL:
+                if(val1 >= val2){
+                    return callFunction(cmd.getField2()[1].getLiteral());
+                }
+                break;
+            case LESS:
+                if(val1 < val2){
+                    return callFunction(cmd.getField2()[1].getLiteral());
+                }
+                break;
+            case GREATER:
+                if(val1 > val2){
+                    return callFunction(cmd.getField2()[1].getLiteral());
+                }
+                break;
+            case EQUAL:
+                if(val1 == val2){
+                    return callFunction(cmd.getField2()[1].getLiteral());
+                }
+                break;
+            case NOTEQUAL:
+                if(val1 != val2){
+                    return callFunction(cmd.getField2()[1].getLiteral());
+                }
+                break;
+            default:
+                return Result.Error(Result.Errors.INVALID_COMPARISON, cmd.getField1()[2].getLiteral() + " at position: " + pos);
+        }
+        return Result.Success();
+    }
+
+    private Result callFunction(String funcName){
+        if(this.functions.containsKey(funcName)){
+            File file = this.functions.get(funcName);
+
+            if(file.getName().endsWith(".hds")){
+                String fileData = "";
+                try{
+                    Scanner sc = new Scanner(file);
+                    while(sc.hasNextLine()){
+                        fileData += sc.nextLine();
+                    }
+                    sc.close();
+                } catch(Exception e){
+                    return Result.Error(Result.Errors.FILE_NOT_FOUND, file.getName() + " at position: " + pos);
+                }
+    
+                Lexer l = new Lexer(fileData);
+                Token[] tokens = l.lex();
+                Parser p = new Parser(tokens);
+                ASTC ast = p.parse();
+                HadesInterpreter i = new HadesInterpreter(ast);
+                i.interpret();
+                return Result.Success();
+            } else if(file.getName().endsWith(".ebf")){
+                eBFInterpreter i = new eBFInterpreter(file, this);
+                i.interpret();
+                return Result.Success();
+            } else if(file.getName().endsWith(".ebin")){
+                eBinInterpreter i = new eBinInterpreter(file, this);
+                i.interpret();
+                return Result.Success();
+            } else {
+                return Result.Error(Result.Errors.INVALID_FILE, file.getName() + " at position: " + pos);
+            }
+
+        } else {
+            return Result.Error(Result.Errors.NONEXISTENT_FUNCTION, funcName + " at position: " + pos);
+        }
+    }
+
+    private Result writePosition(){
+        memory[ptr] = ptr;
+        return Result.Success();
+    }
+
+    private Result readPosition(){
+        ptrVal = ptr;
+        return Result.Success();
+    }
+
+    private Result incrementPosition(){
+        ptr++;
+        if(ptr >= memory.length){ ptr = 0; }
+        return Result.Success();
+    }
+    
+    private Result decrementPosition(){
+        ptr--;
+        if(ptr <= -1){ ptr = memory.length - 1; }
+        return Result.Success();
+    }
+
+    private Result writeValue(){
+        memory[ptr] = ptrVal;
+        return Result.Success();
+    }
+
+    private Result readValue(){
+        ptrVal = memory[ptr];
+        return Result.Success();
+    }
+
+    private Result incrementValue(){
+        ptrVal++;
+        return Result.Success();
+    }
+
+    private Result decrementValue(){
+        ptrVal--;
+        if(ptrVal < 0){ ptrVal = 0; }
+        return Result.Success();
+    }
+
+    private Result push(){
+        stack[stackPtr] = ptrVal;
+        ptrVal = 0;
+        stackPtr++;
+        return Result.Success();
+    }
+
+    private Result pop(){
+        ptrVal = stack[stackPtr];
+        stack[stackPtr] = 0;
+        stackPtr--;
+        return Result.Success();
+    }
+
+    private Result createLabel(UnaryCommand cmd){
+        labels.put(cmd.getField()[1].getLiteral(), ptr);
+        return Result.Success();
+    }
+
+    private Result deleteLabel(UnaryCommand cmd){
+        if(!labels.containsKey(cmd.getField()[1].getLiteral())){
+            return Result.Error(Result.Errors.NONEXISTENT_LABEL, cmd.getField()[1].getLiteral() + " at position: " + pos);
+        }
+        labels.remove(cmd.getField()[1].getLiteral());
+        return Result.Success();
+    }
+
+    private Result jumpLabel(UnaryCommand cmd){
+        if(labels.containsKey(cmd.getField()[1].getLiteral())){
+            return Result.Error(Result.Errors.NONEXISTENT_LABEL, cmd.getField()[1].getLiteral() + " at position: " + pos);
+        }
+        ptr = labels.get(cmd.getField()[1].getLiteral());
+
+        return Result.Success();
+    }
+
+    private Result createDependency(BinaryCommand cmd){
+        File f = new File(cmd.getField1()[1].getLiteral());
+        if(!f.exists()){return Result.Error(Result.Errors.FILE_NOT_FOUND, cmd.getField1()[1].getLiteral() + " at position: " + pos);}
+        String alias = cmd.getField2()[1].getLiteral();
+        functions.put(alias, f);
+        return Result.Success();
+    }
+
+    private Result callDependency(UnaryCommand cmd){
+        String alias = cmd.getField()[1].getLiteral();
+        callFunction(alias);
+        return Result.Success();
+    }
+
+    private Result loop(LoopCommand cmd){
+        Command[] body = cmd.getBody();
+
+        while(memory[ptr] != 0){ this.subinterpret(body); }
+        return Result.Success();
+    }
+
+    private void subinterpret(Command[] body){
+        int i = 0;
+        while(i < body.length){
+            Result r = this.interpretCommand(body[i]);
+            if(!r.getSuccess()){
+                r.handleError();
+            }
+            i++;
         }
     }
 }

@@ -10,6 +10,7 @@ public class Result {
         NONEXISTENT_FUNCTION("Non-existent function: "),
         INVALID_VALUE("Invalid Value"),
         INVALID_COMPARISON("Invalid comparison: "),
+        INVALID_FILE("Invalid file: "),
         FILE_NOT_FOUND("Cannot find file: "),
         SYNTAX_ERROR("Syntax error: ");
 
