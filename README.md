@@ -1,7 +1,7 @@
 # Hades Programming Language
 
 Hades is an Assembly mimic intended to target the eBin Bytecode.\
-Hades is a programming language built for easier development within the [ePUx16 Computer Simulator](https://github.com/Nadelio/ePU/tree/main/eBF%20External%20Programming/bin)
+Hades is a programming language built for easier development within the [ePUx32 Computer Simulator](https://github.com/Nadelio/ePU)
 
 # 
 \
