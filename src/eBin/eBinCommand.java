@@ -10,6 +10,7 @@ public class eBinCommand {
         LABEL,
         NUMBER,
         COMPARISON,
+        FILE,
         INSTRUCTION
     }
 

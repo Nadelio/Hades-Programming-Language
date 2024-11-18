@@ -30,6 +30,7 @@ public class Compiler {
         "23", // INT : 23
         "24", // NOP : 24
         "25", // WRITE : 25
+        "26", // OUT : 26
     };
 
     private static final String[] bytecodePrefixes = {
@@ -113,9 +114,9 @@ public class Compiler {
 
                     String dependencyAndAlias = "";
                     if(Main.EPU_FLAG){
-                        dependencyAndAlias = dependencyToBin(field1[1].getLiteral() + " " + field1[2].getLiteral(), field2[1].getLiteral());
+                        dependencyAndAlias = dependencyToBin("N" + field1[1].getLiteral() + " N" + field1[2].getLiteral(), field2[1].getLiteral());
                     } else {
-                        dependencyAndAlias = dependencyToBin(field1[1].getLiteral() + field1[2].getLiteral() + field1[3].getLiteral(), field2[1].getLiteral());
+                        dependencyAndAlias = dependencyToBin("D" + field1[1].getLiteral() + field1[2].getLiteral() + field1[3].getLiteral(), field2[1].getLiteral());
                     }
 
                     return bytecode[10] + " " + dependencyAndAlias;
@@ -221,10 +222,12 @@ public class Compiler {
                     UnaryCommand unary = (UnaryCommand) cmd;
                     Token[] field = unary.getField();
                     String num = bytecodePrefixes[3] + field[0].getLiteral();
-                    return bytecode[27] + " " + num;
+                    return bytecode[25] + " " + num;
                 } else {
                     throw new IllegalArgumentException("Invalid command type.");
                 }
+            case OUT:
+                return bytecode[26];
             default:
                 return "";
         }
@@ -255,17 +258,17 @@ public class Compiler {
     private String byteCodeFromComparison(Token.TokenType comparision){
         switch(comparision){
             case NOTEQUAL:
-                return "1";
+                return "0";
             case EQUAL:
-                return "2";
+                return "1";
             case GREATER:
-                return "3";
+                return "2";
             case LESS:
-                return "4";
+                return "3";
             case GREATEREQUAL:
-                return "5";
+                return "4";
             case LESSEQUAL:
-                return "6";
+                return "5";
             default:
                 throw new IllegalArgumentException("Invalid comparison type.");
         }
