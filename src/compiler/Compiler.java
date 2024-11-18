@@ -2,12 +2,13 @@ package src.compiler;
 
 import java.util.HashMap;
 
-import src.data.ASTC;
-import src.data.BinaryCommand;
-import src.data.Command;
-import src.data.LoopCommand;
-import src.data.Token;
-import src.data.UnaryCommand;
+import src.Main;
+import src.parser.ASTC;
+import src.parser.BinaryCommand;
+import src.parser.Command;
+import src.parser.LoopCommand;
+import src.parser.Token;
+import src.parser.UnaryCommand;
 
 public class Compiler {
     private static final String[] bytecode = {
@@ -120,7 +121,7 @@ public class Compiler {
                     Token[] field2 = binary.getField2();
 
                     String dependencyAndAlias = "";
-                    if(CompMain.EPU_FLAG){
+                    if(Main.EPU_FLAG){
                         dependencyAndAlias = dependencyToBin("N" + field1[1].getLiteral() + " N" + field1[2].getLiteral(), field2[1].getLiteral());
                     } else {
                         dependencyAndAlias = dependencyToBin("D" + field1[1].getLiteral() + field1[2].getLiteral() + field1[3].getLiteral(), field2[1].getLiteral());
@@ -241,7 +242,7 @@ public class Compiler {
     }
 
     private String dependencyToBin(String dependency, String alias){
-        if(CompMain.EPU_FLAG){
+        if(Main.EPU_FLAG){
             dependencies.put(alias, dependencyCounter);
             dependencyCounter++;
         }

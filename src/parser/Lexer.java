@@ -1,6 +1,6 @@
-package src.data;
+package src.parser;
 
-import src.compiler.CompMain;
+import src.Main;
 
 public class Lexer {
     
@@ -18,7 +18,7 @@ public class Lexer {
     }
 
     private void readChar() {
-        if(CompMain.DEBUG_FLAG){System.out.println("Reading Character: " + this.input.charAt(this.readPosition));}
+        if(Main.DEBUG_FLAG){System.out.println("Reading Character: " + this.input.charAt(this.readPosition));}
         if (this.readPosition >= this.input.length()) {
             this.ch = '\u0000';
         } else {
@@ -29,7 +29,7 @@ public class Lexer {
     }
 
     private char peekChar() {
-        if(CompMain.DEBUG_FLAG){System.out.println("Peeking Character: " + this.input.charAt(this.readPosition));}
+        if(Main.DEBUG_FLAG){System.out.println("Peeking Character: " + this.input.charAt(this.readPosition));}
         if (this.readPosition >= this.input.length()) {
             return '\u0000';
         } else {
@@ -41,7 +41,7 @@ public class Lexer {
         java.util.ArrayList<Token> tokens = new java.util.ArrayList<Token>();
         while(this.ch != '\u0000'){
             Token tok = this.nextToken();
-            if(CompMain.DEBUG_FLAG){System.out.println("Completed Token: " + tok.toString());}
+            if(Main.DEBUG_FLAG){System.out.println("Completed Token: " + tok.toString());}
             tokens.add(tok);
             this.readChar();
         }
@@ -129,7 +129,7 @@ public class Lexer {
     }
 
     private String readIdentifier(){
-        if(CompMain.DEBUG_FLAG){System.out.println("Position of string: " + this.position);}
+        if(Main.DEBUG_FLAG){System.out.println("Position of string: " + this.position);}
         int pos = this.position;
         int count = 0;
         while(isLetter(this.ch)){
@@ -137,7 +137,7 @@ public class Lexer {
             count++;
         }
         String keyword = this.input.substring(pos, this.position);
-        if(CompMain.DEBUG_FLAG){
+        if(Main.DEBUG_FLAG){
             System.out.println("While loop iteration count: " + count);
             System.out.println("Position of last character: " + this.position);
             System.out.println("String: \"" + keyword + "\"");

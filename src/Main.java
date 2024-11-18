@@ -1,13 +1,19 @@
-package src.interpreter;
+package src;
+import java.io.File;
 
-import src.data.ASTC;
-import src.data.Lexer;
-import src.data.Parser;
-import src.data.Token;
+import src.compiler.Compiler;
+import src.interpreter.HadesInterpreter;
+import src.parser.ASTC;
+import src.parser.Lexer;
+import src.parser.Parser;
+import src.parser.Token;
 
-public class InterMain {
+public class Main{
+
     public static boolean DEBUG_FLAG = false;
     public static boolean EPU_FLAG = false;
+    public static boolean COMPILE_FLAG = false;
+    public static boolean RUN_FLAG = false;
 
     public static void main(String[] args) {
         
@@ -43,6 +49,15 @@ public class InterMain {
                 EPU_FLAG = true;
             }
 
+            if(args[0].contains("c")){
+                COMPILE_FLAG = true;
+            } else if(args[0].contains("r")){
+                RUN_FLAG = true;
+            } else {
+                System.out.println("Missing compile or run flag.");
+                System.exit(1);
+            }
+
         } else if(args.length <= 1){
             System.out.println("Too few arguments.");
             System.exit(1);
@@ -51,22 +66,48 @@ public class InterMain {
             System.exit(1);
         }
         
-        try {
+        if(COMPILE_FLAG){
+            try {
+                // lex Hades code
+                System.out.println("Lexing Hades code...");
+                Lexer lexer = new Lexer(hadesCode);
+                Token[] tokens = lexer.lex();
+                
+                // parse Hades code
+                System.out.println("Parsing Hades code...");
+                Parser parser = new Parser(tokens);
+                ASTC ast = parser.parse();
+    
+                // compile Hades code
+                System.out.println("Compiling Hades code...");
+                Compiler compiler = new Compiler(ast);
+                String eBinCode = compiler.compile();
+    
+                // write eBin code to file
+                File inputFile = new File(args[1]);
+                File outputFile = new File(inputFile.getName().substring(0, inputFile.getName().length() - 4) + ".ebin");
+                System.out.println("Writing eBin code to " + outputFile.getName() + "...");
+                java.io.FileWriter fw = new java.io.FileWriter(outputFile);
+                fw.write(eBinCode);
+                fw.close();
+                System.out.println("Completed writing eBin code to " + outputFile.getName());
+    
+            } catch(Exception e) { e.printStackTrace(); }
+        } else if(RUN_FLAG){
             // lex Hades code
             System.out.println("Lexing Hades code...");
             Lexer lexer = new Lexer(hadesCode);
             Token[] tokens = lexer.lex();
-            
+
             // parse Hades code
             System.out.println("Parsing Hades code...");
             Parser parser = new Parser(tokens);
             ASTC ast = parser.parse();
 
-            // interpret Hades code
+            // interpreter Hades code
             System.out.println("Interpreting Hades code...");
             HadesInterpreter interpreter = new HadesInterpreter(ast);
             interpreter.interpret();
-
-        } catch(Exception e) { e.printStackTrace(); }
+        }
     }
 }

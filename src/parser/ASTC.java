@@ -1,4 +1,4 @@
-package src.data;
+package src.parser;
 public class ASTC {
     private Command[] tree;
     public ASTC(Command[] tree) { this.tree = tree; }

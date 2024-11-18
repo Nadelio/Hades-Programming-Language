@@ -3,8 +3,8 @@ package src.interpreter;
 import java.io.File;
 import java.util.Scanner;
 
-import src.data.Result;
 import src.interpreter.eBin.*;
+import src.parser.Result;
 
 public class eBinInterpreter {
     private int progPos;

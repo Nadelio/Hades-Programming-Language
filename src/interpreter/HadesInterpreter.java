@@ -4,15 +4,15 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import src.data.ASTC;
-import src.data.BinaryCommand;
-import src.data.Command;
-import src.data.Lexer;
-import src.data.LoopCommand;
-import src.data.Parser;
-import src.data.Result;
-import src.data.Token;
-import src.data.UnaryCommand;
+import src.parser.ASTC;
+import src.parser.BinaryCommand;
+import src.parser.Command;
+import src.parser.Lexer;
+import src.parser.LoopCommand;
+import src.parser.Parser;
+import src.parser.Result;
+import src.parser.Token;
+import src.parser.UnaryCommand;
 
 public class HadesInterpreter {
     // ast tree variables

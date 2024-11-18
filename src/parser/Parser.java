@@ -1,9 +1,9 @@
-package src.data;
+package src.parser;
 
 import java.util.ArrayList;
 
-import src.compiler.CompMain;
-import src.data.Token.TokenType;
+import src.Main;
+import src.parser.Token.TokenType;
 
 public class Parser {
 
@@ -24,7 +24,7 @@ public class Parser {
     Reads the next token from the AST and increments read pointer
     */
     private void readToken() {
-        if(CompMain.DEBUG_FLAG){ System.out.println("Reading Token: " + this.ast.getTree()[this.readPosition].getLiteral()); }
+        if(Main.DEBUG_FLAG){ System.out.println("Reading Token: " + this.ast.getTree()[this.readPosition].getLiteral()); }
         if (this.readPosition >= this.ast.getTree().length) {
             this.tok = new Token(Token.TokenType.EOF, '\u0000');
         } else {
@@ -39,7 +39,7 @@ public class Parser {
     @return Token
     */
     private Token peekToken() {
-        if(CompMain.DEBUG_FLAG){ System.out.println("Peeking Token: " + this.ast.getTree()[this.readPosition].getLiteral()); }
+        if(Main.DEBUG_FLAG){ System.out.println("Peeking Token: " + this.ast.getTree()[this.readPosition].getLiteral()); }
         if (this.readPosition >= this.ast.getTree().length) {
             return new Token(Token.TokenType.EOF, '\u0000');
         } else {
@@ -55,7 +55,7 @@ public class Parser {
         java.util.ArrayList<Command> commands = new java.util.ArrayList<Command>();
         while(this.tok.getType() != Token.TokenType.EOF){
             Command cmd = this.nextCommand();
-            if(CompMain.DEBUG_FLAG){System.out.println("Completed Command: " + cmd.toString());}
+            if(Main.DEBUG_FLAG){System.out.println("Completed Command: " + cmd.toString());}
             commands.add(cmd);
             this.readToken();
         }
@@ -177,7 +177,7 @@ public class Parser {
                 field2 = new Token[3];
                 
                 // build field1
-                if(!CompMain.EPU_FLAG){
+                if(!Main.EPU_FLAG){
                     field1 = new Token[5];
                     if(this.peekToken().getType() == Token.TokenType.LBRACKET){
                         this.readToken();

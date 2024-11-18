@@ -1,4 +1,4 @@
-package src.data;
+package src.parser;
 public class UnaryCommand extends Command {
     /*
     field[0] = [
