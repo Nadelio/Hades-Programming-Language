@@ -3,7 +3,7 @@ package src.interpreter;
 import java.io.File;
 import java.util.Scanner;
 
-import src.Result;
+import src.data.Result;
 
 public class eBFInterpreter {
     private int progPos;

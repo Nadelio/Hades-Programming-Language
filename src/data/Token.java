@@ -1,4 +1,4 @@
-package src;
+package src.data;
 public class Token {
     public static enum TokenType {
         MOVE,

@@ -3,7 +3,7 @@ package src.interpreter;
 import java.io.File;
 import java.util.Scanner;
 
-import src.Result;
+import src.data.Result;
 import src.interpreter.eBin.*;
 
 public class eBinInterpreter {

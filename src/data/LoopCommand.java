@@ -1,4 +1,4 @@
-package src;
+package src.data;
 public class LoopCommand extends Command {
     private Command[] body;
 

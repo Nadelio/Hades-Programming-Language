@@ -1,9 +1,9 @@
 package src.interpreter;
 
-import src.ASTC;
-import src.Lexer;
-import src.Parser;
-import src.Token;
+import src.data.ASTC;
+import src.data.Lexer;
+import src.data.Parser;
+import src.data.Token;
 
 public class InterMain {
     public static boolean DEBUG_FLAG = false;

@@ -1,9 +1,12 @@
-package src;
+package src.compiler;
 import java.io.File;
 
-import src.compiler.Compiler;
+import src.data.ASTC;
+import src.data.Lexer;
+import src.data.Parser;
+import src.data.Token;
 
-public class Main{
+public class CompMain{
 
     public static boolean DEBUG_FLAG = false;
     public static boolean EPU_FLAG = false;

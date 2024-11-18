@@ -1,4 +1,4 @@
-package src;
+package src.data;
 
 public class BinaryCommand extends Command {
     private Token[] field1;
