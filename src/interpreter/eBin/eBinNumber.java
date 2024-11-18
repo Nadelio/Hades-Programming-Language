@@ -1,4 +1,4 @@
-package src.eBin;
+package src.interpreter.eBin;
 
 public class eBinNumber extends eBinCommand{
     public eBinNumber(String literal){

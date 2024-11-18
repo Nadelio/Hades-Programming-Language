@@ -1,6 +1,14 @@
-package src;
+package src.compiler;
 
 import java.util.HashMap;
+
+import src.ASTC;
+import src.BinaryCommand;
+import src.Command;
+import src.LoopCommand;
+import src.Main;
+import src.Token;
+import src.UnaryCommand;
 
 public class Compiler {
     private static final String[] bytecode = {

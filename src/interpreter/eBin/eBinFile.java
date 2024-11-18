@@ -1,4 +1,4 @@
-package src.eBin;
+package src.interpreter.eBin;
 
 public class eBinFile extends eBinCommand{
     public eBinFile(String path){

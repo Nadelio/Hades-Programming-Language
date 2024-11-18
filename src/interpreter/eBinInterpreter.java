@@ -1,8 +1,10 @@
-package src;
+package src.interpreter;
 
 import java.io.File;
 import java.util.Scanner;
-import src.eBin.*;
+
+import src.Result;
+import src.interpreter.eBin.*;
 
 public class eBinInterpreter {
     private int progPos;

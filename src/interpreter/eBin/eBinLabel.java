@@ -1,4 +1,4 @@
-package src.eBin;
+package src.interpreter.eBin;
 
 public class eBinLabel extends eBinCommand {
     public eBinLabel(String literal){

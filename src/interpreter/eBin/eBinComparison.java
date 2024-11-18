@@ -1,4 +1,4 @@
-package src.eBin;
+package src.interpreter.eBin;
 
 public class eBinComparison extends eBinCommand {
     public eBinComparison(String literal){

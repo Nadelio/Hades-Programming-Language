@@ -1,10 +1,11 @@
-package src;
-import java.io.File;
+package src.interpreter;
 
-import src.compiler.Compiler;
+import src.ASTC;
+import src.Lexer;
+import src.Parser;
+import src.Token;
 
-public class Main{
-
+public class InterMain {
     public static boolean DEBUG_FLAG = false;
     public static boolean EPU_FLAG = false;
 
@@ -61,19 +62,10 @@ public class Main{
             Parser parser = new Parser(tokens);
             ASTC ast = parser.parse();
 
-            // compile Hades code
-            System.out.println("Compiling Hades code...");
-            Compiler compiler = new Compiler(ast);
-            String eBinCode = compiler.compile();
-
-            // write eBin code to file
-            File inputFile = new File(args[1]);
-            File outputFile = new File(inputFile.getName().substring(0, inputFile.getName().length() - 4) + ".ebin");
-            System.out.println("Writing eBin code to " + outputFile.getName() + "...");
-            java.io.FileWriter fw = new java.io.FileWriter(outputFile);
-            fw.write(eBinCode);
-            fw.close();
-            System.out.println("Completed writing eBin code to " + outputFile.getName());
+            // interpret Hades code
+            System.out.println("Interpreting Hades code...");
+            HadesInterpreter interpreter = new HadesInterpreter(ast);
+            interpreter.interpret();
 
         } catch(Exception e) { e.printStackTrace(); }
     }

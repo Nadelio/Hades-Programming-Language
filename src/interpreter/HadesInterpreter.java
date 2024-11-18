@@ -1,8 +1,18 @@
-package src;
+package src.interpreter;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Scanner;
+
+import src.ASTC;
+import src.BinaryCommand;
+import src.Command;
+import src.Lexer;
+import src.LoopCommand;
+import src.Parser;
+import src.Result;
+import src.Token;
+import src.UnaryCommand;
 
 public class HadesInterpreter {
     // ast tree variables
