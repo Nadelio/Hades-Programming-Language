@@ -12,7 +12,8 @@ public class Result {
         INVALID_COMPARISON("Invalid comparison: "),
         INVALID_FILE("Invalid file: "),
         FILE_NOT_FOUND("Cannot find file: "),
-        SYNTAX_ERROR("Syntax error: ");
+        SYNTAX_ERROR("Syntax error: "),
+        LOOPED_DEPENDENCY_SET("Looped dependency set: ");
 
         private String errmsg;
         private Errors(String errmsg) { this.errmsg = errmsg; }

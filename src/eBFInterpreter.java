@@ -8,11 +8,13 @@ public class eBFInterpreter {
     File file;
     HadesInterpreter caller;
     String[] commands;
+    int c; // for loops
 
     public eBFInterpreter(File file, HadesInterpreter caller){
         this.progPos = 0;
         this.file = file;
         this.caller = caller;
+        this.c = 0;
     }
 
     public void interpret(){
@@ -38,7 +40,6 @@ public class eBFInterpreter {
     }
 
     private Result interpretCommand(String command){
-        int c = 0;
         switch(command){
             case "+":
                 this.caller.ptrVal++;
@@ -56,9 +57,37 @@ public class eBFInterpreter {
                 if(this.caller.ptr < 0){ this.caller.ptr = this.caller.memory.length - 1; }
                 return Result.Success();
             case "[":
-                
+                if(this.caller.memory[this.caller.ptr] == 0) {
+                    this.progPos++;
+                    while(c > 0 || !this.commands[this.progPos].equals("]")) {
+                        
+                        if(this.commands[this.progPos].equals("[")) {
+                            c++;
+                        } else if(this.commands[this.progPos].equals("]")) {
+                            c--;
+                        } else if(this.commands[this.progPos].equals("DPND")) {
+                            return Result.Error(Result.Errors.LOOPED_DEPENDENCY_SET, command + " at position: " + progPos);  
+                        }
+                        this.progPos++;
+                    }
+                }
+                return Result.Success();
             case "]":
-
+                if(this.caller.memory[this.caller.ptr] != 0) {
+                    this.progPos--;
+                    while(c > 0 || !this.commands[this.progPos].equals("[")) {
+                        
+                        if(this.commands[this.progPos].equals("]")) {
+                            c++;
+                        } else if(this.commands[this.progPos].equals("[")) {
+                            c--;
+                        } else if(this.commands[this.progPos].equals("DPND")) {
+                            return Result.Error(Result.Errors.LOOPED_DEPENDENCY_SET, command + " at position: " + progPos);  
+                        }
+                        this.progPos--;
+                    }
+                }
+                return Result.Success();
             case "'":
                 this.caller.ptrVal = this.caller.memory[this.caller.ptr];
                 return Result.Success();
@@ -78,21 +107,47 @@ public class eBFInterpreter {
                 this.caller.memory[this.caller.ptr] = val;
                 return Result.Success();    
             case ">>":
-
+                this.caller.stack[this.caller.stackPtr] = this.caller.ptrVal;
+                this.caller.ptrVal = 0;
+                this.caller.stackPtr++;
+                return Result.Success();
             case "<<":
-
+                this.caller.ptrVal = this.caller.stack[this.caller.stackPtr];
+                this.caller.stack[this.caller.stackPtr] = 0;
+                this.caller.stackPtr--;
+                return Result.Success();
             case "DPND":
-
+                File f = new File(this.commands[this.progPos + 1]);
+                this.caller.functions.put(this.commands[this.progPos + 2], f);
+                this.progPos += 2;
+                return Result.Success();
             case "%":
-
+                this.progPos++;
+                return this.caller.callFunction(this.commands[this.progPos]);
             case "#":
-
+                this.progPos++;
+                this.caller.labels.put(this.commands[this.progPos], this.caller.ptr);
+                return Result.Success();
             case "!#":
-
+                this.progPos++;
+                if(this.caller.labels.containsKey(this.commands[this.progPos])){
+                    this.caller.labels.remove(this.commands[this.progPos]);
+                } else {
+                    return Result.Error(Result.Errors.NONEXISTENT_LABEL, this.commands[this.progPos] + " at position: " + progPos);
+                }
+                return Result.Success();
             case "@":
-
-            case "/*":
+                this.progPos++;
+                if(this.caller.labels.containsKey(this.commands[this.progPos])){
+                    this.caller.ptr = this.caller.labels.get(this.commands[this.progPos]);
+                } else {
+                    return Result.Error(Result.Errors.NONEXISTENT_LABEL, this.commands[this.progPos] + " at position: " + progPos);
+                }
+                return Result.Success();
+            case "/*":  
                 while(this.commands[this.progPos] != "*/"){ this.progPos++; }
+                this.progPos++;
+                return Result.Success();
             case "END":
                 return Result.Success();
             default:

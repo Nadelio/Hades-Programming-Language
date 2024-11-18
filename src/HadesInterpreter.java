@@ -225,7 +225,7 @@ public class HadesInterpreter {
         return Result.Success();
     }
 
-    private Result callFunction(String funcName){
+    public Result callFunction(String funcName){
         if(this.functions.containsKey(funcName)){
             File file = this.functions.get(funcName);
 
