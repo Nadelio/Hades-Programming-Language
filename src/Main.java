@@ -45,12 +45,11 @@ public class Main{
                 DEBUG_FLAG = true;
             }
 
-            if(args[0].contains("e")){
-                EPU_FLAG = true;
-            }
-
             if(args[0].contains("c")){
                 COMPILE_FLAG = true;
+                if(args[0].contains("e")){
+                    EPU_FLAG = true;
+                }
             } else if(args[0].contains("r")){
                 RUN_FLAG = true;
             } else {
