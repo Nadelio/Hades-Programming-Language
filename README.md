@@ -87,7 +87,7 @@ CLB [foo]
 WRT [14]
 SYS [foo zero zero zero zero] ; print to terminal syscall but using labels called "foo" and "zero" ;
 
-; check the ePUx16 syscall documentation for help on the syscall arguments ;
+; check the ePUx32 syscall documentation for help on the syscall arguments ;
 
 ; end program ;
 HLT
