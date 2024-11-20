@@ -25,7 +25,7 @@ OUT ; print l twice ;
 OUT
 WRT [79] ; o ;
 OUT
-WRT [0] ; whitespace ;
+WRT [32] ; whitespace ;
 OUT
 WRT [55] ; W ;
 OUT
@@ -37,7 +37,7 @@ WRT [76] ; l ;
 OUT
 WRT [68] ; d ;
 OUT
-WRT [1] ; ! ;
+WRT [33] ; ! ;
 OUT
 ; end program ;
 HLT
