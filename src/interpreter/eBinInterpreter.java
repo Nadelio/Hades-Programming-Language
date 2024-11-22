@@ -119,11 +119,15 @@ public class eBinInterpreter {
                         return Result.Success();
                     case 10: // CDP [F]
                         this.progPos++;
-                        File f = new File(this.eBinCommands[this.progPos].getLiteral());
-                        if(!f.exists()){ return Result.Error(Result.Errors.FILE_NOT_FOUND, this.eBinCommands[this.progPos].getLiteral() + " at position: " + this.progPos); }
-                        this.progPos++;
-                        this.caller.functions.put(this.eBinCommands[this.progPos].getLiteral(), f);
-                        return Result.Success();
+                        if(this.eBinCommands[this.progPos] instanceof eBinFile){
+                            File f = new File(this.eBinCommands[this.progPos].getLiteral());
+                            if(!f.exists()){ return Result.Error(Result.Errors.FILE_NOT_FOUND, this.eBinCommands[this.progPos].getLiteral() + " at position: " + this.progPos); }
+                            this.progPos++;
+                            this.caller.functions.put(this.eBinCommands[this.progPos].getLiteral(), f);
+                            return Result.Success();
+                        } else {
+                            return Result.Error(Result.Errors.INVALID_COMMAND, this.eBinCommands[this.progPos] + " at position: " + this.progPos);
+                        }
                     case 11: // CALL [F]
                         this.progPos++;
                         this.caller.callFunction(this.eBinCommands[this.progPos].getLiteral());
