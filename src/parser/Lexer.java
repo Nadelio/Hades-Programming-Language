@@ -11,10 +11,11 @@ public class Lexer {
 
     public Lexer(String hadesCode) {
         this.input = hadesCode;
-        this.position = 0;
+        this.position = -1;
         this.readPosition = 0;
         this.ch = '\u0000';
         this.readChar();
+        System.out.println(hadesCode);
     }
 
     private void readChar() {

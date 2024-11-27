@@ -14,16 +14,22 @@ public class Parser {
 
     public Parser(Token[] tokens) {
         this.ast = new AST(tokens);
-        this.position = 0;
+        this.position = -1;
         this.readPosition = 0;
         this.tok = new Token(Token.TokenType.INVALID, '\u0000');
         this.readToken();
+        System.out.print("AST: [");
+        for(Token t : this.ast.getTree()){
+            System.out.print(t + ", ");
+        }
+        System.out.println("]");
     }
 
     /**
     Reads the next token from the AST and increments read pointer
     */
     private void readToken() {
+        System.out.println("Reading Token: " + this.ast.getTree()[this.readPosition].getLiteral());
         if(Main.DEBUG_FLAG){ System.out.println("Reading Token: " + this.ast.getTree()[this.readPosition].getLiteral()); }
         if (this.readPosition >= this.ast.getTree().length) {
             this.tok = new Token(Token.TokenType.EOF, '\u0000');
@@ -121,28 +127,29 @@ public class Parser {
                 field1 = this.doAliasField();
                 return new UnaryCommand(Token.TokenType.CALLDEPENDENCY, field1);
             case Token.TokenType.SYSCALL:
+                this.readToken();
                 field1 = new Token[7];
-                if(this.peekToken().getType() == Token.TokenType.LBRACKET){
-                    this.readToken();
+                if(this.tok.getType() == Token.TokenType.LBRACKET){
                     field1[0] = tok;
-                    if(this.peekToken().getType() == Token.TokenType.ALIAS || this.peekToken().getType() == Token.TokenType.NUMBER){
-                        this.readToken();
+                    this.readToken();
+                    if(this.tok.getType() == Token.TokenType.ALIAS || this.peekToken().getType() == Token.TokenType.NUMBER){
                         field1[1] = tok;
-                        if(this.peekToken().getType() == Token.TokenType.ALIAS || this.peekToken().getType() == Token.TokenType.NUMBER){
-                            this.readToken();
+                        this.readToken();
+                        if(this.tok.getType() == Token.TokenType.ALIAS || this.peekToken().getType() == Token.TokenType.NUMBER){
                             field1[2] = tok;
-                            if(this.peekToken().getType() == Token.TokenType.ALIAS || this.peekToken().getType() == Token.TokenType.NUMBER){
-                                this.readToken();
+                            this.readToken();
+                            if(this.tok.getType() == Token.TokenType.ALIAS || this.peekToken().getType() == Token.TokenType.NUMBER){
                                 field1[3] = tok;
-                                if(this.peekToken().getType() == Token.TokenType.ALIAS || this.peekToken().getType() == Token.TokenType.NUMBER){
-                                    this.readToken();
+                                this.readToken();
+                                if(this.tok.getType() == Token.TokenType.ALIAS || this.peekToken().getType() == Token.TokenType.NUMBER){
                                     field1[4] = tok;
-                                    if(this.peekToken().getType() == Token.TokenType.ALIAS || this.peekToken().getType() == Token.TokenType.NUMBER){
-                                        this.readToken();
+                                    this.readToken();
+                                    if(this.tok.getType() == Token.TokenType.ALIAS || this.peekToken().getType() == Token.TokenType.NUMBER){
                                         field1[5] = tok;
-                                        if(this.peekToken().getType() == Token.TokenType.RBRACKET){
-                                            this.readToken();
+                                        this.readToken();
+                                        if(this.tok.getType() == Token.TokenType.RBRACKET){
                                             field1[6] = tok;
+                                            this.readToken();
                                             return new UnaryCommand(Token.TokenType.SYSCALL, field1);
                                         } else {
                                             exitWithError(Token.TokenType.RBRACKET);
@@ -168,9 +175,9 @@ public class Parser {
                 break;
             case Token.TokenType.COMMENT:
                 ArrayList<Token> content = new ArrayList<Token>();
-                while(this.peekToken().getType() != Token.TokenType.COMMENT){
-                    this.readToken();
+                while(this.tok.getType() != Token.TokenType.COMMENT){
                     content.add(this.tok);
+                    this.readToken();
                 }
                 return new UnaryCommand(Token.TokenType.COMMENT, content.toArray(new Token[content.size()]));
             case Token.TokenType.CREATEDEPENDENCY:
@@ -211,6 +218,9 @@ public class Parser {
                     }
                 } else {
                     field1 = new Token[4];
+                    System.out.println("Next Token: " + this.peekToken().getType());
+                    System.out.println("Reading Position: " + this.readPosition);
+                    System.out.println("Current Position: " + this.position);
                     if(this.peekToken().getType() == Token.TokenType.LBRACKET){
                         this.readToken();
                         field1[0] = tok;
@@ -242,25 +252,26 @@ public class Parser {
 
                 return new BinaryCommand(Token.TokenType.CREATEDEPENDENCY, field1, field2);
             case Token.TokenType.INTERRUPT:
+                this.readToken();
                 field1 = new Token[5];
                 field2 = new Token[3];
 
                 // build field1
-                if(this.peekToken().getType() == Token.TokenType.LBRACKET){
-                    this.readToken();
+                if(this.tok.getType() == Token.TokenType.LBRACKET){
                     field1[0] = tok;
-                    if(this.peekToken().getType() == Token.TokenType.ALIAS){
-                        this.readToken();
+                    this.readToken();
+                    if(this.tok.getType() == Token.TokenType.ALIAS){
                         field1[1] = tok;
-                        if(this.isComparison(this.peekToken().getType())){
-                            this.readToken();
+                        this.readToken();
+                        if(this.isComparison(this.tok.getType())){
                             field1[2] = tok;
-                            if(this.peekToken().getType() == Token.TokenType.ALIAS){
-                                this.readToken();
+                            this.readToken();
+                            if(this.tok.getType() == Token.TokenType.ALIAS){
                                 field1[3] = tok;
-                                if(this.peekToken().getType() == Token.TokenType.RBRACKET){
-                                    this.readToken();
+                                this.readToken();
+                                if(this.tok.getType() == Token.TokenType.RBRACKET){
                                     field1[4] = tok;
+                                    this.readToken();
                                 } else {
                                     exitWithError(Token.TokenType.RBRACKET);
                                 }
@@ -315,15 +326,15 @@ public class Parser {
     private boolean isComparison(Token.TokenType type){ return type == Token.TokenType.EQUAL || type == Token.TokenType.NOTEQUAL || type == Token.TokenType.GREATER || type == Token.TokenType.LESS || type == Token.TokenType.GREATEREQUAL || type == Token.TokenType.LESSEQUAL; }
     private Token[] doAliasField(){
         Token[] field = new Token[3];
-        if(this.peekToken().getType() == Token.TokenType.LBRACKET){
-            this.readToken();
+        if(this.tok.getType() == Token.TokenType.LBRACKET){
             field[0] = tok;
-            if(this.peekToken().getType() == Token.TokenType.ALIAS){
-                this.readToken();
+            this.readToken();
+            if(this.tok.getType() == Token.TokenType.ALIAS){
                 field[1] = tok;
-                if(this.peekToken().getType() == Token.TokenType.RBRACKET){
-                    this.readToken();
+                this.readToken();
+                if(this.tok.getType() == Token.TokenType.RBRACKET){
                     field[2] = tok;
+                    this.readToken();
                 } else {
                     exitWithError(this.peekToken().getType());
                 }

@@ -1,4 +1,4 @@
-CDP [someFile.ebf] [foo]
+CDP [0 0] [foo]
 CALL [foo]
 CLB [lblA]
 INCV
