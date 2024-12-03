@@ -18,19 +18,14 @@ public class Parser {
         this.readPosition = 0;
         this.tok = new Token(Token.TokenType.INVALID, '\u0000');
         this.readToken();
-        System.out.print("AST: [");
-        for(Token t : this.ast.getTree()){
-            System.out.print(t + ", ");
-        }
-        System.out.println("]");
     }
 
     /**
     Reads the next token from the AST and increments read pointer
     */
     private void readToken() {
-        System.out.println("Reading Token: " + this.ast.getTree()[this.readPosition].getLiteral());
-        if(Main.DEBUG_FLAG){ System.out.println("Reading Token: " + this.ast.getTree()[this.readPosition].getLiteral()); }
+        System.out.println("\u001B[34mReading Token: \u001B[33m" + this.ast.getTree()[this.readPosition].getLiteral() + "\u001B[0m");
+        if(Main.DEBUG_FLAG){ System.out.println("\u001B[34mReading Token: \u001B[33m" + this.ast.getTree()[this.readPosition].getLiteral() + "\u001B[0m"); }
         if (this.readPosition >= this.ast.getTree().length) {
             this.tok = new Token(Token.TokenType.EOF, '\u0000');
         } else {
@@ -45,7 +40,7 @@ public class Parser {
     @return Token
     */
     private Token peekToken() {
-        if(Main.DEBUG_FLAG){ System.out.println("Peeking Token: " + this.ast.getTree()[this.readPosition].getLiteral()); }
+        if(Main.DEBUG_FLAG){ System.out.println("\u001B[34mPeeking Token: \u001B[33m" + this.ast.getTree()[this.readPosition].getLiteral() + "\u001B[0m"); }
         if (this.readPosition >= this.ast.getTree().length) {
             return new Token(Token.TokenType.EOF, '\u0000');
         } else {
@@ -218,9 +213,6 @@ public class Parser {
                     }
                 } else {
                     field1 = new Token[4];
-                    System.out.println("Next Token: " + this.peekToken().getType());
-                    System.out.println("Reading Position: " + this.readPosition);
-                    System.out.println("Current Position: " + this.position);
                     if(this.peekToken().getType() == Token.TokenType.LBRACKET){
                         this.readToken();
                         field1[0] = tok;
@@ -306,20 +298,20 @@ public class Parser {
     }
 
     private void exitWithError(Token.TokenType type){
-        System.out.println("Syntax error: expected " + type + " @ " + (this.position + 1));
-        System.out.println("Recieved: " + this.peekToken().getType());
+        System.out.println("\u001B[31mSyntax error: expected \u001B[33m" + type + "\u001B[31m @ \u001B[33m" + (this.position + 1) + "\u001B[0m");
+        System.out.println("\u001B[31mRecieved: \u001B[33m" + this.peekToken().getType() + "\u001B[0m");
         System.exit(1);
     }
 
     private void exitWithError(String type){
-        System.out.println("Syntax error: expected " + type + " @ " + (this.position + 1));
-        System.out.println("Recieved: " + this.peekToken().getType());
+        System.out.println("\u001B[31mSyntax error: expected \u001B[33m" + type + "\u001B[31m @ \u001B[33m" + (this.position + 1) + "\u001B[0m");
+        System.out.println("\u001B[31mRecieved: \u001B[33m" + this.peekToken().getType() + "\u001B[0m");
         System.exit(1);
     }
 
     private void exitWithError(Token.TokenType type1, Token.TokenType type2){
-        System.out.println("Syntax error: expected " + type1 + " or " + type2 + " @ " + (this.position + 1));
-        System.out.println("Recieved: " + this.peekToken().getType());
+        System.out.println("\u001B[31mSyntax error: expected \u001B[33m" + type1 + "\u001B[31m or \u001B[33m" + type2 + "\u001B[31m @ \u001B[33m" + (this.position + 1) + "\u001B[0m");
+        System.out.println("\u001B[31mRecieved: \u001B[33m" + this.peekToken().getType() + "\u001B[0m");
         System.exit(1);
     }
 
@@ -345,5 +337,13 @@ public class Parser {
             exitWithError(this.peekToken().getType());
         }
         return field;
+    }
+
+    @SuppressWarnings("unused")
+    private void printParserInfo(){
+        System.out.println("\u001B[34mCurrent Token: [\u001B[33m" + this.tok + "\u001B[34m]\u001B[0m");
+        System.out.println("\u001B[34mNext Token: \u001B[33m" + this.peekToken().getLiteral() + "\u001B[0m");
+        System.out.println("\u001B[34mReading Position: \u001B[33m" + this.readPosition + "\u001B[0m");
+        System.out.println("\u001B[34mCurrent Position: \u001B[33m" + this.position + "\u001B[0m");
     }
 }

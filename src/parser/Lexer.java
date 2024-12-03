@@ -15,7 +15,6 @@ public class Lexer {
         this.readPosition = 0;
         this.ch = '\u0000';
         this.readChar();
-        System.out.println(hadesCode);
     }
 
     private void readChar() {
@@ -116,11 +115,11 @@ public class Lexer {
                 }
                 break;
         }
-
-        this.readChar();
+        
         return tok;
     }
 
+    //! Need to move both positions back one at end of readNumber() and readIdentifier()
     private int readNumber(){
         int pos = this.position;
         while(isNumber(this.ch)){

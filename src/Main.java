@@ -26,7 +26,7 @@ public class Main{
                     java.io.File file = new java.io.File(args[1]);
 
                     if(!file.getName().endsWith(".hds")){
-                        System.out.println("Given file is not a Hades file.");
+                        System.out.println("\u001B[31mGiven file is not a Hades file.\u001B[0m");
                         System.exit(1);
                     }
 
@@ -36,7 +36,7 @@ public class Main{
                     }
                     sc.close();
                 } catch(java.io.FileNotFoundException e) {
-                    System.out.println("Given file not found.");
+                    System.out.println("\u001B[31mGiven file not found.\u001B[0m");
                     System.exit(1);
                 }
             }
@@ -53,58 +53,58 @@ public class Main{
             } else if(args[0].contains("r")){
                 RUN_FLAG = true;
             } else {
-                System.out.println("Missing compile or run flag.");
+                System.out.println("\u001B[31mMissing compile or run flag.\u001B[0m");
                 System.exit(1);
             }
 
         } else if(args.length <= 1){
-            System.out.println("Too few arguments.");
+            System.out.println("\u001B[31mToo few arguments.\u001B[0m");
             System.exit(1);
         } else {
-            System.out.println("Too many arguments.");
+            System.out.println("\u001B[31mToo many arguments.\u001B[0m");
             System.exit(1);
         }
         
         if(COMPILE_FLAG){
             try {
                 // lex Hades code
-                System.out.println("Lexing Hades code...");
+                System.out.println("\u001B[34mLexing Hades code...\u001B[0m");
                 Lexer lexer = new Lexer(hadesCode);
                 Token[] tokens = lexer.lex();
                 
                 // parse Hades code
-                System.out.println("Parsing Hades code...");
+                System.out.println("\u001B[34mParsing Hades code...\u001B[0m");
                 Parser parser = new Parser(tokens);
                 ASTC ast = parser.parse();
     
                 // compile Hades code
-                System.out.println("Compiling Hades code...");
+                System.out.println("\u001B[34mCompiling Hades code...\u001B[0m");
                 Compiler compiler = new Compiler(ast);
                 String eBinCode = compiler.compile();
     
                 // write eBin code to file
                 File inputFile = new File(args[1]);
                 File outputFile = new File(inputFile.getName().substring(0, inputFile.getName().length() - 4) + ".ebin");
-                System.out.println("Writing eBin code to " + outputFile.getName() + "...");
+                System.out.println("\u001B[34mWriting eBin code to " + outputFile.getName() + "...\u001B[0m");
                 java.io.FileWriter fw = new java.io.FileWriter(outputFile);
                 fw.write(eBinCode);
                 fw.close();
-                System.out.println("Completed writing eBin code to " + outputFile.getName());
+                System.out.println("\u001B[34mCompleted writing eBin code to " + outputFile.getName() + "\u001B[0m");
     
             } catch(Exception e) { e.printStackTrace(); }
         } else if(RUN_FLAG){
             // lex Hades code
-            System.out.println("Lexing Hades code...");
+            System.out.println("\u001B[34mLexing Hades code...\u001B[0m");
             Lexer lexer = new Lexer(hadesCode);
             Token[] tokens = lexer.lex();
 
             // parse Hades code
-            System.out.println("Parsing Hades code...");
+            System.out.println("\u001B[34mParsing Hades code...\u001B[0m");
             Parser parser = new Parser(tokens);
             ASTC ast = parser.parse();
 
             // interpreter Hades code
-            System.out.println("Interpreting Hades code...");
+            System.out.println("\u001B[34mInterpreting Hades code...\u001B[0m");
             HadesInterpreter interpreter = new HadesInterpreter(ast);
             interpreter.interpret();
         }
