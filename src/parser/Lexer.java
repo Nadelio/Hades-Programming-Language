@@ -18,7 +18,7 @@ public class Lexer {
     }
 
     private void readChar() {
-        if(Main.DEBUG_FLAG){System.out.println("Reading Character: " + this.input.charAt(this.readPosition));}
+        if(Main.DEBUG_FLAG){ System.out.println("\u001B[34mReading Character: \u001B[33m" + this.input.charAt(this.readPosition) + "\u001B[0m"); }
         if (this.readPosition >= this.input.length()) {
             this.ch = '\u0000';
         } else {
@@ -29,7 +29,7 @@ public class Lexer {
     }
 
     private char peekChar() {
-        if(Main.DEBUG_FLAG){System.out.println("Peeking Character: " + this.input.charAt(this.readPosition));}
+        if(Main.DEBUG_FLAG){ System.out.println("\u001B[34mPeeking Character: \u001B[33m" + this.input.charAt(this.readPosition) + "\u001B[0m"); }
         if (this.readPosition >= this.input.length()) {
             return '\u0000';
         } else {
@@ -41,7 +41,7 @@ public class Lexer {
         java.util.ArrayList<Token> tokens = new java.util.ArrayList<Token>();
         while(this.ch != '\u0000'){
             Token tok = this.nextToken();
-            if(Main.DEBUG_FLAG){System.out.println("Completed Token: " + tok.toString());}
+            if(Main.DEBUG_FLAG){System.out.println("\u001B[34Completed Command: \u001B[33m" + tok.toString() + "\u001B[0m");}
             tokens.add(tok);
             this.readChar();
         }
@@ -119,13 +119,28 @@ public class Lexer {
         return tok;
     }
 
-    //! Need to move both positions back one at end of readNumber() and readIdentifier()
+    /**
+    Moves the lexer char pointer and read pointer back once
+     */
+    private void backtrack(){
+        if (this.position <= 0) {
+            this.ch = '\u0000';
+        } else {
+            this.ch = this.input.charAt(this.position);
+        }
+        this.position--;
+        this.readPosition--;
+    }
+
     private int readNumber(){
         int pos = this.position;
         while(isNumber(this.ch)){
             this.readChar();
         }
-        return Integer.parseInt(this.input.substring(pos, this.position));
+        int num = Integer.parseInt(this.input.substring(pos, this.position));
+        
+        backtrack();
+        return num;
     }
 
     private String readIdentifier(){
@@ -142,6 +157,7 @@ public class Lexer {
             System.out.println("Position of last character: " + this.position);
             System.out.println("String: \"" + keyword + "\"");
         }
+        backtrack();
         return keyword;
     }
 
