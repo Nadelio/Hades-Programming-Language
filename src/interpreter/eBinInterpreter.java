@@ -33,7 +33,7 @@ public class eBinInterpreter {
             Result.Error(Result.Errors.FILE_NOT_FOUND, file.getName() + " at position: " + progPos).handleError();;    
         }
 
-        commands = code.split("");
+        commands = code.split(" ");
 
         eBinCommands = this.buildAST(commands);
 

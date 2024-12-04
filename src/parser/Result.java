@@ -5,15 +5,15 @@ public class Result {
     private boolean success;
 
     public enum Errors {
-        INVALID_COMMAND("Invalid command: "),
-        NONEXISTENT_LABEL("Non-existent label: "),
-        NONEXISTENT_FUNCTION("Non-existent function: "),
-        INVALID_VALUE("Invalid Value"),
-        INVALID_COMPARISON("Invalid comparison: "),
-        INVALID_FILE("Invalid file: "),
-        FILE_NOT_FOUND("Cannot find file: "),
-        SYNTAX_ERROR("Syntax error: "),
-        LOOPED_DEPENDENCY_SET("Looped dependency set: ");
+        INVALID_COMMAND("\u001B[31mInvalid command: \u001B[33m"),
+        NONEXISTENT_LABEL("\u001B[31mNon-existent label: \u001B[33m"),
+        NONEXISTENT_FUNCTION("\u001B[31mNon-existent function: \u001B[33m"),
+        INVALID_VALUE("\u001B[31mInvalid Value: \u001B[33m"),
+        INVALID_COMPARISON("\u001B[31mInvalid comparison: \u001B[33m"),
+        INVALID_FILE("\u001B[31mInvalid file: \u001B[33m"),
+        FILE_NOT_FOUND("\u001B[31mCannot find file: \u001B[33m"),
+        SYNTAX_ERROR("\u001B[31mSyntax error: \u001B[33m"),
+        LOOPED_DEPENDENCY_SET("\u001B[31mLooped dependency set: \u001B[33m");
 
         private String errmsg;
         private Errors(String errmsg) { this.errmsg = errmsg; }

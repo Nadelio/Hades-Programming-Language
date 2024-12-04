@@ -18,10 +18,10 @@ public class Lexer {
     }
 
     private void readChar() {
-        if(Main.DEBUG_FLAG){ System.out.println("\u001B[34mReading Character: \u001B[33m" + this.input.charAt(this.readPosition) + "\u001B[0m"); }
         if (this.readPosition >= this.input.length()) {
             this.ch = '\u0000';
         } else {
+            if(Main.DEBUG_FLAG){ System.out.println("\u001B[34mReading Character: \u001B[33m" + this.input.charAt(this.readPosition) + "\u001B[0m"); }
             this.ch = this.input.charAt(this.readPosition);
         }
         this.position = this.readPosition;
@@ -29,10 +29,10 @@ public class Lexer {
     }
 
     private char peekChar() {
-        if(Main.DEBUG_FLAG){ System.out.println("\u001B[34mPeeking Character: \u001B[33m" + this.input.charAt(this.readPosition) + "\u001B[0m"); }
         if (this.readPosition >= this.input.length()) {
             return '\u0000';
         } else {
+            if(Main.DEBUG_FLAG){ System.out.println("\u001B[34mPeeking Character: \u001B[33m" + this.input.charAt(this.readPosition) + "\u001B[0m"); }
             return this.input.charAt(this.readPosition);
         }
     }
@@ -41,7 +41,7 @@ public class Lexer {
         java.util.ArrayList<Token> tokens = new java.util.ArrayList<Token>();
         while(this.ch != '\u0000'){
             Token tok = this.nextToken();
-            if(Main.DEBUG_FLAG){System.out.println("\u001B[34Completed Command: \u001B[33m" + tok.toString() + "\u001B[0m");}
+            if(Main.DEBUG_FLAG){System.out.println("\u001B[34mCompleted Command: \u001B[33m" + tok.toString() + "\u001B[0m");}
             tokens.add(tok);
             this.readChar();
         }
@@ -138,25 +138,16 @@ public class Lexer {
             this.readChar();
         }
         int num = Integer.parseInt(this.input.substring(pos, this.position));
-        
         backtrack();
         return num;
     }
 
     private String readIdentifier(){
-        if(Main.DEBUG_FLAG){System.out.println("Position of string: " + this.position);}
         int pos = this.position;
-        int count = 0;
         while(isLetter(this.ch)){
             this.readChar();
-            count++;
         }
         String keyword = this.input.substring(pos, this.position);
-        if(Main.DEBUG_FLAG){
-            System.out.println("While loop iteration count: " + count);
-            System.out.println("Position of last character: " + this.position);
-            System.out.println("String: \"" + keyword + "\"");
-        }
         backtrack();
         return keyword;
     }
@@ -226,6 +217,6 @@ public class Lexer {
 
     private void skipWhitespace(){while(isWhitespace(this.ch)){this.readChar();}}
     private static boolean isWhitespace(char ch){return ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r';}
-    private static boolean isLetter(char ch){return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z';}
+    private static boolean isLetter(char ch){return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '/';}
     private static boolean isNumber(char ch){return '0' <= ch && ch <= '9';}
 }

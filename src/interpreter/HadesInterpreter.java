@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import src.Main;
 import src.parser.ASTC;
 import src.parser.BinaryCommand;
 import src.parser.Command;
@@ -32,9 +33,22 @@ public class HadesInterpreter {
 
     public HadesInterpreter(ASTC ast) {
         this.ast = ast;
-        this.pos = 0;
+        this.pos = -1;
         this.readPos = 0;
         this.cmd = null;
+        this.readCommand();
+        System.out.println("[");
+        for(Command c : ast.getTree()){
+            System.out.println("    " + c.toString());
+            if(c instanceof LoopCommand){
+                System.out.println("    [");
+                for(Command c2 : ((LoopCommand) c).getBody()){
+                    System.out.println("        " + c2.toString());
+                }
+                System.out.println("    ]");
+            }
+        }
+        System.out.println("]");
     }
 
     public void interpret(){
@@ -62,6 +76,7 @@ public class HadesInterpreter {
     }
 
     public Result interpretCommand(Command cmd){
+        if(Main.DEBUG_FLAG){System.out.println("\u001B[34mInterpreting Command: \u001B[33m" + cmd.toString() + "\u001B[0m");}
         switch(cmd.getKind()){
             case MOVE:
                 UnaryCommand move = (UnaryCommand) cmd;
@@ -355,8 +370,8 @@ public class HadesInterpreter {
     }
 
     private Result createDependency(BinaryCommand cmd){
-        File f = new File(cmd.getField1()[1].getLiteral());
-        if(!f.exists()){return Result.Error(Result.Errors.FILE_NOT_FOUND, cmd.getField1()[1].getLiteral() + " at position: " + pos);}
+        File f = new File(cmd.getField1()[1].getLiteral() + cmd.getField1()[2].getLiteral() + cmd.getField1()[3].getLiteral());
+        if(!f.exists()){return Result.Error(Result.Errors.FILE_NOT_FOUND, cmd.getField1()[1].getLiteral() + cmd.getField1()[2].getLiteral() + cmd.getField1()[3].getLiteral() + "\u001B[31m at position: \u001B[33m" + pos);}
         String alias = cmd.getField2()[1].getLiteral();
         functions.put(alias, f);
         return Result.Success();

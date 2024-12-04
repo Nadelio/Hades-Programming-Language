@@ -24,10 +24,10 @@ public class Parser {
     Reads the next token from the AST and increments read pointer
     */
     private void readToken() {
-        if(Main.DEBUG_FLAG){ System.out.println("\u001B[34mReading Token: \u001B[33m" + this.ast.getTree()[this.readPosition].getLiteral() + "\u001B[0m"); }
         if (this.readPosition >= this.ast.getTree().length) {
             this.tok = new Token(Token.TokenType.EOF, '\u0000');
         } else {
+            if(Main.DEBUG_FLAG){ System.out.println("\u001B[34mReading Token: \u001B[33m" + this.ast.getTree()[this.readPosition].getLiteral() + "\u001B[0m"); }
             this.tok = this.ast.getTree()[this.readPosition];
         }
         this.position = this.readPosition;
@@ -39,10 +39,10 @@ public class Parser {
     @return Token
     */
     private Token peekToken() {
-        if(Main.DEBUG_FLAG){ System.out.println("\u001B[34mPeeking Token: \u001B[33m" + this.ast.getTree()[this.readPosition].getLiteral() + "\u001B[0m"); }
         if (this.readPosition >= this.ast.getTree().length) {
             return new Token(Token.TokenType.EOF, '\u0000');
         } else {
+            if(Main.DEBUG_FLAG){ System.out.println("\u001B[34mPeeking Token: \u001B[33m" + this.ast.getTree()[this.readPosition].getLiteral() + "\u001B[0m"); }
             return this.ast.getTree()[this.readPosition];
         }
     }
@@ -55,7 +55,7 @@ public class Parser {
         java.util.ArrayList<Command> commands = new java.util.ArrayList<Command>();
         while(!this.tok.getType().equals(Token.TokenType.EOF)){
             Command cmd = this.nextCommand();
-            if(Main.DEBUG_FLAG){System.out.println("\u001B[34Completed Command: \u001B[33m" + cmd.toString() + "\u001B[0m");}
+            if(Main.DEBUG_FLAG){System.out.println("\u001B[34mCompleted Command: \u001B[33m" + cmd.toString() + "\u001B[0m");}
             commands.add(cmd);
             this.readToken();
         }
@@ -172,6 +172,9 @@ public class Parser {
                     this.readToken();
                     content.add(this.tok);
                 }
+                System.out.println("COMMENT [");
+                for(Token t : content){ System.out.println("    " + t.getLiteral()); }
+                System.out.println("]");
                 this.readToken();
                 break;
             case Token.TokenType.CREATEDEPENDENCY:
@@ -287,6 +290,9 @@ public class Parser {
                 if(this.peekToken().getType().equals(Token.TokenType.LBRACKET)){ this.readToken(); } else { exitWithError(Token.TokenType.LBRACKET); }
                 while(!this.peekToken().getType().equals(Token.TokenType.RBRACKET) && this.position < this.ast.getTree().length){ loopBody.add(this.nextCommand()); this.readToken();}
                 if(this.peekToken().getType().equals(Token.TokenType.RBRACKET)){ this.readToken();
+                    System.out.println("LOOP [");
+                    for(Command c : loopBody){ System.out.println("    " + c.toString()); }
+                    System.out.println("]");
                     return new LoopCommand(loopBody.toArray(new Command[loopBody.size()]));
                 } else { exitWithError(Token.TokenType.RBRACKET); }
                 break;
