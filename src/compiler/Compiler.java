@@ -49,7 +49,7 @@ public class Compiler {
     };
 
     private ASTC ast;
-    private int position = 0;
+    private int position = -1;
     private int readPosition = 0;
     private Command cmd;
     private HashMap<String, Integer> dependencies = new HashMap<String, Integer>();
@@ -59,13 +59,15 @@ public class Compiler {
 
     public Compiler(ASTC astc) {
         this.ast = astc;
-        this.cmd = ast.getTree()[this.position];
+        this.cmd = null;
+        this.readCommand();
     }
 
     public String compile(){
         String compiledCode = "";
         while(this.cmd.getKind() != Token.TokenType.END){
-            compiledCode += this.compileCommand(this.cmd);
+            String compiledCommand = this.compileCommand(this.cmd);
+            compiledCode += compiledCommand;
             this.readCommand();
         }
         compiledCode += bytecode[14]; // HLT
@@ -266,17 +268,17 @@ public class Compiler {
     private String byteCodeFromComparison(Token.TokenType comparision){
         switch(comparision){
             case NOTEQUAL:
-                return "0";
+                return "C0 ";
             case EQUAL:
-                return "1";
+                return "C1 ";
             case GREATER:
-                return "2";
+                return "C2 ";
             case LESS:
-                return "3";
+                return "C3 ";
             case GREATEREQUAL:
-                return "4";
+                return "C4 ";
             case LESSEQUAL:
-                return "5";
+                return "C5 ";
             default:
                 throw new IllegalArgumentException("Invalid comparison type.");
         }
