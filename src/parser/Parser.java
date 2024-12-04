@@ -168,13 +168,14 @@ public class Parser {
                     exitWithError(Token.TokenType.LBRACKET);
                 }
                 break;
-            case Token.TokenType.COMMENT:
+            case Token.TokenType.COMMENT: //! Error
                 ArrayList<Token> content = new ArrayList<Token>();
-                while(!this.tok.getType().equals(Token.TokenType.COMMENT)){
-                    content.add(this.tok);
+                while(!this.peekToken().getType().equals(Token.TokenType.COMMENT)){
                     this.readToken();
+                    content.add(this.tok);
                 }
-                return new UnaryCommand(Token.TokenType.COMMENT, content.toArray(new Token[content.size()]));
+                this.readToken();
+                break;
             case Token.TokenType.CREATEDEPENDENCY:
                 field2 = new Token[3];
                 
