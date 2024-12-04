@@ -85,11 +85,11 @@ public class Main{
                 // write eBin code to file
                 File inputFile = new File(args[1]);
                 File outputFile = new File(inputFile.getName().substring(0, inputFile.getName().length() - 4) + ".ebin");
-                System.out.println("\u001B[34mWriting eBin code to " + outputFile.getName() + "...\u001B[0m");
+                System.out.println("\u001B[34mWriting eBin code to \u001B[33m" + outputFile.getName() + "\u001B[34m...\u001B[0m");
                 java.io.FileWriter fw = new java.io.FileWriter(outputFile);
                 fw.write(eBinCode);
                 fw.close();
-                System.out.println("\u001B[34mCompleted writing eBin code to " + outputFile.getName() + "\u001B[0m");
+                System.out.println("\u001B[34mCompleted writing eBin code to \u001B[33m" + outputFile.getName() + "\u001B[0m");
     
             } catch(Exception e) { e.printStackTrace(); }
         } else if(RUN_FLAG){

@@ -170,7 +170,7 @@ public class Parser {
                 break;
             case Token.TokenType.COMMENT: //! Error
                 ArrayList<Token> content = new ArrayList<Token>();
-                while(!this.peekToken().getType().equals(Token.TokenType.COMMENT)){
+                while(!this.peekToken().getType().equals(Token.TokenType.COMMENT) && this.position < this.ast.getTree().length){
                     this.readToken();
                     content.add(this.tok);
                 }
@@ -288,7 +288,7 @@ public class Parser {
             case Token.TokenType.LOOP:
                 ArrayList<Command> loopBody = new ArrayList<Command>();
                 if(this.peekToken().getType().equals(Token.TokenType.LBRACKET)){ this.readToken(); } else { exitWithError(Token.TokenType.LBRACKET); }
-                while(!this.peekToken().getType().equals(Token.TokenType.RBRACKET)){ loopBody.add(this.nextCommand()); }
+                while(!this.peekToken().getType().equals(Token.TokenType.RBRACKET) && this.position < this.ast.getTree().length){ loopBody.add(this.nextCommand()); this.readToken();}
                 if(this.peekToken().getType().equals(Token.TokenType.RBRACKET)){ this.readToken();
                     return new LoopCommand(loopBody.toArray(new Command[loopBody.size()]));
                 } else { exitWithError(Token.TokenType.RBRACKET); }

@@ -89,32 +89,32 @@ public class Compiler {
     private String compileCommand(Command cmd){
         switch(cmd.getKind()){
             case INCVAL:
-                return bytecode[0];
+                return bytecode[0] + " ";
             case DECVAL:
-                return bytecode[1];
+                return bytecode[1] + " ";
             case INCPOS:
-                return bytecode[2];
+                return bytecode[2] + " ";
             case DECPOS:
-                return bytecode[3];
+                return bytecode[3] + " ";
             case LOOP: // unary
                 if(cmd instanceof LoopCommand){
                     LoopCommand loop = (LoopCommand) cmd;
                     String loopCode = bytecode[4] + " ";
                     for(int i = 0; i < loop.getBody().length; i++){
-                        loopCode += this.compileCommand(loop.getBody()[i]) + " ";
+                        loopCode += this.compileCommand(loop.getBody()[i]);
                     }
                     loopCode += bytecode[5] + " ";
                     return loopCode;
                 }
             case WRITEVAL:
-                return bytecode[6];
+                return bytecode[6] + " ";
             case IN:
-                return bytecode[7];
+                return bytecode[7] + " ";
             case PUSH:
-                return bytecode[8];
+                return bytecode[8] + " ";
             case POP:
-                return bytecode[9];
-            case CREATEDEPENDENCY: // binary
+                return bytecode[9] + " ";
+            case CREATEDEPENDENCY: // binary //! gets called twice, error!!!
                 if(cmd instanceof BinaryCommand){
                     BinaryCommand binary = (BinaryCommand) cmd;
                     Token[] field1 = binary.getField1();
@@ -141,18 +141,18 @@ public class Compiler {
                     throw new IllegalArgumentException("Invalid command type.");
                 }
             case READVAL:
-                return bytecode[12];
+                return bytecode[12] + " ";
             case SYSCALL: // unary // different unary format from rest
                 if(cmd instanceof UnaryCommand){
                     UnaryCommand unary = (UnaryCommand) cmd;
                     Token[] field = unary.getField();
                     String syscallCode = bytecode[13] + " ";
                     if(field[1].getType() == Token.TokenType.ALIAS){
-                        syscallCode += byteCodeFromAlias(field[1].getLiteral(), true) + " ";
-                        syscallCode += byteCodeFromAlias(field[2].getLiteral(), true) + " ";
-                        syscallCode += byteCodeFromAlias(field[3].getLiteral(), true) + " ";
-                        syscallCode += byteCodeFromAlias(field[4].getLiteral(), true) + " ";
-                        syscallCode += byteCodeFromAlias(field[5].getLiteral(), true) + " ";
+                        syscallCode += byteCodeFromAlias(field[1].getLiteral(), true);
+                        syscallCode += byteCodeFromAlias(field[2].getLiteral(), true);
+                        syscallCode += byteCodeFromAlias(field[3].getLiteral(), true);
+                        syscallCode += byteCodeFromAlias(field[4].getLiteral(), true);
+                        syscallCode += byteCodeFromAlias(field[5].getLiteral(), true);
                         return syscallCode;
                     } else if(field[1].getType() == Token.TokenType.NUMBER){
                         syscallCode += bytecodePrefixes[3] + field[1].getLiteral() + " ";
@@ -190,13 +190,13 @@ public class Compiler {
                     throw new IllegalArgumentException("Invalid command type.");
                 }
             case READPOS:
-                return bytecode[18];
+                return bytecode[18] + " ";
             case SET: // unary
                 if(cmd instanceof UnaryCommand){
                     UnaryCommand unary = (UnaryCommand) cmd;
                     Token[] field = unary.getField();
-                    String num = bytecodePrefixes[3] + field[0].getLiteral();
-                    return bytecode[19] + num;
+                    String num = bytecodePrefixes[3] + field[1].getLiteral();
+                    return bytecode[19] + " " + num + " ";
                 } else {
                     throw new IllegalArgumentException("Invalid command type.");
                 }
@@ -204,8 +204,8 @@ public class Compiler {
                 if(cmd instanceof UnaryCommand){
                     UnaryCommand unary = (UnaryCommand) cmd;
                     Token[] field = unary.getField();
-                    String num = bytecodePrefixes[3] + field[0].getLiteral();
-                    return bytecode[22] + " " + num;
+                    String num = bytecodePrefixes[3] + field[1].getLiteral();
+                    return bytecode[22] + " " + num + " ";
                 } else {
                     throw new IllegalArgumentException("Invalid command type.");
                 }
@@ -215,27 +215,27 @@ public class Compiler {
                     BinaryCommand binary = (BinaryCommand) cmd;
                     Token[] field1 = binary.getField1();
                     Token[] field2 = binary.getField2();
-                    interruptCode += byteCodeFromAlias(field1[1].getLiteral(), true) + " ";
-                    interruptCode += byteCodeFromComparison(field1[2].getType()) + " ";
-                    interruptCode += byteCodeFromAlias(field1[3].getLiteral(), true) + " ";
-                    interruptCode += byteCodeFromAlias(field2[1].getLiteral(), false) + " ";
+                    interruptCode += byteCodeFromAlias(field1[1].getLiteral(), true);
+                    interruptCode += byteCodeFromComparison(field1[2].getType());
+                    interruptCode += byteCodeFromAlias(field1[3].getLiteral(), true);
+                    interruptCode += byteCodeFromAlias(field2[1].getLiteral(), false);
                     return interruptCode;
                 } else {
                     throw new IllegalArgumentException("Invalid command type.");
                 }
             case NOP:
-                return bytecode[24];
+                return bytecode[24] + " ";
             case WRITE: // unary
                 if(cmd instanceof UnaryCommand){
                     UnaryCommand unary = (UnaryCommand) cmd;
                     Token[] field = unary.getField();
-                    String num = bytecodePrefixes[3] + field[0].getLiteral();
-                    return bytecode[25] + " " + num;
+                    String num = bytecodePrefixes[3] + field[1].getLiteral();
+                    return bytecode[25] + " " + num + " ";
                 } else {
                     throw new IllegalArgumentException("Invalid command type.");
                 }
             case OUT:
-                return bytecode[26];
+                return bytecode[26] + " ";
             default:
                 return "";
         }
@@ -247,20 +247,20 @@ public class Compiler {
             dependencyCounter++;
         }
 
-        return dependency + " " + bytecodePrefixes[0] + dependencies.get(alias);
+        return dependency + " " + bytecodePrefixes[0] + dependencies.get(alias) + " ";
     }
 
     private String labelToBin(String label){
         labels.put(label, labelCounter);
         labelCounter++;
-        return bytecodePrefixes[1] + labels.get(label);
+        return bytecodePrefixes[1] + labels.get(label) + " ";
     }
 
     private String byteCodeFromAlias(String alias, boolean isLabel){
         if(isLabel){
-            return bytecodePrefixes[1] + labels.get(alias);
+            return bytecodePrefixes[1] + labels.get(alias) + " ";
         }
-        return bytecodePrefixes[0] + dependencies.get(alias);
+        return bytecodePrefixes[0] + dependencies.get(alias) + " ";
     }
 
     private String byteCodeFromComparison(Token.TokenType comparision){
