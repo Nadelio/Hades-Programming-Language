@@ -37,18 +37,6 @@ public class HadesInterpreter {
         this.readPos = 0;
         this.cmd = null;
         this.readCommand();
-        System.out.println("[");
-        for(Command c : ast.getTree()){
-            System.out.println("    " + c.toString());
-            if(c instanceof LoopCommand){
-                System.out.println("    [");
-                for(Command c2 : ((LoopCommand) c).getBody()){
-                    System.out.println("        " + c2.toString());
-                }
-                System.out.println("    ]");
-            }
-        }
-        System.out.println("]");
     }
 
     public void interpret(){
@@ -186,31 +174,23 @@ public class HadesInterpreter {
         if(cmd.getField1()[1].getType() == Token.TokenType.NUMBER){
             try{
                 val1 = Integer.parseInt(cmd.getField1()[1].getLiteral());
-            } catch(Exception e){
-                return Result.Error(Result.Errors.INVALID_VALUE, cmd.getField1()[1].getLiteral() + " at position: " + pos);
-            }
+            } catch(Exception e){ return Result.Error(Result.Errors.INVALID_VALUE, cmd.getField1()[1].getLiteral() + " at position: " + pos); }
         } else {
             lab1 = cmd.getField1()[1].getLiteral();
             if(this.labels.containsKey(lab1)){
-                val1 = this.labels.get(lab1);
-            } else {
-                return Result.Error(Result.Errors.NONEXISTENT_LABEL, lab1 + " at position: " + pos);
-            }
+                val1 = memory[this.labels.get(lab1)];
+            } else { return Result.Error(Result.Errors.NONEXISTENT_LABEL, lab1 + " at position: " + pos); }
         }
 
         if(cmd.getField1()[3].getType() == Token.TokenType.NUMBER){
             try{
                 val2 = Integer.parseInt(cmd.getField1()[3].getLiteral());
-            } catch(Exception e){
-                return Result.Error(Result.Errors.INVALID_VALUE, cmd.getField1()[3].getLiteral() + " at position: " + pos);
-            }
+            } catch(Exception e){ return Result.Error(Result.Errors.INVALID_VALUE, cmd.getField1()[3].getLiteral() + " at position: " + pos); }
         } else {
             lab2 = cmd.getField1()[3].getLiteral();
             if(this.labels.containsKey(lab2)){
-                val2 = this.labels.get(lab2);
-            } else {
-                return Result.Error(Result.Errors.NONEXISTENT_LABEL, lab2 + " at position: " + pos);
-            }
+                val2 = memory[this.labels.get(lab2)];
+            } else { return Result.Error(Result.Errors.NONEXISTENT_LABEL, lab2 + " at position: " + pos); }
         }
 
         switch(cmd.getField1()[2].getType()){
@@ -259,7 +239,7 @@ public class HadesInterpreter {
                 try{
                     Scanner sc = new Scanner(file);
                     while(sc.hasNextLine()){
-                        fileData += sc.nextLine();
+                        fileData += sc.nextLine() + " ";
                     }
                     sc.close();
                 } catch(Exception e){
@@ -391,13 +371,9 @@ public class HadesInterpreter {
     }
 
     private void subinterpret(Command[] body){
-        int i = 0;
-        while(i < body.length){
-            Result r = this.interpretCommand(body[i]);
-            if(!r.getSuccess()){
-                r.handleError();
-            }
-            i++;
+        for(Command c : body){
+            Result r = this.interpretCommand(c);
+            if(!r.getSuccess()){ r.handleError(); }
         }
     }
 }

@@ -174,7 +174,7 @@ public class Lexer {
                 return new Token(Token.TokenType.SYSCALL, literal);
             case "WTP":
                 return new Token(Token.TokenType.WRITEPOS, literal);
-            case "RTP":
+            case "RDP":
                 return new Token(Token.TokenType.READPOS, literal);
             case "INCP":
                 return new Token(Token.TokenType.INCPOS, literal);
@@ -182,7 +182,7 @@ public class Lexer {
                 return new Token(Token.TokenType.DECPOS, literal);
             case "WTV":
                 return new Token(Token.TokenType.WRITEVAL, literal);
-            case "RTV":
+            case "RDV":
                 return new Token(Token.TokenType.READVAL, literal);
             case "INCV":
                 return new Token(Token.TokenType.INCVAL, literal);

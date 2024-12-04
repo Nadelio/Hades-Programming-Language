@@ -1,17 +1,10 @@
-CDP [examples/escapeLoop.ebin] [foo]
+CDP [examples/out.hds] [foo]
 CALL [foo]
 CLB [lblA]
-INCV
+WRT [95]
 INCP
 CLB [lblB]
-INT [lblA == lblB] [foo]
-MOV [2]
-SET [100]
+SET [95]
 WTV
-LOOP [
-    NOP
-    RDV
-    DECP
-    WTV
-]
+INT [lblA == lblB] [foo]
 HLT

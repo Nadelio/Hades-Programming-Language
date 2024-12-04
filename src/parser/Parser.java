@@ -42,7 +42,6 @@ public class Parser {
         if (this.readPosition >= this.ast.getTree().length) {
             return new Token(Token.TokenType.EOF, '\u0000');
         } else {
-            if(Main.DEBUG_FLAG){ System.out.println("\u001B[34mPeeking Token: \u001B[33m" + this.ast.getTree()[this.readPosition].getLiteral() + "\u001B[0m"); }
             return this.ast.getTree()[this.readPosition];
         }
     }
@@ -172,10 +171,6 @@ public class Parser {
                     this.readToken();
                     content.add(this.tok);
                 }
-                System.out.println("COMMENT [");
-                for(Token t : content){ System.out.println("    " + t.getLiteral()); }
-                System.out.println("]");
-                this.readToken();
                 break;
             case Token.TokenType.CREATEDEPENDENCY:
                 field2 = new Token[3];
@@ -287,12 +282,16 @@ public class Parser {
                 return new BinaryCommand(Token.TokenType.INTERRUPT, field1, field2);
             case Token.TokenType.LOOP:
                 ArrayList<Command> loopBody = new ArrayList<Command>();
-                if(this.peekToken().getType().equals(Token.TokenType.LBRACKET)){ this.readToken(); } else { exitWithError(Token.TokenType.LBRACKET); }
-                while(!this.peekToken().getType().equals(Token.TokenType.RBRACKET) && this.position < this.ast.getTree().length){ loopBody.add(this.nextCommand()); this.readToken();}
-                if(this.peekToken().getType().equals(Token.TokenType.RBRACKET)){ this.readToken();
-                    System.out.println("LOOP [");
-                    for(Command c : loopBody){ System.out.println("    " + c.toString()); }
-                    System.out.println("]");
+                if(this.peekToken().getType().equals(Token.TokenType.LBRACKET)){
+                    this.readToken();
+                } else { exitWithError(Token.TokenType.LBRACKET); }
+                while(!this.peekToken().getType().equals(Token.TokenType.RBRACKET) && this.position < this.ast.getTree().length){
+                    this.readToken();
+                    Command c = this.nextCommand();
+                    loopBody.add(c);
+                }
+                if(this.peekToken().getType().equals(Token.TokenType.RBRACKET)){
+                    this.readToken();
                     return new LoopCommand(loopBody.toArray(new Command[loopBody.size()]));
                 } else { exitWithError(Token.TokenType.RBRACKET); }
                 break;

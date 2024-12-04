@@ -49,6 +49,7 @@ public class Compiler {
     };
 
     private ASTC ast;
+    @SuppressWarnings("unused")
     private int position = -1;
     private int readPosition = 0;
     private Command cmd;
