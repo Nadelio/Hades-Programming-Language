@@ -16,7 +16,7 @@ public class Main{
     public static boolean RUN_FLAG = false;
 
     public static void main(String[] args) {
-        
+
         String hadesCode = "";
 
         // get eBF code from user
