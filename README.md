@@ -7,7 +7,7 @@ Hades is a programming language built for easier development within the [ePUx32 
 1. Download the newest release of the `Hades-Language.jar` file (check the Github release page)
 2. Put the `.jar` and the `.bash` file in the same folder as where you want to put your files
 3. Write your Hades program
-4. Run the bash script using the `bash hades.bash -[flags] [file]` format
+4. Run the bash script using the `hades -[flags] [file]` format
   - Use `-fc` flag to compile the given file to eBin
   - Use `-fr` flag to run the given file
   - Use `-fce` flag to compile a ePU formatted Hades file to relevant eBin
