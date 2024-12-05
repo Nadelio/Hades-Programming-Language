@@ -1,0 +1,24 @@
+; assuming Hades Standard Library String format ;
+; [size][stringStart][...] ;
+; assumes program is pointing at [size] on start ;
+CLB [size]
+RDV
+PUSH ; save copy of size in stack ;
+INCP ; move to [stringStart] ;
+CLB [temp]
+LOOP [
+    ; move to next char and print ;
+    JLB [temp]
+    OUT
+    INCP
+    CLB [temp]
+    ; decrement size ;
+    JLB [size]
+    RDV
+    DECV
+    WTV
+]
+; reset size ;
+POP
+WTV
+HLT
