@@ -1,0 +1,32 @@
+CLB [start] ; some comment ;
+WRT [72]
+INCP
+WRT [101]
+INCP
+WRT [108]
+INCP
+WRT [108]
+INCP
+WRT [111]
+INCP
+WRT [32]
+INCP
+WRT [87]
+INCP
+WRT [111]
+INCP
+WRT [114]
+INCP
+WRT [108]
+INCP
+WRT [100]
+INCP
+WRT [33]
+INCP
+WRT [0]
+JLB [start]
+LOOP [
+    OUT
+    INCP
+]
+HLT

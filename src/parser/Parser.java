@@ -167,11 +167,12 @@ public class Parser {
                 break;
             case Token.TokenType.COMMENT:
                 ArrayList<Token> content = new ArrayList<Token>();
-                while(!this.peekToken().getType().equals(Token.TokenType.COMMENT) && this.position < this.ast.getTree().length){
+                while((!this.peekToken().getType().equals(Token.TokenType.COMMENT)) && (this.position < this.ast.getTree().length)){
                     this.readToken();
                     content.add(this.tok);
                 }
-                break;
+                this.readToken();
+                return new UnaryCommand(Token.TokenType.COMMENT, content.toArray(new Token[content.size()]));
             case Token.TokenType.CREATEDEPENDENCY:
                 field2 = new Token[3];
                 

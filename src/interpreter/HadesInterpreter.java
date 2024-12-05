@@ -128,6 +128,7 @@ public class HadesInterpreter {
             case LOOP:
                 LoopCommand loop = (LoopCommand) cmd;
                 return this.loop(loop);
+            case COMMENT:
             case END:
             case EOF:
                 return Result.Success();
@@ -341,8 +342,8 @@ public class HadesInterpreter {
     }
 
     private Result jumpLabel(UnaryCommand cmd){
-        if(labels.containsKey(cmd.getField()[1].getLiteral())){
-            return Result.Error(Result.Errors.NONEXISTENT_LABEL, cmd.getField()[1].getLiteral() + " at position: " + pos);
+        if(!labels.containsKey(cmd.getField()[1].getLiteral())){
+            return Result.Error(Result.Errors.NONEXISTENT_LABEL, cmd.getField()[1].getLiteral() + " \u001B[31mat position: \u001B[33m" + pos);
         }
         ptr = labels.get(cmd.getField()[1].getLiteral());
 
