@@ -1,4 +1,5 @@
-CLB [start] ; some comment ;
+CLB [start]
+; Hello ;
 WRT [72]
 INCP
 WRT [101]
@@ -9,9 +10,20 @@ WRT [108]
 INCP
 WRT [111]
 INCP
-WRT [32]
+WRT [32] ; space ;
 INCP
-WRT [87]
+; Underworld! ;
+WRT [85]
+INCP
+WRT [110]
+INCP
+WRT [100]
+INCP
+WRT [101]
+INCP
+WRT [114]
+INCP
+WRT [119]
 INCP
 WRT [111]
 INCP

@@ -14,32 +14,51 @@ Hades is a programming language built for easier development within the [ePUx32 
 5. Profit
 
 ### Examples
-Hello World in Hades:
+Say "Hello" in Hades:
 ```nasm
-WRT [40] ; H ;
-OUT ; print to terminal ;
-WRT [69] ; e ;
-OUT
-WRT [76] ; l ;
-OUT ; print l twice ;
-OUT
-WRT [79] ; o ;
-OUT
-WRT [32] ; whitespace ;
-OUT
-WRT [55] ; W ;
-OUT
-WRT [79] ; o ;
-OUT
-WRT [82] ; r ;
-OUT
-WRT [76] ; l ;
-OUT
-WRT [68] ; d ;
-OUT
-WRT [33] ; ! ;
-OUT
-; end program ;
+CLB [start]
+; Hello ;
+WRT [72]
+INCP
+WRT [101]
+INCP
+WRT [108]
+INCP
+WRT [108]
+INCP
+WRT [111]
+INCP
+WRT [32] ; space ;
+INCP
+; Underworld! ;
+WRT [85]
+INCP
+WRT [110]
+INCP
+WRT [100]
+INCP
+WRT [101]
+INCP
+WRT [114]
+INCP
+WRT [119]
+INCP
+WRT [111]
+INCP
+WRT [114]
+INCP
+WRT [108]
+INCP
+WRT [100]
+INCP
+WRT [33]
+INCP
+WRT [0]
+JLB [start]
+LOOP [
+    OUT
+    INCP
+]
 HLT
 ```
 Addition in Hades:
