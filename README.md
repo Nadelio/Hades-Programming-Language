@@ -26,7 +26,7 @@ Hades is a programming language built for easier development within the [ePUx32 
 - [x] v1.0.0: Get the damn thing working
 - [ ] v1.1.0: Add new instructions for label manipulation
   - Add `Hand` single-cell label register
-  - Add `HOLD [label]` and `DROP` instructions for adding/removing labels from the Hand
+  - Add `HOLD [label]` and `DROP` instructions for adding/removing labels from the `Hand`
   - `MLB [num]`, `MLP`, `SLB [num]`, `SLV` held label manipulation instructions
   - `WDD [num0 num1 num2 ... numN]` for writing large amounts of data at once to the `Tape`
   - `FUNC [alias] [ body ]` (QoL change), `CDP [file] [alias]` will still exist
