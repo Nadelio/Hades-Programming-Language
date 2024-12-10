@@ -83,28 +83,28 @@ HLT
 ```
 Addition in Hades:
 ```nasm
-WRT [1] ; write 1 to RAM ;
+WRT [1] ; write 1 to Tape ;
 INCP ; move ptr to the right
-WRT [2] ; write 2 to RAM ;
+WRT [2] ; write 2 to Tape ;
 LOOP [ ; start a loop ;
     DECP ; move ptr to the left ;
-    RDV  ; read value from RAM ;
+    RDV  ; read value from Tape ;
     INCV ; increment ptr value ;
-    WTV ; write ptr value to RAM ;
+    WTV ; write ptr value to Tape ;
     INCP ; move ptr to the right ;
-    RDV ; read value from RAM ;
+    RDV ; read value from Tape ;
     DECV ; decrement ptr value ;
-    WTV ; write ptr value to RAM ;
+    WTV ; write ptr value to Tape ;
 ]
 DECP ; move ptr to the left ;
-RDV ; read value from RAM ;
+RDV ; read value from Tape ;
 ; end program ;
 HLT
 ```
 Using labels in Hades:
 ```nasm
 CLB [foo] ; create label called "foo" ;
-MOV [5] ; move ptr to position 5 of RAM ;
+MOV [5] ; move ptr to position 5 of Tape ;
 CLB [bar] ; create label called "bar" ;
 JLB [foo] ; jump to foo label ;
 WRT [1] ; write 1 to foo ;
