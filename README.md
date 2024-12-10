@@ -30,7 +30,8 @@ Hades is a programming language built for easier development within the [ePUx32 
   - `MLB [num]`, `MLP`, `SLB [num]`, `SLV` held label manipulation instructions
   - `WDD [num0 num1 num2 ... numN]` for writing large amounts of data at once to the `Tape`
   - `FUNC [alias] [ body ]` (QoL change), `CDP [file] [alias]` will still exist
-  - `OUTN`, `OUTV [num]` for different I/O choices, `OUTV [num]` outputs the character related to the given number, `OUTN` outputs the raw number at `Tape[Pointer]`
+  - `OUTN`, `OUTV [num]`, and `OUTR [startPos endPos]` for different I/O choices. `OUTV [num]` outputs the character related to the given number, `OUTN` outputs the raw number at `Tape[Pointer]`, and `OUTR [startPos endPos]` outputs a range of the Tape.
+  - `DS [num0 num1 num2 ... numN] [alias]` for referencing a large portion of data, such as strings, can be written to Tape using `WDD` instruction
 - [ ] v1.2.0: Add ability to use labels in place of numbers in all instructions that can take in a number
 
 ### Examples
