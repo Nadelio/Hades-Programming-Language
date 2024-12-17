@@ -34,7 +34,9 @@ Hades is a programming language built for easier development within the [ePUx32 
   - `OUTN`, `OUTV [num]`, and `OUTR [startPos endPos]` for different I/O choices. `OUTV [num]` outputs the character related to the given number, `OUTN` outputs the raw number at `Tape[Pointer]`, and `OUTR [startPos endPos]` outputs a range of the Tape.
   - `INV` and `INS` for more I/O choices. `INV` for taking in a raw number, `INS` for taking in a string (that will then be split into characters and converted into integers and stored)
 - [ ] v1.2.0: Add ability to use labels in place of numbers in all instructions that can take in a number
-
+- [ ] v2.0.0: Add `package` system which adds new systems for defining types, defining instructions, defining instruction arguments, and defining instruction behaviors using a mix of Java and Hades
+  - Add new file type: `*.pkg.hds`
+  - Add new instructions `DPKG [package]`, `UPKG [package]`, `INST [instruction name] [args] [args]`, `TYPE [type name] [body]`
 ### Examples
 Say "Hello" in Hades:
 ```nasm
