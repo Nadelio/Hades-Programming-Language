@@ -1,6 +1,8 @@
 package src.parser;
+
 public class Token {
     public static enum TokenType {
+        // v1.1.0
         MOVE,
         SET,
         WRITE,
@@ -25,6 +27,29 @@ public class Token {
         CREATEDEPENDENCY,
         CALLDEPENDENCY,
         LOOP,
+
+        // v1.1.0
+        HOLD, // unary instruction
+        DROP,
+        MOVEHELPLABELPOSITION, // unary instruction
+        READTOLABELPOSITION,
+        SETHELDLABELVALUE, // unary instruction
+        READTOHELDLABELVALUE,
+        WRITEDATADUMP, // unary instruction, takes in int/label list
+        CREATEDATASTRUCTURE, // binary instruction
+        FUNCTIONMACRO, // binary instruction, takes in instruction list
+        OUTNUMBER, 
+        OUTVALUE, // unary instruction, takes in int/label
+        OUTRANGE, // unary instruction, takes in int/label list
+        INVALUE,
+        INSTRING,
+        FILESTREAMOPEN, // binary instruction
+        FILESTREAMCLOSE, // unary instruction
+        READFROMFILE, // unary instruction
+        WRITETOFILE,  // unary instruction
+        SETWRITEMODE, // unary instruction, takes in 0 or 1 or label, throw error if(!0 || !1 || !label)
+
+        // non-instructions
         ALIAS,
         NUMBER,
         LESS,
