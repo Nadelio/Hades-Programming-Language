@@ -173,7 +173,7 @@ public class Parser {
                 }
                 this.readToken();
                 return new UnaryCommand(Token.TokenType.COMMENT, content.toArray(new Token[content.size()]));
-            case Token.TokenType.CREATEDEPENDENCY:
+            case Token.TokenType.CREATEDEPENDENCY: //! need to update interpreter and compiler to handle STRING argument
                 field2 = new Token[3];
                 
                 // build field1
@@ -203,8 +203,19 @@ public class Parser {
                             } else {
                                 exitWithError(Token.TokenType.FILEINDENTIFIER);
                             }
+                        } else if(this.peekToken().getType().equals(Token.TokenType.STRING)){
+                            field1 = new Token[3];
+                            field1[0] = new Token(Token.TokenType.LBRACKET, '[');
+                            this.readToken();
+                            field1[1] = tok;
+                            if(this.peekToken().getType().equals(Token.TokenType.RBRACKET)){
+                                this.readToken();
+                                field1[2] = tok;
+                            } else {
+                                exitWithError(Token.TokenType.RBRACKET);
+                            }
                         } else {
-                            exitWithError(Token.TokenType.ALIAS);
+                            exitWithError(Token.TokenType.ALIAS, Token.TokenType.STRING);
                         }
                     } else {
                         exitWithError(Token.TokenType.LBRACKET);
