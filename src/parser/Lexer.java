@@ -103,6 +103,14 @@ public class Lexer {
             case '.':
                 tok = new Token(Token.TokenType.FILEINDENTIFIER, this.ch);
                 break;
+            case '"':
+                int pos = this.position;
+                while(this.ch != '"'){
+                    this.readChar();
+                }
+                String lit = this.input.substring(pos + 1, this.position);
+                tok = new Token(Token.TokenType.STRING, lit);
+                break;
             default:
                 if(isLetter(this.ch)){
                     String literal = this.readIdentifier();

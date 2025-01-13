@@ -66,7 +66,10 @@ public class Token {
         EOF,
         END,
         INVALID,
-        COMMENT
+        COMMENT,
+
+        // v1.1.0
+        STRING
     }
 
     private TokenType type;
