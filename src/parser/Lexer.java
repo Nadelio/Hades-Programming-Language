@@ -204,6 +204,44 @@ public class Lexer {
                 return new Token(Token.TokenType.CALLDEPENDENCY, literal);
             case "LOOP":
                 return new Token(Token.TokenType.LOOP, literal);
+            case "HOLD":
+                return new Token(Token.TokenType.HOLD, literal);
+            case "DROP":
+                return new Token(Token.TokenType.DROP, literal);
+            case "MLB":
+                return new Token(Token.TokenType.MOVEHELPLABELPOSITION, literal);
+            case "MLP":
+                return new Token(Token.TokenType.READTOLABELPOSITION, literal);
+            case "SLB":
+                return new Token(Token.TokenType.SETHELDLABELVALUE, literal);
+            case "SLV":
+                return new Token(Token.TokenType.READTOHELDLABELVALUE, literal);
+            case "WDD":
+                return new Token(Token.TokenType.WRITEDATADUMP, literal);
+            case "DS":
+                return new Token(Token.TokenType.CREATEDATASTRUCTURE, literal);
+            case "FUNC":
+                return new Token(Token.TokenType.FUNCTIONMACRO, literal);
+            case "OUTN":
+                return new Token(Token.TokenType.OUTNUMBER, literal);
+            case "OUTV":
+                return new Token(Token.TokenType.OUTVALUE, literal);
+            case "OUTR":
+                return new Token(Token.TokenType.OUTRANGE, literal);
+            case "INV":
+                return new Token(Token.TokenType.INVALUE, literal);
+            case "INS":
+                return new Token(Token.TokenType.INSTRING, literal);
+            case "FSO":
+                return new Token(Token.TokenType.FILESTREAMOPEN, literal);
+            case "FSC":
+                return new Token(Token.TokenType.FILESTREAMCLOSE, literal);
+            case "RFF":
+                return new Token(Token.TokenType.READFROMFILE, literal);
+            case "WTF":
+                return new Token(Token.TokenType.WRITETOFILE, literal);
+            case "SWM":
+                return new Token(Token.TokenType.SETWRITEMODE, literal);
             case "ebin":
                 return new Token(Token.TokenType.EXTENSION, literal);
             case "ebf":
