@@ -285,11 +285,9 @@ public class Compiler {
 
     private String bytecodeFromString(String str) {
         char[] chars = str.toCharArray();
-        int[] encodedStr = new int[chars.length];
         String s = bytecodePrefixes[4] + chars.length + " ";
-        for(char c : chars){
-            encodedStr[c] = (int) c;
-            s += bytecodePrefixes[3] + encodedStr[c] + " ";
+        for (char c : chars) {
+            s += bytecodePrefixes[3] + (int) c + " ";
         }
         return s;
     }
