@@ -1,9 +1,10 @@
 package src.interpreter;
 
-import java.io.File;
-import java.util.Scanner;
-
 import src.parser.Result;
+
+import java.io.File;
+import java.util.Objects;
+import java.util.Scanner;
 
 public class eBFInterpreter {
     private int progPos;
@@ -32,7 +33,7 @@ public class eBFInterpreter {
         }
 
         commands = code.split("");
-        while(commands[this.progPos] != "END"){
+        while (!Objects.equals(commands[this.progPos], "END")) {
             Result r = this.interpretCommand(commands[this.progPos]);
             if(!r.getSuccess()){
                 r.handleError();
