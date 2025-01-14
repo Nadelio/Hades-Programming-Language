@@ -147,7 +147,7 @@ public class eBFInterpreter {
                 }
                 return Result.Success();
             case "/*":  
-                while(this.commands[this.progPos] != "*/"){ this.progPos++; }
+                while(!Objects.equals(this.commands[this.progPos], "*/")){ this.progPos++; }
                 this.progPos++;
                 return Result.Success();
             case "END":
