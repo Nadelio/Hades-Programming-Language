@@ -14,6 +14,7 @@ import src.parser.Parser;
 import src.parser.Result;
 import src.parser.Token;
 import src.parser.UnaryCommand;
+import src.util.Constants;
 
 public class HadesInterpreter {
     // ast tree variables
@@ -64,7 +65,7 @@ public class HadesInterpreter {
     }
 
     public Result interpretCommand(Command cmd){
-        if(Main.DEBUG_FLAG){System.out.println("\u001B[34mInterpreting Command: \u001B[33m" + cmd.toString() + "\u001B[0m");}
+        if(Main.DEBUG_FLAG){System.out.println(Constants.ANSI_MSG + "Interpreting Command: " + Constants.ANSI_INFO + cmd.toString() + Constants.ANSI_RESET);}
         switch(cmd.getKind()){
             case MOVE:
                 UnaryCommand move = (UnaryCommand) cmd;
@@ -343,7 +344,7 @@ public class HadesInterpreter {
 
     private Result jumpLabel(UnaryCommand cmd){
         if(!labels.containsKey(cmd.getField()[1].getLiteral())){
-            return Result.Error(Result.Errors.NONEXISTENT_LABEL, cmd.getField()[1].getLiteral() + " \u001B[31mat position: \u001B[33m" + pos);
+            return Result.Error(Result.Errors.NONEXISTENT_LABEL, cmd.getField()[1].getLiteral() + Constants.ANSI_ERROR + " at position: " + Constants.ANSI_INFO + pos);
         }
         ptr = labels.get(cmd.getField()[1].getLiteral());
 
@@ -352,7 +353,7 @@ public class HadesInterpreter {
 
     private Result createDependency(BinaryCommand cmd){
         File f = new File(cmd.getField1()[1].getLiteral() + cmd.getField1()[2].getLiteral() + cmd.getField1()[3].getLiteral());
-        if(!f.exists()){return Result.Error(Result.Errors.FILE_NOT_FOUND, cmd.getField1()[1].getLiteral() + cmd.getField1()[2].getLiteral() + cmd.getField1()[3].getLiteral() + "\u001B[31m at position: \u001B[33m" + pos);}
+        if(!f.exists()){return Result.Error(Result.Errors.FILE_NOT_FOUND, cmd.getField1()[1].getLiteral() + cmd.getField1()[2].getLiteral() + cmd.getField1()[3].getLiteral() + Constants.ANSI_ERROR + " at position: " + Constants.ANSI_INFO + pos);}
         String alias = cmd.getField2()[1].getLiteral();
         functions.put(alias, f);
         return Result.Success();

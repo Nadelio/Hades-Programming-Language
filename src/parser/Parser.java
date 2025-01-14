@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import src.Main;
 import src.parser.Token.TokenType;
+import src.util.Constants;
 
 public class Parser {
 
@@ -27,7 +28,7 @@ public class Parser {
         if (this.readPosition >= this.ast.getTree().length) {
             this.tok = new Token(Token.TokenType.EOF, '\u0000');
         } else {
-            if(Main.DEBUG_FLAG){ System.out.println("\u001B[34mReading Token: \u001B[33m" + this.ast.getTree()[this.readPosition].getLiteral() + "\u001B[0m"); }
+            if(Main.DEBUG_FLAG){ System.out.println(Constants.ANSI_MSG + "Reading Token: " + Constants.ANSI_INFO + this.ast.getTree()[this.readPosition].getLiteral() + Constants.ANSI_RESET); }
             this.tok = this.ast.getTree()[this.readPosition];
         }
         this.position = this.readPosition;
@@ -54,7 +55,7 @@ public class Parser {
         java.util.ArrayList<Command> commands = new java.util.ArrayList<Command>();
         while(!this.tok.getType().equals(Token.TokenType.EOF)){
             Command cmd = this.nextCommand();
-            if(Main.DEBUG_FLAG){System.out.println("\u001B[34mCompleted Command: \u001B[33m" + cmd.toString() + "\u001B[0m");}
+            if(Main.DEBUG_FLAG){System.out.println(Constants.ANSI_MSG + "Completed Command: " + Constants.ANSI_INFO + cmd.toString() + Constants.ANSI_RESET);}
             commands.add(cmd);
             this.readToken();
         }
@@ -313,20 +314,20 @@ public class Parser {
     }
 
     private void exitWithError(Token.TokenType type){
-        System.out.println("\u001B[31mSyntax error: expected \u001B[33m" + type + "\u001B[31m @ \u001B[33m" + (this.readPosition) + "\u001B[0m");
-        System.out.println("\u001B[31mRecieved: \u001B[33m" + this.peekToken().getType() + "\u001B[0m");
+        System.out.println(Constants.ANSI_ERROR + "Syntax error: expected " + Constants.ANSI_INFO + type + Constants.ANSI_ERROR + " @ " + Constants.ANSI_INFO + (this.readPosition) + Constants.ANSI_RESET);
+        System.out.println(Constants.ANSI_ERROR + "Recieved: " + Constants.ANSI_INFO + this.peekToken().getType() + Constants.ANSI_RESET);
         System.exit(1);
     }
 
     private void exitWithError(String type){
-        System.out.println("\u001B[31mSyntax error: expected \u001B[33m" + type + "\u001B[31m @ \u001B[33m" + (this.readPosition) + "\u001B[0m");
-        System.out.println("\u001B[31mRecieved: \u001B[33m" + this.peekToken().getType() + "\u001B[0m");
+        System.out.println(Constants.ANSI_ERROR + "Syntax error: expected " + Constants.ANSI_INFO + type + Constants.ANSI_ERROR + " @ " + Constants.ANSI_INFO + (this.readPosition) + Constants.ANSI_RESET);
+        System.out.println(Constants.ANSI_ERROR + "Recieved: " + Constants.ANSI_INFO + this.peekToken().getType() + Constants.ANSI_RESET);
         System.exit(1);
     }
 
     private void exitWithError(Token.TokenType type1, Token.TokenType type2){
-        System.out.println("\u001B[31mSyntax error: expected \u001B[33m" + type1 + "\u001B[31m or \u001B[33m" + type2 + "\u001B[31m @ \u001B[33m" + (this.readPosition) + "\u001B[0m");
-        System.out.println("\u001B[31mRecieved: \u001B[33m" + this.peekToken().getType() + "\u001B[0m");
+        System.out.println(Constants.ANSI_ERROR + "Syntax error: expected " + Constants.ANSI_INFO + type1 + Constants.ANSI_ERROR + " or " + Constants.ANSI_INFO + type2 + Constants.ANSI_ERROR + " @ " + Constants.ANSI_INFO + (this.readPosition) + Constants.ANSI_RESET);
+        System.out.println(Constants.ANSI_ERROR + "Recieved: " + Constants.ANSI_INFO + this.peekToken().getType() + Constants.ANSI_RESET);
         System.exit(1);
     }
 
@@ -379,10 +380,10 @@ public class Parser {
 
     @SuppressWarnings("unused")
     private void printParserInfo(){
-        System.out.println("\u001B[34mCurrent Token: [\u001B[33m" + this.tok + "\u001B[34m]\u001B[0m");
-        System.out.println("\u001B[34mNext Token: \u001B[33m" + this.peekToken().getLiteral() + "\u001B[0m");
-        System.out.println("\u001B[34mReading Position: \u001B[33m" + this.readPosition + "\u001B[0m");
-        System.out.println("\u001B[34mCurrent Position: \u001B[33m" + this.position + "\u001B[0m");
+        System.out.println(Constants.ANSI_MSG + "Current Token: [" + Constants.ANSI_INFO + this.tok + Constants.ANSI_MSG + "]" + Constants.ANSI_RESET);
+        System.out.println(Constants.ANSI_MSG + "Next Token: " + Constants.ANSI_INFO + this.peekToken().getLiteral() + Constants.ANSI_RESET);
+        System.out.println(Constants.ANSI_MSG + "Reading Position: " + Constants.ANSI_INFO + this.readPosition + Constants.ANSI_RESET);
+        System.out.println(Constants.ANSI_MSG + "Current Position: " + Constants.ANSI_INFO + this.position + Constants.ANSI_RESET);
     }
 
     @SuppressWarnings("unused")
