@@ -1,19 +1,21 @@
 package src.parser;
 
+import src.util.Constants;
+
 public class Result {
     private String result;
     private boolean success;
 
     public enum Errors {
-        INVALID_COMMAND("\u001B[31mInvalid command: \u001B[33m"),
-        NONEXISTENT_LABEL("\u001B[31mNon-existent label: \u001B[33m"),
-        NONEXISTENT_FUNCTION("\u001B[31mNon-existent function: \u001B[33m"),
-        INVALID_VALUE("\u001B[31mInvalid Value: \u001B[33m"),
-        INVALID_COMPARISON("\u001B[31mInvalid comparison: \u001B[33m"),
-        INVALID_FILE("\u001B[31mInvalid file: \u001B[33m"),
-        FILE_NOT_FOUND("\u001B[31mCannot find file: \u001B[33m"),
-        SYNTAX_ERROR("\u001B[31mSyntax error: \u001B[33m"),
-        LOOPED_DEPENDENCY_SET("\u001B[31mLooped dependency set: \u001B[33m");
+        INVALID_COMMAND(Constants.ANSI_ERROR + "Invalid command:" + Constants.ANSI_RESET),
+        NONEXISTENT_LABEL(Constants.ANSI_ERROR + "Non-existent label:" + Constants.ANSI_RESET),
+        NONEXISTENT_FUNCTION(Constants.ANSI_ERROR + "Non-existent function:" + Constants.ANSI_RESET),
+        INVALID_VALUE(Constants.ANSI_ERROR + "Invalid Value:" + Constants.ANSI_RESET),
+        INVALID_COMPARISON(Constants.ANSI_ERROR + "Invalid comparison:" + Constants.ANSI_RESET),
+        INVALID_FILE(Constants.ANSI_ERROR + "Invalid file:" + Constants.ANSI_RESET),
+        FILE_NOT_FOUND(Constants.ANSI_ERROR + "Cannot find file:" + Constants.ANSI_RESET),
+        SYNTAX_ERROR(Constants.ANSI_ERROR + "Syntax error:" + Constants.ANSI_RESET),
+        LOOPED_DEPENDENCY_SET(Constants.ANSI_ERROR + "Looped dependency set:" + Constants.ANSI_RESET);
 
         private String errmsg;
         private Errors(String errmsg) { this.errmsg = errmsg; }

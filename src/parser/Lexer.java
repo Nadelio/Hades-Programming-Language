@@ -1,6 +1,7 @@
 package src.parser;
 
 import src.Main;
+import src.util.Constants;
 
 public class Lexer {
     
@@ -21,7 +22,7 @@ public class Lexer {
         if (this.readPosition >= this.input.length()) {
             this.ch = '\u0000';
         } else {
-            if(Main.DEBUG_FLAG){ System.out.println("\u001B[34mReading Character: \u001B[33m" + this.input.charAt(this.readPosition) + "\u001B[0m"); }
+            if(Main.DEBUG_FLAG){ System.out.println(Constants.ANSI_MSG + "Reading Character: " + Constants.ANSI_INFO + this.input.charAt(this.readPosition) + Constants.ANSI_RESET); }
             this.ch = this.input.charAt(this.readPosition);
         }
         this.position = this.readPosition;
@@ -32,7 +33,7 @@ public class Lexer {
         if (this.readPosition >= this.input.length()) {
             return '\u0000';
         } else {
-            if(Main.DEBUG_FLAG){ System.out.println("\u001B[34mPeeking Character: \u001B[33m" + this.input.charAt(this.readPosition) + "\u001B[0m"); }
+            if(Main.DEBUG_FLAG){ System.out.println(Constants.ANSI_MSG + "Peeking Character: " + Constants.ANSI_INFO + this.input.charAt(this.readPosition) + Constants.ANSI_RESET); }
             return this.input.charAt(this.readPosition);
         }
     }
@@ -41,7 +42,7 @@ public class Lexer {
         java.util.ArrayList<Token> tokens = new java.util.ArrayList<Token>();
         while(this.ch != '\u0000'){
             Token tok = this.nextToken();
-            if(Main.DEBUG_FLAG){System.out.println("\u001B[34mCompleted Command: \u001B[33m" + tok.toString() + "\u001B[0m");}
+            if(Main.DEBUG_FLAG){System.out.println(Constants.ANSI_MSG + "Completed Command: " + Constants.ANSI_INFO + tok.toString() + Constants.ANSI_RESET);}
             tokens.add(tok);
             this.readChar();
         }
