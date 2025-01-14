@@ -46,6 +46,7 @@ public class Compiler {
         "L", // labels
         "C", // comparisons
         "N", // numbers
+        "S", // strings
     };
 
     private ASTC ast;
@@ -263,8 +264,8 @@ public class Compiler {
         return bytecodePrefixes[0] + dependencies.get(alias) + " ";
     }
 
-    private String byteCodeFromComparison(Token.TokenType comparision){
-        switch(comparision){
+    private String byteCodeFromComparison(Token.TokenType comparison){
+        switch(comparison){
             case NOTEQUAL:
                 return "C0 ";
             case EQUAL:
@@ -281,4 +282,19 @@ public class Compiler {
                 throw new IllegalArgumentException("Invalid comparison type.");
         }
     }
+
+    private String bytecodeFromString(String str) {
+        char[] chars = str.toCharArray();
+        int[] encodedStr = new int[chars.length];
+        String s = bytecodePrefixes[4] + chars.length + " ";
+        for(char c : chars){
+            encodedStr[c] = (int) c;
+            s += bytecodePrefixes[3] + encodedStr[c] + " ";
+        }
+        return s;
+    }
+
+    // foo -> bytecodeFromString() -> "S3 N102 N111 N111 "
+
+    // S<string length> <string as nums>
 }

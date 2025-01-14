@@ -1,0 +1,21 @@
+DS [
+    "foo"
+    10
+    25
+    78
+] [foo]
+
+WDD [foo] ; write foo to index 0 ;
+
+;
+[102][111][111][10][25][78]
+  * <- "foo"
+;
+JLB [foo]
+
+INCP
+INCP
+INCP
+CLB [TEN]
+JLB [foo]
+JLB [TEN]

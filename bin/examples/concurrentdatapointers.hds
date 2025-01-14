@@ -1,0 +1,16 @@
+CLB [ptrOne]
+HOLD [ptrOne]
+INCP
+MLB [2]
+INCV
+SLV [3]
+WTV
+
+DROP [ptrOne]
+DLB [ptrOne] ; free label instruction ;
+JLB [ptrOne] ; throws error! ;
+
+;
+[0][1][3]
+    *  * <- ptrOne
+;
