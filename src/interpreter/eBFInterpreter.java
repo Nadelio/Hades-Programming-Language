@@ -3,6 +3,8 @@ package src.interpreter;
 import src.parser.Result;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -22,16 +24,13 @@ public class eBFInterpreter {
 
     public void interpret(){
         String code = "";
-        try{
-            Scanner sc = new Scanner(this.file);
-            while(sc.hasNextLine()){
-                code += sc.nextLine();
-            }
-            sc.close();
-        } catch(Exception e){
-            Result.Error(Result.Errors.FILE_NOT_FOUND, file.getName() + " at position: " + progPos).handleError();;    
-        }
 
+        try {
+            code = Files.readString(this.file.toPath());
+        } catch (IOException e) {
+            Result.Error(Result.Errors.FILE_NOT_FOUND, file.getName() + " at position: " + progPos).handleError();;
+        }
+        
         commands = code.split("");
         while (!Objects.equals(commands[this.progPos], "END")) {
             Result r = this.interpretCommand(commands[this.progPos]);
