@@ -1,10 +1,12 @@
 package src.interpreter;
 
-import java.io.File;
-import java.util.Scanner;
-
 import src.interpreter.eBin.*;
 import src.parser.Result;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Scanner;
 
 public class eBinInterpreter {
     private int progPos;
@@ -23,13 +25,9 @@ public class eBinInterpreter {
 
     public void interpret(){
         String code = "";
-        try{
-            Scanner sc = new Scanner(this.file);
-            while(sc.hasNextLine()){
-                code += sc.nextLine();
-            }
-            sc.close();
-        } catch(Exception e){
+        try {
+            code = Files.readString(this.file.toPath());
+        } catch (IOException e) {
             Result.Error(Result.Errors.FILE_NOT_FOUND, file.getName() + " at position: " + progPos).handleError();;    
         }
 
