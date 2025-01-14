@@ -292,7 +292,7 @@ public class Compiler {
         return s;
     }
 
-    // foo -> bytecodeFromString() -> "S3 N102 N111 N111 "
+    // "foo" -> bytecodeFromString("foo") -> "S3 N102 N111 N111 "
 
     // S<string length> <string as nums>
 }
