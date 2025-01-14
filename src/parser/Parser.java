@@ -70,56 +70,56 @@ public class Parser {
         Token[] field2;
         // build command
         switch(this.tok.getType()){
-            case Token.TokenType.NOP:
+            case NOP:
                 return new Command(Token.TokenType.NOP);
-            case Token.TokenType.END:
+            case END:
                 return new Command(Token.TokenType.END);
-            case Token.TokenType.OUT:
+            case OUT:
                 return new Command(Token.TokenType.OUT);
-            case Token.TokenType.IN:
+            case IN:
                 return new Command(Token.TokenType.IN);
-            case Token.TokenType.WRITEPOS:
+            case WRITEPOS:
                 return new Command(Token.TokenType.WRITEPOS);
-            case Token.TokenType.READPOS:
+            case READPOS:
                 return new Command(Token.TokenType.READPOS);
-            case Token.TokenType.INCPOS:
+            case INCPOS:
                 return new Command(Token.TokenType.INCPOS);
-            case Token.TokenType.DECPOS:
+            case DECPOS:
                 return new Command(Token.TokenType.DECPOS);
-            case Token.TokenType.WRITEVAL:
+            case WRITEVAL:
                 return new Command(Token.TokenType.WRITEVAL);
-            case Token.TokenType.READVAL:
+            case READVAL:
                 return new Command(Token.TokenType.READVAL);
-            case Token.TokenType.INCVAL:
+            case INCVAL:
                 return new Command(Token.TokenType.INCVAL);
-            case Token.TokenType.DECVAL:
+            case DECVAL:
                 return new Command(Token.TokenType.DECVAL);
-            case Token.TokenType.PUSH:
+            case PUSH:
                 return new Command(Token.TokenType.PUSH);
-            case Token.TokenType.POP:
+            case POP:
                 return new Command(Token.TokenType.POP);
-            case Token.TokenType.MOVE:
+            case MOVE:
                 field1 = this.doNumberField();
                 return new UnaryCommand(Token.TokenType.MOVE, field1);
-            case Token.TokenType.SET:
+            case SET:
                 field1 = this.doNumberField();
                 return new UnaryCommand(Token.TokenType.SET, field1);
-            case Token.TokenType.WRITE:
+            case WRITE:
                 field1 = this.doNumberField();
                 return new UnaryCommand(Token.TokenType.WRITE, field1);
-            case Token.TokenType.CREATELABEL:
+            case CREATELABEL:
                 field1 = this.doAliasField();
                 return new UnaryCommand(Token.TokenType.CREATELABEL, field1);
-            case Token.TokenType.DELETELABEL:
+            case DELETELABEL:
                 field1 = this.doAliasField();
                 return new UnaryCommand(Token.TokenType.DELETELABEL, field1);
-            case Token.TokenType.JUMPLABEL:
+            case JUMPLABEL:
                 field1 = this.doAliasField();
                 return new UnaryCommand(Token.TokenType.JUMPLABEL, field1);
-            case Token.TokenType.CALLDEPENDENCY:
+            case CALLDEPENDENCY:
                 field1 = this.doAliasField();
                 return new UnaryCommand(Token.TokenType.CALLDEPENDENCY, field1);
-            case Token.TokenType.SYSCALL:
+            case SYSCALL:
                 field1 = new Token[7];
                 if(this.peekToken().getType().equals(Token.TokenType.LBRACKET)){
                     this.readToken();
@@ -165,7 +165,7 @@ public class Parser {
                     exitWithError(Token.TokenType.LBRACKET);
                 }
                 break;
-            case Token.TokenType.COMMENT:
+            case COMMENT:
                 ArrayList<Token> content = new ArrayList<Token>();
                 while((!this.peekToken().getType().equals(Token.TokenType.COMMENT)) && (this.position < this.ast.getTree().length)){
                     this.readToken();
@@ -173,7 +173,7 @@ public class Parser {
                 }
                 this.readToken();
                 return new UnaryCommand(Token.TokenType.COMMENT, content.toArray(new Token[content.size()]));
-            case Token.TokenType.CREATEDEPENDENCY: //! need to update interpreter and compiler to handle STRING argument
+            case CREATEDEPENDENCY: //! need to update interpreter and compiler to handle STRING argument
                 field2 = new Token[3];
                 
                 // build field1
@@ -252,7 +252,7 @@ public class Parser {
                 field2 = this.doAliasField();
 
                 return new BinaryCommand(Token.TokenType.CREATEDEPENDENCY, field1, field2);
-            case Token.TokenType.INTERRUPT:
+            case INTERRUPT:
                 field1 = new Token[5];
                 field2 = new Token[3];
 
@@ -292,7 +292,7 @@ public class Parser {
                 field2 = this.doAliasField();
 
                 return new BinaryCommand(Token.TokenType.INTERRUPT, field1, field2);
-            case Token.TokenType.LOOP:
+            case LOOP:
                 ArrayList<Command> loopBody = new ArrayList<Command>();
                 if(this.peekToken().getType().equals(Token.TokenType.LBRACKET)){
                     this.readToken();

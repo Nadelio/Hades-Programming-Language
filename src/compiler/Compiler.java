@@ -117,7 +117,7 @@ public class Compiler {
                 return bytecode[8] + " ";
             case POP:
                 return bytecode[9] + " ";
-            case CREATEDEPENDENCY: // binary //! gets called twice, error!!!
+            case CREATEDEPENDENCY: // binary 
                 if(cmd instanceof BinaryCommand){
                     BinaryCommand binary = (BinaryCommand) cmd;
                     Token[] field1 = binary.getField1();
@@ -245,11 +245,8 @@ public class Compiler {
     }
 
     private String dependencyToBin(String dependency, String alias){
-        if(Main.EPU_FLAG){
-            dependencies.put(alias, dependencyCounter);
-            dependencyCounter++;
-        }
-
+        dependencies.put(alias, dependencyCounter);
+        dependencyCounter++;
         return dependency + " " + bytecodePrefixes[0] + dependencies.get(alias) + " ";
     }
 
