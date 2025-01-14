@@ -267,27 +267,19 @@ public class eBinInterpreter {
     }
 
     private eBinCommand makeCommand(String command){
-        eBinCommand cmd;
-        switch(command.charAt(0)){
-            case 'F': // function names
-                cmd = new eBinFunction(command.substring(1));
-                break;
-            case 'L': // label names
-                cmd = new eBinLabel(command.substring(1));
-                break;
-            case 'N': // numbers
-                cmd = new eBinNumber(command.substring(1));
-                break;
-            case 'C': // comparisons
-                cmd = new eBinComparison(command.substring(1));
-                break;
-            case 'D': // files
-                cmd = new eBinFile(command.substring(1));
-                break;
-            default: // instructions
-                cmd = new eBinInstruction(command);
-        }
-
-        return cmd;
+        return switch (command.charAt(0)) {
+            case 'F' -> // function names
+                    new eBinFunction(command.substring(1));
+            case 'L' -> // label names
+                    new eBinLabel(command.substring(1));
+            case 'N' -> // numbers
+                    new eBinNumber(command.substring(1));
+            case 'C' -> // comparisons
+                    new eBinComparison(command.substring(1));
+            case 'D' -> // files
+                    new eBinFile(command.substring(1));
+            default -> // instructions
+                    new eBinInstruction(command);
+        };
     }
 }
