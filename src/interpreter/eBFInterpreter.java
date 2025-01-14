@@ -28,7 +28,7 @@ public class eBFInterpreter {
         try {
             code = Files.readString(this.file.toPath());
         } catch (IOException e) {
-            Result.Error(Result.Errors.FILE_NOT_FOUND, file.getName() + " at position: " + progPos).handleError();;
+            Result.Error(Result.Errors.FILE_NOT_FOUND, file.getName() + " at position: " + progPos).handleError();
         }
         
         commands = code.split("");
@@ -63,12 +63,12 @@ public class eBFInterpreter {
                     this.progPos++;
                     while(c > 0 || !this.commands[this.progPos].equals("]")) {
                         
-                        if(this.commands[this.progPos].equals("[")) {
-                            c++;
-                        } else if(this.commands[this.progPos].equals("]")) {
-                            c--;
-                        } else if(this.commands[this.progPos].equals("DPND")) {
-                            return Result.Error(Result.Errors.LOOPED_DEPENDENCY_SET, command + " at position: " + progPos);  
+                        switch (this.commands[this.progPos]) {
+                            case "[" -> c++;
+                            case "]" -> c--;
+                            case "DPND" -> {
+                                return Result.Error(Result.Errors.LOOPED_DEPENDENCY_SET, command + " at position: " + progPos);
+                            }
                         }
                         this.progPos++;
                     }
@@ -79,12 +79,12 @@ public class eBFInterpreter {
                     this.progPos--;
                     while(c > 0 || !this.commands[this.progPos].equals("[")) {
                         
-                        if(this.commands[this.progPos].equals("]")) {
-                            c++;
-                        } else if(this.commands[this.progPos].equals("[")) {
-                            c--;
-                        } else if(this.commands[this.progPos].equals("DPND")) {
-                            return Result.Error(Result.Errors.LOOPED_DEPENDENCY_SET, command + " at position: " + progPos);  
+                        switch (this.commands[this.progPos]) {
+                            case "]" -> c++;
+                            case "[" -> c--;
+                            case "DPND" -> {
+                                return Result.Error(Result.Errors.LOOPED_DEPENDENCY_SET, command + " at position: " + progPos);
+                            }
                         }
                         this.progPos--;
                     }
@@ -104,7 +104,7 @@ public class eBFInterpreter {
                 return Result.Success();
             case ".":
                 Scanner sc = new Scanner(System.in);
-                int val = (int) sc.next().charAt(0);
+                int val = sc.next().charAt(0);
                 sc.close();
                 this.caller.memory[this.caller.ptr] = val;
                 return Result.Success();    
