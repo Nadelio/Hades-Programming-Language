@@ -71,7 +71,7 @@ public class Main{
                                     "  - Use `-fc` flag to compile the given file to eBin\r\n" + //
                                     "  - Use `-fr` flag to run the given file\r\n" + //
                                     "  - Use `-fce` flag to compile a ePU formatted Hades file to relevant eBin\r\n" + //
-                                    "5. Profit");
+                                    "4. Profit");
                 System.exit(0);
             }else {
                 System.out.println("\u001B[31mMissing compile or run flag.\u001B[0m");
