@@ -14,6 +14,7 @@ public class Main{
     public static boolean EPU_FLAG = false;
     public static boolean COMPILE_FLAG = false;
     public static boolean RUN_FLAG = false;
+    public static final String COMPILER_VERSION = "v1.1.0";
 
     public static void main(String[] args) {
 
@@ -52,7 +53,27 @@ public class Main{
                 }
             } else if(args[0].contains("r")){
                 RUN_FLAG = true;
-            } else {
+            } else if(args[0].contains("v")){
+                System.out.println("Hades Compiler Version: " + COMPILER_VERSION);
+                System.exit(0);
+            } else if(args[0].contains("h")){
+                System.out.println( "1. Put the `.jar` and the `.bat` file in the same folder as where you want to put your files\r\n" + //
+                                    "2. Write your Hades program\r\n" + //
+                                    "\\\r\n" + //
+                                    "For Linux Systems:\r\n" + //
+                                    "3. Run the `hades` file using the `./hades -[flags] [file]` format\r\n" + //
+                                    "  - Use `-fc` flag to compile the given file to eBin\r\n" + //
+                                    "  - Use `-fr` flag to run the given file\r\n" + //
+                                    "  - Use `-fce` flag to compile a ePU formatted Hades file to relevant eBin\r\n" + //
+                                    "\\\r\n" + //
+                                    "For Windows Systems:\r\n" + //
+                                    "3. Run the bat script using the `./hades.bat -[flags] [file]` format\r\n" + //
+                                    "  - Use `-fc` flag to compile the given file to eBin\r\n" + //
+                                    "  - Use `-fr` flag to run the given file\r\n" + //
+                                    "  - Use `-fce` flag to compile a ePU formatted Hades file to relevant eBin\r\n" + //
+                                    "5. Profit");
+                System.exit(0);
+            }else {
                 System.out.println("\u001B[31mMissing compile or run flag.\u001B[0m");
                 System.exit(1);
             }
