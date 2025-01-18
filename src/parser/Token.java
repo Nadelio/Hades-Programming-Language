@@ -41,6 +41,7 @@ public class Token {
         OUTRANGE,
         INVALUE,
         INSTRING,
+        SETWRITEMODE,
 
         // can take in STRING or STRUCT ALIAS type
         WRITEDATADUMP,
@@ -50,8 +51,6 @@ public class Token {
         READFROMFILE, // takes in string/struct alias and a label/int
         WRITETOFILE,  // binary instruction // takes in string/struct alias and a label/int
         
-        SETWRITEMODE, 
-
         // non-instructions
         ALIAS,
         NUMBER,
