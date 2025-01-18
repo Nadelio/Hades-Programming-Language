@@ -218,9 +218,9 @@ public class Lexer {
             case "DROP":
                 return new Token(Token.TokenType.DROP, literal);
             case "MLB":
-                return new Token(Token.TokenType.MOVEHELPLABELPOSITION, literal);
+                return new Token(Token.TokenType.MOVEHELDLABELPOSITION, literal);
             case "MLP":
-                return new Token(Token.TokenType.READTOLABELPOSITION, literal);
+                return new Token(Token.TokenType.READTOHELDLABELPOSITION, literal);
             case "SLB":
                 return new Token(Token.TokenType.SETHELDLABELVALUE, literal);
             case "SLV":

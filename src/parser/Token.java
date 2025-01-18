@@ -29,10 +29,10 @@ public class Token {
         LOOP,
 
         // v1.1.0
-        HOLD, // unary instruction
+        HOLD,
         DROP,
-        MOVEHELPLABELPOSITION, // unary instruction
-        READTOLABELPOSITION,
+        MOVEHELDLABELPOSITION, // unary instruction
+        READTOHELDLABELPOSITION,
         SETHELDLABELVALUE, // unary instruction
         READTOHELDLABELVALUE,
         FUNCTIONMACRO, // binary instruction, takes in instruction list
@@ -73,6 +73,12 @@ public class Token {
 
         // v1.1.0
         STRING
+    }
+
+    public enum BuilderTypes {
+        LIST,
+        SINGLE,
+        VARIABLEARG // check current type and next type for type checking against pattern
     }
 
     private TokenType type;

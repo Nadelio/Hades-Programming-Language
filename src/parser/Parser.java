@@ -110,17 +110,29 @@ public class Parser {
                 return new Command(Token.TokenType.PUSH);
             case POP:
                 return new Command(Token.TokenType.POP);
+            case DROP:
+                return new Command(Token.TokenType.DROP);
+            case READTOHELDLABELPOSITION:
+                return new Command(Token.TokenType.READTOHELDLABELPOSITION);
+            case READTOHELDLABELVALUE:
+                return new Command(Token.TokenType.READTOHELDLABELVALUE);
+            case OUTNUMBER:
+                return new Command(Token.TokenType.OUTNUMBER);
+            case INVALUE:
+                return new Command(Token.TokenType.INVALUE);
+            case INSTRING:
+                return new Command(Token.TokenType.INSTRING);
             case MOVE:
-                field1 = this.doNumberField();
+                field1 = this.doLabelField();
                 return new UnaryCommand(Token.TokenType.MOVE, field1);
             case SET:
-                field1 = this.doNumberField();
+                field1 = this.doLabelField();
                 return new UnaryCommand(Token.TokenType.SET, field1);
             case WRITE:
-                field1 = this.doNumberField();
+                field1 = this.doLabelField();
                 return new UnaryCommand(Token.TokenType.WRITE, field1);
             case CREATELABEL:
-                field1 = this.doAliasField();
+                field1 = this.doLabelField();
                 return new UnaryCommand(Token.TokenType.CREATELABEL, field1);
             case DELETELABEL:
                 field1 = this.doAliasField();
@@ -131,6 +143,18 @@ public class Parser {
             case CALLDEPENDENCY:
                 field1 = this.doAliasField();
                 return new UnaryCommand(Token.TokenType.CALLDEPENDENCY, field1);
+            case HOLD:
+                field1 = this.doAliasField();
+                return new UnaryCommand(Token.TokenType.HOLD, field1);
+            case MOVEHELDLABELPOSITION:
+                field1 = this.doLabelField();
+                return new UnaryCommand(Token.TokenType.MOVEHELDLABELPOSITION, field1);
+            case SETHELDLABELVALUE:
+                field1 = this.doLabelField();
+                return new UnaryCommand(Token.TokenType.SETHELDLABELVALUE, field1);
+            case OUTVALUE:
+                field1 = this.doLabelField();
+                return new UnaryCommand(Token.TokenType.OUTVALUE, field1);
             case SYSCALL:
                 field1 = new Token[7];
                 if(this.peekToken().getType().equals(Token.TokenType.LBRACKET)){
@@ -390,6 +414,40 @@ public class Parser {
         return field;
     }
 
+    private Token[] doLabelField(){
+        Token[] field = new Token[3];
+        if(this.peekToken().getType().equals(Token.TokenType.LBRACKET)){
+            this.readToken();
+            field[0] = tok;
+            if(match(this.peekToken().getType(), Token.TokenType.ALIAS, Token.TokenType.NUMBER)){
+                this.readToken();
+                field[1] = tok;
+                if(this.peekToken().getType().equals(Token.TokenType.RBRACKET)){
+                    this.readToken();
+                    field[2] = tok;
+                } else {
+                    exitWithError(Token.TokenType.RBRACKET);
+                }
+            } else {
+                exitWithError(Token.TokenType.ALIAS, Token.TokenType.NUMBER);
+            }
+        } else {
+            exitWithError(Token.TokenType.LBRACKET);
+        }
+        return field;
+    }
+    
+    /**
+     * Builds a token field using a pattern builder semantic array and a pattern of types
+     * @param patternSemantics
+     * @param pattern
+     * @return An array containing a series of validated {@link Token} instances
+     */
+    private Token[] buildPatternedField(Token.BuilderTypes[] patternSemantics, Token.TokenType... pattern){
+        //TODO: implement patterned field building
+        return null;
+    }
+    
     /**
      * Checks if the input token matches any of the given types
      * @param input
