@@ -42,15 +42,15 @@ public class Token {
         INVALUE,
         INSTRING,
 
-        // can take in STRING type
+        // can take in STRING or STRUCT ALIAS type
         WRITEDATADUMP,
         CREATEDATASTRUCTURE, // binary instruction, takes in an int/label/string list and a alias
-        FILESTREAMOPEN, // binary instruction
-        FILESTREAMCLOSE, // unary instruction
-        READFROMFILE, // unary instruction
-        WRITETOFILE,  // unary instruction
+        FILESTREAMOPEN, // binary instruction // takes in a string/struct alias and a int/label
+        FILESTREAMCLOSE, // takes in string/struct alias and a label/int
+        READFROMFILE, // takes in string/struct alias and a label/int
+        WRITETOFILE,  // binary instruction // takes in string/struct alias and a label/int
         
-        SETWRITEMODE, // unary instruction, takes in 0 or 1 or label, throw error if(!0 || !1 || !label)
+        SETWRITEMODE, 
 
         // non-instructions
         ALIAS,

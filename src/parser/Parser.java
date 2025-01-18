@@ -5,6 +5,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import src.Main;
+import src.parser.Token.BuilderTypes;
 import src.parser.Token.TokenType;
 import src.util.Constants;
 
@@ -80,6 +81,8 @@ public class Parser {
     private Command nextCommand(){
         Token[] field1;
         Token[] field2;
+        Token.BuilderTypes[] patternSemantics;
+        Token.TokenType[] pattern;
         // build command
         switch(this.tok.getType()){
             case NOP:
@@ -156,66 +159,39 @@ public class Parser {
                 field1 = this.doLabelField();
                 return new UnaryCommand(Token.TokenType.OUTVALUE, field1);
             case OUTRANGE:
-                Token.BuilderTypes[] patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARGLIST, Token.BuilderTypes.SINGLE};
+                patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARGLIST, Token.BuilderTypes.SINGLE};
                 field1 = this.buildPatternedField(patternSemantics, Token.TokenType.LBRACKET, Token.TokenType.NUMBER, Token.TokenType.ALIAS, Token.TokenType.RBRACKET);
                 return new UnaryCommand(Token.TokenType.OUTRANGE, field1);
             case WRITEDATADUMP:
-                Token.BuilderTypes[] patternSemantics2 = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.TRIVARARGLIST, Token.BuilderTypes.SINGLE};
-                field1 = this.buildPatternedField(patternSemantics2, Token.TokenType.LBRACKET, Token.TokenType.NUMBER, Token.TokenType.ALIAS, Token.TokenType.STRING, Token.TokenType.RBRACKET);
+                patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.TRIVARARGLIST, Token.BuilderTypes.SINGLE};
+                field1 = this.buildPatternedField(patternSemantics, Token.TokenType.LBRACKET, Token.TokenType.NUMBER, Token.TokenType.ALIAS, Token.TokenType.STRING, Token.TokenType.RBRACKET);
                 return new UnaryCommand(Token.TokenType.WRITEDATADUMP, field1);
             case FILESTREAMCLOSE:
-            case READFROMFILE:
-            case WRITETOFILE:
+                patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARGLIST, Token.BuilderTypes.SINGLE};
+                pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.STRING, Token.TokenType.ALIAS, Token.TokenType.RBRACKET};
+                field1 = this.buildPatternedField(patternSemantics, pattern);
+                return new UnaryCommand(Token.TokenType.FILESTREAMCLOSE, field1);
             case SETWRITEMODE:
+                patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARGLIST, Token.BuilderTypes.SINGLE};
+                pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.NUMBER, Token.TokenType.ALIAS, Token.TokenType.RBRACKET};
+                field1 = this.buildPatternedField(patternSemantics, pattern);
+                return new UnaryCommand(Token.TokenType.SETWRITEMODE, field1);
+            case READFROMFILE:
+                patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARGLIST, Token.BuilderTypes.SINGLE};
+                pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.STRING, Token.TokenType.ALIAS, Token.TokenType.RBRACKET};
+                field1 = this.buildPatternedField(patternSemantics, pattern);
+                patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARGLIST, Token.BuilderTypes.SINGLE};
+                pattern = new TokenType[]{Token.TokenType.LBRACKET, Token.TokenType.ALIAS, Token.TokenType.NUMBER, Token.TokenType.RBRACKET};
+                field2 = this.buildPatternedField(patternSemantics, pattern);
+                return new BinaryCommand(Token.TokenType.READFROMFILE, field1, field2);
+            case WRITETOFILE: // binary instruction // takes in string/struct alias and a label/int
                 //TODO: Implement
                 throw new UnsupportedOperationException("Not yet implemented");
             case SYSCALL:
-                field1 = new Token[7];
-                if(this.peekToken().getType().equals(Token.TokenType.LBRACKET)){
-                    this.readToken();
-                    field1[0] = tok;
-                    
-                    if(match(this.peekToken().getType(), Token.TokenType.ALIAS, Token.TokenType.NUMBER)){
-                        this.readToken();
-                        field1[1] = tok;
-                        if(match(this.peekToken().getType(), Token.TokenType.ALIAS, Token.TokenType.NUMBER)){
-                            this.readToken();
-                            field1[2] = tok;
-                            if(match(this.peekToken().getType(), Token.TokenType.ALIAS, Token.TokenType.NUMBER)){
-                                this.readToken();
-                                field1[3] = tok;
-                                if(match(this.peekToken().getType(), Token.TokenType.ALIAS, Token.TokenType.NUMBER)){
-                                    this.readToken();
-                                    field1[4] = tok;
-                                    if(match(this.peekToken().getType(), Token.TokenType.ALIAS, Token.TokenType.NUMBER)){
-                                        this.readToken();
-                                        field1[5] = tok;
-                                        if(this.peekToken().getType().equals(Token.TokenType.RBRACKET)){
-                                            this.readToken();
-                                            field1[6] = tok;
-                                            return new UnaryCommand(Token.TokenType.SYSCALL, field1);
-                                        } else {
-                                            exitWithError(Token.TokenType.RBRACKET);
-                                        }
-                                    } else {
-                                        exitWithError(TokenType.ALIAS, Token.TokenType.NUMBER);
-                                    }
-                                } else {
-                                    exitWithError(TokenType.ALIAS, Token.TokenType.NUMBER);
-                                }
-                            } else {
-                                exitWithError(TokenType.ALIAS, Token.TokenType.NUMBER);
-                            }
-                        } else {
-                            exitWithError(TokenType.ALIAS, Token.TokenType.NUMBER);
-                        }
-                    } else {
-                        exitWithError(TokenType.ALIAS, Token.TokenType.NUMBER);
-                    }
-                } else {
-                    exitWithError(Token.TokenType.LBRACKET);
-                }
-                break;
+                patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARGLIST, Token.BuilderTypes.SINGLE};
+                pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.ALIAS, Token.TokenType.NUMBER, Token.TokenType.RBRACKET};
+                field1 = this.buildPatternedField(patternSemantics, pattern);
+                return new UnaryCommand(Token.TokenType.SYSCALL, field1);
             case COMMENT:
                 ArrayList<Token> content = new ArrayList<Token>();
                 while((!this.peekToken().getType().equals(Token.TokenType.COMMENT)) && (this.position < this.ast.getTree().length)){
@@ -388,6 +364,7 @@ public class Parser {
     }
 
     private boolean isComparison(Token.TokenType type){ return match(type, Token.TokenType.GREATER, Token.TokenType.LESS, Token.TokenType.GREATEREQUAL, Token.TokenType.LESSEQUAL, Token.TokenType.EQUAL, Token.TokenType.NOTEQUAL); }
+    
     private Token[] doAliasField(){ 
         Token[] field = new Token[3];
         if(this.peekToken().getType().equals(Token.TokenType.LBRACKET)){
@@ -411,6 +388,7 @@ public class Parser {
         return field;
     }
 
+    @SuppressWarnings("unused")
     private Token[] doNumberField(){
         Token[] field = new Token[3];
         if(this.peekToken().getType().equals(Token.TokenType.LBRACKET)){
