@@ -155,6 +155,20 @@ public class Parser {
             case OUTVALUE:
                 field1 = this.doLabelField();
                 return new UnaryCommand(Token.TokenType.OUTVALUE, field1);
+            case OUTRANGE:
+                Token.BuilderTypes[] patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARGLIST, Token.BuilderTypes.SINGLE};
+                field1 = this.buildPatternedField(patternSemantics, Token.TokenType.LBRACKET, Token.TokenType.NUMBER, Token.TokenType.ALIAS, Token.TokenType.RBRACKET);
+                return new UnaryCommand(Token.TokenType.OUTRANGE, field1);
+            case WRITEDATADUMP:
+                Token.BuilderTypes[] patternSemantics2 = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.TRIVARARGLIST, Token.BuilderTypes.SINGLE};
+                field1 = this.buildPatternedField(patternSemantics2, Token.TokenType.LBRACKET, Token.TokenType.NUMBER, Token.TokenType.ALIAS, Token.TokenType.STRING, Token.TokenType.RBRACKET);
+                return new UnaryCommand(Token.TokenType.WRITEDATADUMP, field1);
+            case FILESTREAMCLOSE:
+            case READFROMFILE:
+            case WRITETOFILE:
+            case SETWRITEMODE:
+                //TODO: Implement
+                throw new UnsupportedOperationException("Not yet implemented");
             case SYSCALL:
                 field1 = new Token[7];
                 if(this.peekToken().getType().equals(Token.TokenType.LBRACKET)){
@@ -367,6 +381,12 @@ public class Parser {
         System.exit(1);
     }
 
+    private void exitWithError(Token.TokenType type1, Token.TokenType type2, Token.TokenType type3){
+        System.out.println(Constants.ANSI_ERROR + "Syntax error: expected " + Constants.ANSI_INFO + type1 + Constants.ANSI_ERROR + ", " + Constants.ANSI_INFO + type2 + Constants.ANSI_ERROR + ", or " + Constants.ANSI_INFO + type3 + Constants.ANSI_ERROR + " @ " + Constants.ANSI_INFO + (this.readPosition) + Constants.ANSI_RESET);
+        System.out.println(Constants.ANSI_ERROR + "Recieved: " + Constants.ANSI_INFO + this.peekToken().getType() + Constants.ANSI_RESET);
+        System.exit(1);
+    }
+
     private boolean isComparison(Token.TokenType type){ return match(type, Token.TokenType.GREATER, Token.TokenType.LESS, Token.TokenType.GREATEREQUAL, Token.TokenType.LESSEQUAL, Token.TokenType.EQUAL, Token.TokenType.NOTEQUAL); }
     private Token[] doAliasField(){ 
         Token[] field = new Token[3];
@@ -443,9 +463,90 @@ public class Parser {
      * @param pattern
      * @return An array containing a series of validated {@link Token} instances
      */
-    private Token[] buildPatternedField(Token.BuilderTypes[] patternSemantics, Token.TokenType... pattern){
-        //TODO: implement patterned field building
-        return null;
+    public Token[] buildPatternedField(Token.BuilderTypes[] patternSemantics, Token.TokenType... pattern){
+        if(patternSemantics.length > pattern.length){ throw new IllegalArgumentException("Pattern semantics cannot be bigger than pattern"); }
+        
+        Token[] field = new Token[0];
+        int patternIndex = 0;
+
+        int readLength = 0;
+
+        for(Token.BuilderTypes b : patternSemantics){
+            switch(b){
+                case LIST -> readLength++;
+                case SINGLE -> readLength++;
+                case BIVARARG -> readLength += 2;
+                case BIVARARGLIST -> readLength += 2;
+                case TRIVARARG -> readLength += 3;
+                case TRIVARARGLIST -> readLength += 3;
+                default -> throw new IllegalArgumentException("Invalid pattern builder type");
+            }
+        }
+
+        if(readLength != pattern.length){ throw new IllegalArgumentException("Semantic Builder Pattern must read the all of the Type Pattern. Builder Pattern Read Length Mismatch."); }
+
+        for(Token.BuilderTypes b : patternSemantics){
+            switch(b){
+                case LIST -> {
+                    Token.TokenType listType = pattern[patternIndex];
+                    while(match(this.peekToken().getType(), listType)){
+                        this.readToken();
+                        field = appendElement(field, tok);
+                    }
+                    patternIndex++;
+                }
+                case SINGLE -> {
+                    Token.TokenType type = pattern[patternIndex];
+                    if(match(this.peekToken().getType(), type)){
+                        this.readToken();
+                        field = appendElement(field, tok);
+                    } else { exitWithError(type); }
+                    patternIndex++;
+                }
+                case BIVARARG -> {
+                    Token.TokenType firstType = pattern[patternIndex], secondType = pattern[patternIndex + 1];
+                    if(match(this.peekToken().getType(), firstType, secondType)){
+                        this.readToken();
+                        field = appendElement(field, tok);
+                    } else { exitWithError(firstType, secondType); }
+                    patternIndex += 2;
+                }
+                case BIVARARGLIST -> {
+                    Token.TokenType firstType = pattern[patternIndex], secondType = pattern[patternIndex + 1];
+                    while(match(this.peekToken().getType(), firstType, secondType)){
+                        this.readToken();
+                        field = appendElement(field, tok);
+                    }
+                    patternIndex += 2;
+                }
+                case TRIVARARG -> {
+                    Token.TokenType firstType = pattern[patternIndex], secondType = pattern[patternIndex + 1], thirdType = pattern[patternIndex + 2];
+                    if(match(this.peekToken().getType(), firstType, secondType, thirdType)){
+                        this.readToken();
+                        field = appendElement(field, tok);
+                    } else { exitWithError(firstType, secondType, thirdType); }
+                    patternIndex += 3;
+                }
+                case TRIVARARGLIST -> {
+                    Token.TokenType firstType = pattern[patternIndex], secondType = pattern[patternIndex + 1], thirdType = pattern[patternIndex + 2];
+                    while(match(this.peekToken().getType(), firstType, secondType, thirdType)){
+                        this.readToken();
+                        field = appendElement(field, tok);
+                    }
+                    patternIndex += 3;
+                }
+                default -> throw new IllegalArgumentException("Invalid pattern builder type");
+            }
+        }
+
+        return field;
+    }
+
+    private Token[] appendElement(Token[] field, Token element){
+        Token[] newField = new Token[field.length + 1];
+        for(int i = 0; i < field.length; i++){ newField[i] = field[i]; }
+        newField[field.length] = element;
+        return newField;
     }
     
     /**

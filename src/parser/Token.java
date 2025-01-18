@@ -31,20 +31,20 @@ public class Token {
         // v1.1.0
         HOLD,
         DROP,
-        MOVEHELDLABELPOSITION, // unary instruction
+        MOVEHELDLABELPOSITION,
         READTOHELDLABELPOSITION,
-        SETHELDLABELVALUE, // unary instruction
+        SETHELDLABELVALUE,
         READTOHELDLABELVALUE,
-        FUNCTIONMACRO, // binary instruction, takes in instruction list
+        FUNCTIONMACRO, // binary instruction, takes in instruction list -> FUNC [alias] [body]
         OUTNUMBER, 
-        OUTVALUE, // unary instruction, takes in int/label
-        OUTRANGE, // unary instruction, takes in int/label list
+        OUTVALUE,
+        OUTRANGE,
         INVALUE,
         INSTRING,
 
         // can take in STRING type
-        WRITEDATADUMP, // unary instruction, takes in int/label list
-        CREATEDATASTRUCTURE, // binary instruction
+        WRITEDATADUMP,
+        CREATEDATASTRUCTURE, // binary instruction, takes in an int/label/string list and a alias
         FILESTREAMOPEN, // binary instruction
         FILESTREAMCLOSE, // unary instruction
         READFROMFILE, // unary instruction
@@ -75,10 +75,34 @@ public class Token {
         STRING
     }
 
+    /**
+     * A list of different semantics for the {@link src.parser.Parser#buildPatternedField(BuilderTypes[], TokenType...)} method
+     */
     public enum BuilderTypes {
-        LIST,
+        /**
+         * Match a single token to the expected pattern type
+         */
         SINGLE,
-        VARIABLEARG // check current type and next type for type checking against pattern
+        /**
+         * Match a single tokens to one of two expected pattern types
+         */
+        BIVARARG,
+        /**
+         * Match a single tokens to one of three expected pattern types
+         */
+        TRIVARARG,
+        /**
+         * Match a list of tokens to the expected pattern type
+         */
+        LIST,
+        /**
+         * Match a list of tokens to one of two expected pattern types
+         */
+        BIVARARGLIST,
+        /**
+         * Match a list of tokens to one of three expected pattern types
+         */
+        TRIVARARGLIST
     }
 
     private TokenType type;
