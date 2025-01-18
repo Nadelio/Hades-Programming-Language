@@ -1,6 +1,8 @@
 package src.parser;
 
 import java.util.ArrayList;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import src.Main;
 import src.parser.Token.TokenType;
@@ -36,20 +38,29 @@ public class Parser {
     }
 
     /**
-    Reads the next token without incrementing read pointer
-    @return Token
+    Reads the token at readPosition + offset without incrementing read pointer
+    @param offset
+    @return {@link Token}
     */
-    private Token peekToken() {
-        if (this.readPosition >= this.ast.getTree().length) {
+    private Token peekToken(int offset) {
+        if (this.readPosition + offset >= this.ast.getTree().length) {
             return new Token(Token.TokenType.EOF, '\u0000');
         } else {
-            return this.ast.getTree()[this.readPosition];
+            return this.ast.getTree()[this.readPosition + offset];
         }
     }
 
     /**
+     * Reads the next token without incrementing read pointer
+     * @return {@link Token}
+     */
+    private Token peekToken(){
+        return this.peekToken(0);
+    }
+
+    /**
     Parses the AST
-    @return ASTC 
+    @return {@link ASTC} 
     */
     public ASTC parse(){
         java.util.ArrayList<Command> commands = new java.util.ArrayList<Command>();
@@ -64,7 +75,7 @@ public class Parser {
 
     /**
     Generates the next command from the AST 
-    @return Command
+    @return {@link Command}
      */
     private Command nextCommand(){
         Token[] field1;
@@ -125,19 +136,20 @@ public class Parser {
                 if(this.peekToken().getType().equals(Token.TokenType.LBRACKET)){
                     this.readToken();
                     field1[0] = tok;
-                    if(this.peekToken().getType().equals(Token.TokenType.ALIAS) || this.peekToken().getType().equals(Token.TokenType.NUMBER)){
+                    
+                    if(match(this.peekToken().getType(), Token.TokenType.ALIAS, Token.TokenType.NUMBER)){
                         this.readToken();
                         field1[1] = tok;
-                        if(this.peekToken().getType().equals(Token.TokenType.ALIAS) || this.peekToken().getType().equals(Token.TokenType.NUMBER)){
+                        if(match(this.peekToken().getType(), Token.TokenType.ALIAS, Token.TokenType.NUMBER)){
                             this.readToken();
                             field1[2] = tok;
-                            if(this.peekToken().getType().equals(Token.TokenType.ALIAS) || this.peekToken().getType().equals(Token.TokenType.NUMBER)){
+                            if(match(this.peekToken().getType(), Token.TokenType.ALIAS, Token.TokenType.NUMBER)){
                                 this.readToken();
                                 field1[3] = tok;
-                                if(this.peekToken().getType().equals(Token.TokenType.ALIAS) || this.peekToken().getType().equals(Token.TokenType.NUMBER)){
+                                if(match(this.peekToken().getType(), Token.TokenType.ALIAS, Token.TokenType.NUMBER)){
                                     this.readToken();
                                     field1[4] = tok;
-                                    if(this.peekToken().getType().equals(Token.TokenType.ALIAS) || this.peekToken().getType().equals(Token.TokenType.NUMBER)){
+                                    if(match(this.peekToken().getType(), Token.TokenType.ALIAS, Token.TokenType.NUMBER)){
                                         this.readToken();
                                         field1[5] = tok;
                                         if(this.peekToken().getType().equals(Token.TokenType.RBRACKET)){
@@ -331,8 +343,8 @@ public class Parser {
         System.exit(1);
     }
 
-    private boolean isComparison(Token.TokenType type){ return type.equals(Token.TokenType.EQUAL) || type.equals(Token.TokenType.NOTEQUAL) || type.equals(Token.TokenType.GREATER) || type.equals(Token.TokenType.LESS) || type.equals(Token.TokenType.GREATEREQUAL) || type.equals(Token.TokenType.LESSEQUAL); }
-    private Token[] doAliasField(){
+    private boolean isComparison(Token.TokenType type){ return match(type, Token.TokenType.GREATER, Token.TokenType.LESS, Token.TokenType.GREATEREQUAL, Token.TokenType.LESSEQUAL, Token.TokenType.EQUAL, Token.TokenType.NOTEQUAL); }
+    private Token[] doAliasField(){ 
         Token[] field = new Token[3];
         if(this.peekToken().getType().equals(Token.TokenType.LBRACKET)){
             this.readToken();
@@ -376,6 +388,40 @@ public class Parser {
             exitWithError(Token.TokenType.RBRACKET);
         }
         return field;
+    }
+
+    /**
+     * Checks if the input token matches any of the given types
+     * @param input
+     * @param types
+     * @return {@link Boolean}
+     */
+    private boolean match(Token.TokenType input, Token.TokenType... types){
+        return Stream.of(Token.TokenType.values()).anyMatch(t -> t.equals(input));
+    }
+
+    /**
+     * Checks if the input tokens matches any of the given types
+     * @param input
+     * @param types
+     * @return {@link Boolean}
+     */
+    private boolean matchMultiple(Token.TokenType[] input, Token.TokenType... types){
+        for(Token.TokenType type : types){
+            if(Stream.of(input).anyMatch(t -> !t.equals(type))){ return false; }
+        }
+        return true;
+    }
+
+    /**
+     * Checks if the input tokens matches the given pattern
+     * @param input
+     * @param types
+     * @return {@link Boolean}
+     */
+    private boolean matchPattern(Token.TokenType[] input, Token.TokenType... types){
+        if(input.length != types.length){ return false; }
+        return IntStream.range(0, input.length).allMatch(i -> input[i].equals(types[i]));
     }
 
     @SuppressWarnings("unused")
