@@ -103,6 +103,7 @@ public class Lexer {
                 break;
             case '"':
                 int pos = this.position;
+                this.readChar();
                 while(this.ch != '"'){
                     this.readChar();
                 }

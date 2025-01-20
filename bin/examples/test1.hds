@@ -1,4 +1,4 @@
-CDP [examples/out.hds] [foo]
+CDP ["examples/out.hds"] [foo]
 CALL [foo]
 CLB [lblA]
 WRT [95]
