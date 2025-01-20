@@ -483,7 +483,7 @@ public class Parser {
                 }
                 case TRIVARARGLIST -> {
                     Token.TokenType firstType = pattern[patternIndex], secondType = pattern[patternIndex + 1], thirdType = pattern[patternIndex + 2];
-                    while(match(this.peekToken().getType(), firstType, secondType, thirdType)){
+                    while(match(this.peekToken().getType(), firstType, secondType, thirdType) && this.position < this.ast.getTree().length){
                         this.readToken();
                         field = appendElement(field, tok);
                     }
@@ -510,7 +510,7 @@ public class Parser {
      * @return {@link Boolean}
      */
     private boolean match(Token.TokenType input, Token.TokenType... types){
-        return Stream.of(Token.TokenType.values()).anyMatch(t -> t.equals(input));
+        return Stream.of(types).anyMatch(t -> input.equals(t));
     }
 
     /**

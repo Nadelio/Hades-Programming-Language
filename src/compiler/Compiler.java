@@ -265,14 +265,14 @@ public class Compiler {
             case OUT:
                 return bytecode[26] + " ";
             case HOLD:
-                return bytecode[27] + " ";
-            case DROP:
                 if(cmd instanceof UnaryCommand){
                     UnaryCommand unary = (UnaryCommand) cmd;
-                    return bytecode[28] + " " + byteCodeFromSingleField(unary.getField());
+                    return bytecode[27] + " " + byteCodeFromAlias(unary.getField()[1].getLiteral(), true);
                 } else {
                     throw new IllegalArgumentException("Invalid command type.");
                 }
+            case DROP:
+                return bytecode[28] + " ";
             case MOVEHELDLABELPOSITION:
                 if(cmd instanceof UnaryCommand){
                     UnaryCommand unary = (UnaryCommand) cmd;
@@ -295,7 +295,8 @@ public class Compiler {
                 if(cmd instanceof FunctionMacroCommand){
                     FunctionMacroCommand funcMacro = (FunctionMacroCommand) cmd;
                     String funcMacroCode = bytecode[33] + " ";
-                    funcMacroCode += byteCodeFromAlias(funcMacro.getName()[1].getLiteral(), false);
+                    
+                    funcMacroCode += dependencyToBin("", funcMacro.getName()[1].getLiteral());
                     for(int i = 0; i < funcMacro.getBody().length; i++){
                         funcMacroCode += this.compileCommand(funcMacro.getBody()[i]);
                     }
@@ -334,7 +335,7 @@ public class Compiler {
             case WRITEDATADUMP:
                 if(cmd instanceof UnaryCommand){
                     UnaryCommand unary = (UnaryCommand) cmd;
-                    return bytecode[41] + " " + byteCodeFromField(unary.getField()) + " " + bytecode[42];
+                    return bytecode[41] + " " + byteCodeFromField(unary.getField()) + bytecode[42] + " ";
                 } else {
                     throw new IllegalArgumentException("Invalid command type.");
                 }
@@ -346,7 +347,8 @@ public class Compiler {
                     String dataStructureCode = bytecode[43] + " ";
                     dataStructureCode += byteCodeFromField(field1);
                     dataStructureCode += bytecode[44] + " ";
-                    dataStructureCode += byteCodeFromAlias(field2[1].getLiteral(), false);
+                    labelToBin(field2[1].getLiteral());
+                    dataStructureCode += byteCodeFromAlias(field2[1].getLiteral(), true);
                     return dataStructureCode;
                 } else {
                     throw new IllegalArgumentException("Invalid command type.");
@@ -458,7 +460,7 @@ public class Compiler {
 
     private String byteCodeFromField(Token[] field){
         String s = "";
-        for(int i = 1; i < field.length - 2; i++){
+        for(int i = 1; i < field.length - 1; i++){
             switch(field[i].getType()){
                 case NUMBER:
                     s += byteCodeFromNumber(field[i].getLiteral());

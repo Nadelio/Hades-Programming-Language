@@ -1,4 +1,3 @@
-CDP ["examples/out.hds"] [out]
 CDP ["examples/STD.hds"] [initstd]
 
 CALL [initstd]
@@ -55,6 +54,16 @@ INV
 OUT
 
 INS
-CALL [print]
+CALL [print] ; calling functions defined in other files doesn't work, need to fix ;
 
-;! need to test FSO, FSC, RFF, WTF, SWM instructions !;
+; file I/O instructions ;
+FSO ["foo.txt"] [0]
+RFF ["foo.txt"] [10]
+FSC ["foo.txt"]
+
+FSO ["foo.txt"] [1]
+SWM [1]
+WTF ["foo.txt"] [10]
+FSC ["foo.txt"]
+
+HLT

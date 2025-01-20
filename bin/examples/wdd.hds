@@ -1,0 +1,8 @@
+CLB [foo]
+
+WDD [
+    "foo"
+    1
+    foo
+]
+HLT
