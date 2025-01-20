@@ -299,7 +299,7 @@ public class eBinInterpreter {
                     new eBinNumber(command.substring(1));
             case 'C' -> // comparisons
                     new eBinComparison(command.substring(1));
-            case 'D' -> // files
+            case 'D' -> // files //! Delete this and replace with eBinString
                     new eBinFile(command.substring(1));
             default -> // instructions
                     new eBinInstruction(command);
