@@ -1,0 +1,9 @@
+FUNC [print] [
+    CLB [printTemp]
+    LOOP [
+        OUT
+        INCP
+    ]
+    JLB [printTemp]
+    DLB [printTemp]
+]

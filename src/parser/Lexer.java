@@ -101,9 +101,6 @@ public class Lexer {
                     tok = new Token(Token.TokenType.INVALID, this.ch);
                 }
                 break;
-            case '.':
-                tok = new Token(Token.TokenType.FILEINDENTIFIER, this.ch);
-                break;
             case '"':
                 int pos = this.position;
                 while(this.ch != '"'){
@@ -251,12 +248,6 @@ public class Lexer {
                 return new Token(Token.TokenType.WRITETOFILE, literal);
             case "SWM":
                 return new Token(Token.TokenType.SETWRITEMODE, literal);
-            case "ebin":
-                return new Token(Token.TokenType.EXTENSION, literal);
-            case "ebf":
-                return new Token(Token.TokenType.EXTENSION, literal);
-            case "hds":
-                return new Token(Token.TokenType.EXTENSION, literal);
             default:
                 return new Token(Token.TokenType.ALIAS, literal);
         }
@@ -264,6 +255,6 @@ public class Lexer {
 
     private void skipWhitespace(){while(isWhitespace(this.ch)){this.readChar();}}
     private static boolean isWhitespace(char ch){return ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r';}
-    private static boolean isLetter(char ch){return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '/';}
+    private static boolean isLetter(char ch){return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z';}
     private static boolean isNumber(char ch){return '0' <= ch && ch <= '9';}
 }

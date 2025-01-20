@@ -265,11 +265,7 @@ public class eBinInterpreter {
                     }
                     return Result.Success();
                 case 24: // NOP
-                    try {
-                        Thread.sleep(10);
-                    } catch (Exception e) {
-                    }
-                    ;
+                    try { Thread.sleep(10); } catch (Exception e) { }
                     return Result.Success();
                 case 25: // WRT [N]
                     this.progPos++;

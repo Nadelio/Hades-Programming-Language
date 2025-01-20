@@ -35,21 +35,20 @@ public class Token {
         READTOHELDLABELPOSITION,
         SETHELDLABELVALUE,
         READTOHELDLABELVALUE,
-        FUNCTIONMACRO, // binary instruction, takes in instruction list -> FUNC [alias] [body]
-        OUTNUMBER, 
+        FUNCTIONMACRO,
+        OUTNUMBER,
         OUTVALUE,
         OUTRANGE,
         INVALUE,
         INSTRING,
         SETWRITEMODE,
-
         // can take in STRING or STRUCT ALIAS type
         WRITEDATADUMP,
-        CREATEDATASTRUCTURE, // binary instruction, takes in an int/label/string list and a alias
-        FILESTREAMOPEN, // binary instruction // takes in a string/struct alias and a int/label
+        CREATEDATASTRUCTURE,
+        FILESTREAMOPEN, // takes in a string/struct alias and a int/label
         FILESTREAMCLOSE, // takes in string/struct alias and a label/int
         READFROMFILE, // takes in string/struct alias and a label/int
-        WRITETOFILE,  // binary instruction // takes in string/struct alias and a label/int
+        WRITETOFILE,  // takes in string/struct alias and a label/int
         
         // non-instructions
         ALIAS,
@@ -63,8 +62,6 @@ public class Token {
         LBRACKET,
         RBRACKET,
         COMMA,
-        FILEINDENTIFIER,
-        EXTENSION,
         EOF,
         END,
         INVALID,

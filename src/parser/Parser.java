@@ -167,26 +167,44 @@ public class Parser {
                 field1 = this.buildPatternedField(patternSemantics, Token.TokenType.LBRACKET, Token.TokenType.NUMBER, Token.TokenType.ALIAS, Token.TokenType.STRING, Token.TokenType.RBRACKET);
                 return new UnaryCommand(Token.TokenType.WRITEDATADUMP, field1);
             case FILESTREAMCLOSE:
-                patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARGLIST, Token.BuilderTypes.SINGLE};
+                patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARG, Token.BuilderTypes.SINGLE};
                 pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.STRING, Token.TokenType.ALIAS, Token.TokenType.RBRACKET};
                 field1 = this.buildPatternedField(patternSemantics, pattern);
                 return new UnaryCommand(Token.TokenType.FILESTREAMCLOSE, field1);
+            case FILESTREAMOPEN:
+                patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARG, Token.BuilderTypes.SINGLE};
+                pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.STRING, Token.TokenType.ALIAS, Token.TokenType.RBRACKET};
+                field1 = this.buildPatternedField(patternSemantics, pattern);
+                pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.ALIAS, Token.TokenType.NUMBER, Token.TokenType.RBRACKET};
+                field2 = this.buildPatternedField(patternSemantics, pattern);
+                return new BinaryCommand(Token.TokenType.FILESTREAMOPEN, field1, field2);
             case SETWRITEMODE:
-                patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARGLIST, Token.BuilderTypes.SINGLE};
+                patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARG, Token.BuilderTypes.SINGLE};
                 pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.NUMBER, Token.TokenType.ALIAS, Token.TokenType.RBRACKET};
                 field1 = this.buildPatternedField(patternSemantics, pattern);
                 return new UnaryCommand(Token.TokenType.SETWRITEMODE, field1);
             case READFROMFILE:
-                patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARGLIST, Token.BuilderTypes.SINGLE};
+                patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARG, Token.BuilderTypes.SINGLE};
                 pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.STRING, Token.TokenType.ALIAS, Token.TokenType.RBRACKET};
                 field1 = this.buildPatternedField(patternSemantics, pattern);
-                patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARGLIST, Token.BuilderTypes.SINGLE};
                 pattern = new TokenType[]{Token.TokenType.LBRACKET, Token.TokenType.ALIAS, Token.TokenType.NUMBER, Token.TokenType.RBRACKET};
                 field2 = this.buildPatternedField(patternSemantics, pattern);
                 return new BinaryCommand(Token.TokenType.READFROMFILE, field1, field2);
             case WRITETOFILE: // binary instruction // takes in string/struct alias and a label/int
-                //TODO: Implement
-                throw new UnsupportedOperationException("Not yet implemented");
+                patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARG, Token.BuilderTypes.SINGLE};
+                pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.STRING, Token.TokenType.ALIAS, Token.TokenType.RBRACKET};
+                field1 = this.buildPatternedField(patternSemantics, pattern);
+                pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.ALIAS, Token.TokenType.NUMBER, Token.TokenType.RBRACKET};
+                field2 = this.buildPatternedField(patternSemantics, pattern);
+                return new BinaryCommand(Token.TokenType.WRITETOFILE, field1, field2);
+            case CREATEDATASTRUCTURE:
+                patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.TRIVARARGLIST, Token.BuilderTypes.SINGLE};
+                pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.NUMBER, Token.TokenType.ALIAS, Token.TokenType.STRING, Token.TokenType.RBRACKET};
+                field1 = this.buildPatternedField(patternSemantics, pattern);
+                patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.SINGLE, Token.BuilderTypes.SINGLE};
+                pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.ALIAS, Token.TokenType.RBRACKET};
+                field2 = this.buildPatternedField(patternSemantics, pattern);
+                return new BinaryCommand(Token.TokenType.CREATEDATASTRUCTURE, field1, field2);
             case SYSCALL:
                 patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARGLIST, Token.BuilderTypes.SINGLE};
                 pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.ALIAS, Token.TokenType.NUMBER, Token.TokenType.RBRACKET};
@@ -203,76 +221,14 @@ public class Parser {
             case CREATEDEPENDENCY: //! need to update interpreter and compiler to handle STRING argument
                 field2 = new Token[3];
                 
-                // build field1
                 if(!Main.EPU_FLAG){
-                    field1 = new Token[5];
-                    if(this.peekToken().getType().equals(Token.TokenType.LBRACKET)){
-                        this.readToken();
-                        field1[0] = tok;
-                        if(this.peekToken().getType().equals(Token.TokenType.ALIAS)){
-                            this.readToken();
-                            field1[1] = tok;
-                            if(this.peekToken().getType().equals(Token.TokenType.FILEINDENTIFIER)){
-                                this.readToken();
-                                field1[2] = tok;
-                                if(this.peekToken().getType().equals(Token.TokenType.EXTENSION)){
-                                    this.readToken();
-                                    field1[3] = tok;
-                                    if(this.peekToken().getType().equals(Token.TokenType.RBRACKET)){
-                                        this.readToken();
-                                        field1[4] = tok;
-                                    } else {
-                                        exitWithError(Token.TokenType.RBRACKET);
-                                    }
-                                } else {
-                                    exitWithError(Token.TokenType.EXTENSION);
-                                }
-                            } else {
-                                exitWithError(Token.TokenType.FILEINDENTIFIER);
-                            }
-                        } else if(this.peekToken().getType().equals(Token.TokenType.STRING)){
-                            field1 = new Token[3];
-                            field1[0] = new Token(Token.TokenType.LBRACKET, '[');
-                            this.readToken();
-                            field1[1] = tok;
-                            if(this.peekToken().getType().equals(Token.TokenType.RBRACKET)){
-                                this.readToken();
-                                field1[2] = tok;
-                            } else {
-                                exitWithError(Token.TokenType.RBRACKET);
-                            }
-                        } else {
-                            exitWithError(Token.TokenType.ALIAS, Token.TokenType.STRING);
-                        }
-                    } else {
-                        exitWithError(Token.TokenType.LBRACKET);
-                    }
+                    patternSemantics = new BuilderTypes[]{BuilderTypes.SINGLE, BuilderTypes.SINGLE, BuilderTypes.SINGLE};
+                    pattern = new TokenType[]{Token.TokenType.LBRACKET, Token.TokenType.STRING, Token.TokenType.RBRACKET};
+                    field1 = this.buildPatternedField(patternSemantics, pattern);
                 } else {
-                    field1 = new Token[4];
-                    if(this.peekToken().getType().equals(Token.TokenType.LBRACKET)){
-                        this.readToken();
-                        field1[0] = tok;
-                        if(this.peekToken().getType().equals(Token.TokenType.NUMBER)){
-                            this.readToken();
-                            field1[1] = tok;
-                            if(this.peekToken().getType().equals(Token.TokenType.NUMBER)){
-                                this.readToken();
-                                field1[2] = tok;
-                                if(this.peekToken().getType().equals(Token.TokenType.RBRACKET)){
-                                    this.readToken();
-                                    field1[3] = tok;
-                                } else {
-                                    exitWithError(Token.TokenType.RBRACKET);
-                                }
-                            } else {
-                                exitWithError(Token.TokenType.NUMBER);
-                            }
-                        } else {
-                            exitWithError(Token.TokenType.NUMBER);
-                        }
-                    } else {
-                        exitWithError(Token.TokenType.LBRACKET);
-                    }
+                    patternSemantics = new BuilderTypes[]{BuilderTypes.SINGLE, BuilderTypes.SINGLE, BuilderTypes.SINGLE, BuilderTypes.SINGLE};
+                    pattern = new TokenType[]{Token.TokenType.LBRACKET, Token.TokenType.NUMBER, Token.TokenType.NUMBER, Token.TokenType.RBRACKET};
+                    field1 = this.buildPatternedField(patternSemantics, pattern);
                 }
 
                 // build field2
@@ -319,6 +275,26 @@ public class Parser {
                 field2 = this.doAliasField();
 
                 return new BinaryCommand(Token.TokenType.INTERRUPT, field1, field2);
+            case FUNCTIONMACRO:
+                patternSemantics = new BuilderTypes[]{BuilderTypes.SINGLE, BuilderTypes.SINGLE, BuilderTypes.SINGLE};
+                pattern = new TokenType[]{Token.TokenType.LBRACKET, Token.TokenType.ALIAS, Token.TokenType.RBRACKET};
+                field1 = this.buildPatternedField(patternSemantics, pattern);
+
+                ArrayList<Command> funcBody = new ArrayList<Command>();
+                if(this.peekToken().getType().equals(Token.TokenType.LBRACKET)){
+                    this.readToken();
+                } else { exitWithError(Token.TokenType.LBRACKET); }
+                while(!this.peekToken().getType().equals(Token.TokenType.RBRACKET) && this.position < this.ast.getTree().length){
+                    this.readToken();
+                    Command c = this.nextCommand();
+                    funcBody.add(c);
+                }
+                if(this.peekToken().getType().equals(Token.TokenType.RBRACKET)){
+                    this.readToken();
+                    return new FunctionMacroCommand(funcBody.toArray(new Command[funcBody.size()]), field1);
+                } else { exitWithError(Token.TokenType.RBRACKET); }
+
+                break;
             case LOOP:
                 ArrayList<Command> loopBody = new ArrayList<Command>();
                 if(this.peekToken().getType().equals(Token.TokenType.LBRACKET)){

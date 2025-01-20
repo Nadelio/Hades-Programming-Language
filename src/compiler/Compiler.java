@@ -6,39 +6,63 @@ import src.Main;
 import src.parser.ASTC;
 import src.parser.BinaryCommand;
 import src.parser.Command;
+import src.parser.FunctionMacroCommand;
 import src.parser.LoopCommand;
 import src.parser.Token;
 import src.parser.UnaryCommand;
 
 public class Compiler {
     private static final String[] bytecode = {
-        "0", // INCV : 0
-        "1", // DECV : 1
-        "2", // INCP : 2
-        "3", // DECP : 3
-        "4", // LOOP [ : 4
-        "5", // ] : 5
-        "6", // WTV : 6
-        "7", // IN : 7
-        "8", // PUSH : 8
-        "9", // POP : 9
-        "10", // CDP : 10
-        "11", // CALL : 11
-        "12", // RDV : 12
-        "13", // SYS : 13
-        "14", // HLT : 14
-        "15", // CLB : 15
-        "16", // JLB : 16
-        "17", // DLB : 17
-        "18", // RDP : 18
-        "19", // SET : 19
-        "20", // Move Up (unused) : 20
-        "21", // Move Down (unused) : 21
-        "22", // MOV : 22
-        "23", // INT : 23
-        "24", // NOP : 24
-        "25", // WRITE : 25
-        "26", // OUT : 26
+        "0",  // INCV
+        "1",  // DECV
+        "2",  // INCP
+        "3",  // DECP
+        "4",  // LOOP [ 
+        "5",  // ] (for loop)
+        "6",  // WTV
+        "7",  // IN
+        "8",  // PUSH
+        "9",  // POP
+        "10", // CDP
+        "11", // CALL
+        "12", // RDV
+        "13", // SYS
+        "14", // HLT
+        "15", // CLB
+        "16", // JLB
+        "17", // DLB
+        "18", // RDP
+        "19", // SET
+        "20", // Move Up (unused)
+        "21", // Move Down (unused)
+        "22", // MOV
+        "23", // INT
+        "24", // NOP
+        "25", // WRT
+        "26", // OUT
+        // v1.1.0 additions
+        "27", // HOLD
+        "28", // DROP
+        "29", // MLB
+        "30", // MLP
+        "31", // SLB
+        "32", // SLV
+        "33", // FUNC [
+        "34", // ] (for func)
+        "35", // OUTN
+        "36", // OUTV
+        "37", // OUTR
+        "38", // INV
+        "39", // INS
+        "40", // SWM
+        "41", // WDD
+        "42", // ] (for WDD)
+        "43", // DS
+        "44", // ] (for DS)
+        "45", // FSO
+        "46", // FSC
+        "47", // RFF
+        "48", // WTF
     };
 
     private static final String[] bytecodePrefixes = {
@@ -46,6 +70,7 @@ public class Compiler {
         "L", // labels
         "C", // comparisons
         "N", // numbers
+        // v1.1.0 additions
         "S", // strings
     };
 
@@ -128,7 +153,7 @@ public class Compiler {
                     if(Main.EPU_FLAG){
                         dependencyAndAlias = dependencyToBin("N" + field1[1].getLiteral() + " N" + field1[2].getLiteral(), field2[1].getLiteral());
                     } else {
-                        dependencyAndAlias = dependencyToBin("D" + field1[1].getLiteral() + field1[2].getLiteral() + field1[3].getLiteral(), field2[1].getLiteral());
+                        dependencyAndAlias = dependencyToBin(byteCodeFromString(field1[1].getLiteral()), field2[1].getLiteral());
                     }
 
                     return bytecode[10] + " " + dependencyAndAlias;
@@ -151,21 +176,20 @@ public class Compiler {
                     UnaryCommand unary = (UnaryCommand) cmd;
                     Token[] field = unary.getField();
                     String syscallCode = bytecode[13] + " ";
-                    if(field[1].getType() == Token.TokenType.ALIAS){
-                        syscallCode += byteCodeFromAlias(field[1].getLiteral(), true);
-                        syscallCode += byteCodeFromAlias(field[2].getLiteral(), true);
-                        syscallCode += byteCodeFromAlias(field[3].getLiteral(), true);
-                        syscallCode += byteCodeFromAlias(field[4].getLiteral(), true);
-                        syscallCode += byteCodeFromAlias(field[5].getLiteral(), true);
-                        return syscallCode;
-                    } else if(field[1].getType() == Token.TokenType.NUMBER){
-                        syscallCode += bytecodePrefixes[3] + field[1].getLiteral() + " ";
-                        syscallCode += bytecodePrefixes[3] + field[2].getLiteral() + " ";
-                        syscallCode += bytecodePrefixes[3] + field[3].getLiteral() + " ";
-                        syscallCode += bytecodePrefixes[3] + field[4].getLiteral() + " ";
-                        syscallCode += bytecodePrefixes[3] + field[5].getLiteral() + " ";
-                        return syscallCode;
+
+                    for(int i = 1; i < 6; i++){
+                        switch(field[i].getType()){
+                            case ALIAS:
+                                syscallCode += byteCodeFromAlias(field[i].getLiteral(), true);
+                                break;
+                            case NUMBER:
+                                syscallCode += bytecodePrefixes[3] + field[i].getLiteral() + " ";
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Invalid field type.");
+                        }
                     }
+                    return syscallCode;
                 } else {
                     throw new IllegalArgumentException("Invalid command type.");
                 }
@@ -219,9 +243,9 @@ public class Compiler {
                     BinaryCommand binary = (BinaryCommand) cmd;
                     Token[] field1 = binary.getField1();
                     Token[] field2 = binary.getField2();
-                    interruptCode += byteCodeFromAlias(field1[1].getLiteral(), true);
+                    interruptCode += byteCodeFromVariantField(field1[1], true);
                     interruptCode += byteCodeFromComparison(field1[2].getType());
-                    interruptCode += byteCodeFromAlias(field1[3].getLiteral(), true);
+                    interruptCode += byteCodeFromVariantField(field1[3], true);
                     interruptCode += byteCodeFromAlias(field2[1].getLiteral(), false);
                     return interruptCode;
                 } else {
@@ -240,6 +264,131 @@ public class Compiler {
                 }
             case OUT:
                 return bytecode[26] + " ";
+            case HOLD:
+                return bytecode[27] + " ";
+            case DROP:
+                if(cmd instanceof UnaryCommand){
+                    UnaryCommand unary = (UnaryCommand) cmd;
+                    return bytecode[28] + " " + byteCodeFromSingleField(unary.getField());
+                } else {
+                    throw new IllegalArgumentException("Invalid command type.");
+                }
+            case MOVEHELDLABELPOSITION:
+                if(cmd instanceof UnaryCommand){
+                    UnaryCommand unary = (UnaryCommand) cmd;
+                    return bytecode[29] + " " + byteCodeFromSingleField(unary.getField());
+                } else {
+                    throw new IllegalArgumentException("Invalid command type.");
+                }
+            case READTOHELDLABELPOSITION:
+                return bytecode[30] + " ";
+            case SETHELDLABELVALUE:
+                if(cmd instanceof UnaryCommand){
+                    UnaryCommand unary = (UnaryCommand) cmd;
+                    return bytecode[31] + " " + byteCodeFromSingleField(unary.getField());
+                } else {
+                    throw new IllegalArgumentException("Invalid command type.");
+                }
+            case READTOHELDLABELVALUE:
+                return bytecode[32] + " ";
+            case FUNCTIONMACRO:
+                if(cmd instanceof FunctionMacroCommand){
+                    FunctionMacroCommand funcMacro = (FunctionMacroCommand) cmd;
+                    String funcMacroCode = bytecode[33] + " ";
+                    funcMacroCode += byteCodeFromAlias(funcMacro.getName()[1].getLiteral(), false);
+                    for(int i = 0; i < funcMacro.getBody().length; i++){
+                        funcMacroCode += this.compileCommand(funcMacro.getBody()[i]);
+                    }
+                    return funcMacroCode + bytecode[34] + " ";
+                } else {
+                    throw new IllegalArgumentException("Invalid command type.");
+                }
+            case OUTNUMBER:
+                return bytecode[35] + " ";
+            case OUTVALUE:
+                if(cmd instanceof UnaryCommand){
+                    UnaryCommand unary = (UnaryCommand) cmd;
+                    return bytecode[36] + " " + byteCodeFromSingleField(unary.getField());
+                } else {
+                    throw new IllegalArgumentException("Invalid command type.");
+                }
+            case OUTRANGE:
+                if(cmd instanceof UnaryCommand){
+                    UnaryCommand unary = (UnaryCommand) cmd;
+                    Token[] field = unary.getField();
+                    return bytecode[37] + " " + byteCodeFromField(field);
+                } else {
+                    throw new IllegalArgumentException("Invalid command type.");
+                }
+            case INVALUE:
+                return bytecode[38] + " ";
+            case INSTRING:
+                return bytecode[39] + " ";
+            case SETWRITEMODE:
+                if(cmd instanceof UnaryCommand){
+                    UnaryCommand unary = (UnaryCommand) cmd;
+                    return bytecode[40] + " " + byteCodeFromSingleField(unary.getField());
+                } else {
+                    throw new IllegalArgumentException("Invalid command type.");
+                }
+            case WRITEDATADUMP:
+                if(cmd instanceof UnaryCommand){
+                    UnaryCommand unary = (UnaryCommand) cmd;
+                    return bytecode[41] + " " + byteCodeFromField(unary.getField()) + " " + bytecode[42];
+                } else {
+                    throw new IllegalArgumentException("Invalid command type.");
+                }
+            case CREATEDATASTRUCTURE:
+                if(cmd instanceof BinaryCommand){
+                    BinaryCommand binary = (BinaryCommand) cmd;
+                    Token[] field1 = binary.getField1();
+                    Token[] field2 = binary.getField2();
+                    String dataStructureCode = bytecode[43] + " ";
+                    dataStructureCode += byteCodeFromField(field1);
+                    dataStructureCode += bytecode[44] + " ";
+                    dataStructureCode += byteCodeFromAlias(field2[1].getLiteral(), false);
+                    return dataStructureCode;
+                } else {
+                    throw new IllegalArgumentException("Invalid command type.");
+                }
+            case FILESTREAMOPEN: // binary
+                if(cmd instanceof BinaryCommand){
+                    BinaryCommand binary = (BinaryCommand) cmd;
+                    Token[] field1 = binary.getField1();
+                    Token[] field2 = binary.getField2();
+                    String fileStreamCode = bytecode[45] + " ";
+                    fileStreamCode += byteCodeFromField(field1);
+                    fileStreamCode += byteCodeFromField(field2);
+                    return fileStreamCode;
+                }
+            case FILESTREAMCLOSE: // unary
+                if(cmd instanceof UnaryCommand){
+                    UnaryCommand binary = (UnaryCommand) cmd;
+                    Token[] field1 = binary.getField();
+                    String fileStreamCode = bytecode[46] + " ";
+                    fileStreamCode += byteCodeFromString(field1[1].getLiteral());
+                    return fileStreamCode;
+                }
+            case READFROMFILE: // binary
+                if(cmd instanceof BinaryCommand){
+                    BinaryCommand binary = (BinaryCommand) cmd;
+                    Token[] field1 = binary.getField1();
+                    Token[] field2 = binary.getField2();
+                    String fileStreamCode = bytecode[47] + " ";
+                    fileStreamCode += byteCodeFromString(field1[1].getLiteral());
+                    fileStreamCode += byteCodeFromVariantField(field2[1], true);
+                    return fileStreamCode;
+                }
+            case WRITETOFILE: // binary
+                if(cmd instanceof BinaryCommand){
+                    BinaryCommand binary = (BinaryCommand) cmd;
+                    Token[] field1 = binary.getField1();
+                    Token[] field2 = binary.getField2();
+                    String fileStreamCode = bytecode[48] + " ";
+                    fileStreamCode += byteCodeFromString(field1[1].getLiteral());
+                    fileStreamCode += byteCodeFromVariantField(field2[1], true);
+                    return fileStreamCode;
+                }
             default:
                 return "";
         }
@@ -248,7 +397,7 @@ public class Compiler {
     private String dependencyToBin(String dependency, String alias){
         dependencies.put(alias, dependencyCounter);
         dependencyCounter++;
-        return dependency + " " + bytecodePrefixes[0] + dependencies.get(alias) + " ";
+        return dependency + bytecodePrefixes[0] + dependencies.get(alias) + " ";
     }
 
     private String labelToBin(String label){
@@ -283,7 +432,55 @@ public class Compiler {
         }
     }
 
-    private String bytecodeFromString(String str) {
+    private String byteCodeFromSingleField(Token[] field){
+        switch(field[1].getType()){
+            case NUMBER:
+                return byteCodeFromNumber(field[1].getLiteral());
+            case STRING:
+                return byteCodeFromString(field[1].getLiteral());
+            case ALIAS:
+                return byteCodeFromAlias(field[1].getLiteral(), true);
+            default:
+                throw new IllegalArgumentException("Invalid field type.");
+        }
+    }
+
+    private String byteCodeFromVariantField(Token field, boolean isLabel){
+        switch(field.getType()){
+            case NUMBER:
+                return byteCodeFromNumber(field.getLiteral());
+            case ALIAS:
+                return byteCodeFromAlias(field.getLiteral(), isLabel);
+            default:
+                throw new IllegalArgumentException("Invalid field type.");
+        }
+    }
+
+    private String byteCodeFromField(Token[] field){
+        String s = "";
+        for(int i = 1; i < field.length - 2; i++){
+            switch(field[i].getType()){
+                case NUMBER:
+                    s += byteCodeFromNumber(field[i].getLiteral());
+                    break;
+                case STRING:
+                    s += byteCodeFromString(field[i].getLiteral());
+                    break;
+                case ALIAS:
+                    s += byteCodeFromAlias(field[i].getLiteral(), true);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid field type.");
+            }
+        }
+        return s;
+    }
+
+    private String byteCodeFromNumber(String num){
+        return bytecodePrefixes[3] + num + " ";
+    }
+
+    private String byteCodeFromString(String str) {
         char[] chars = str.toCharArray();
         String s = bytecodePrefixes[4] + chars.length + " ";
         for (char c : chars) {
@@ -291,8 +488,4 @@ public class Compiler {
         }
         return s;
     }
-
-    // "foo" -> bytecodeFromString("foo") -> "S3 N102 N111 N111 "
-
-    // S<string length> <string as nums>
 }

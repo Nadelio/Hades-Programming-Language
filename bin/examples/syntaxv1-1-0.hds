@@ -1,0 +1,60 @@
+CDP ["examples/out.hds"] [out]
+CDP ["examples/STD.hds"] [initstd]
+
+CALL [initstd]
+
+CLB [foo]
+HOLD [foo]
+
+; check move label instructions ;
+MLB [3]
+WRT [2]
+MLP
+
+; check set label instruction ;
+SLB [10]
+JLB [foo]
+OUTN
+
+; check alt set label instruction ;
+WRT [90]
+MLB [3]
+SLV
+JLB [foo]
+OUTN
+
+DROP ; drop unused label ;
+
+; Write Data Dump ;
+WDD ["foo" 1 foo]
+RDP
+WTV
+OUTR [foo 10] ; print out "foo ?" ;
+
+DLB [foo] ; free foo label ;
+
+; Data Structure ;
+DS ["foo"] [foostr]
+WDD [foostr]
+JLB [foostr]
+LOOP [
+    OUT
+    INCP
+]
+
+; function macro ;
+FUNC [setZero] [
+    WRT [0]
+]
+CALL [setZero]
+
+; I/O instructions ;
+OUTV [111] ; o ;
+
+INV
+OUT
+
+INS
+CALL [print]
+
+;! need to test FSO, FSC, RFF, WTF, SWM instructions !;
