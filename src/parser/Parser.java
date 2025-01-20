@@ -519,6 +519,7 @@ public class Parser {
      * @param types
      * @return {@link Boolean}
      */
+    @SuppressWarnings("unused")
     private boolean matchMultiple(Token.TokenType[] input, Token.TokenType... types){
         for(Token.TokenType type : types){
             if(Stream.of(input).anyMatch(t -> !t.equals(type))){ return false; }
@@ -532,6 +533,7 @@ public class Parser {
      * @param types
      * @return {@link Boolean}
      */
+    @SuppressWarnings("unused")
     private boolean matchPattern(Token.TokenType[] input, Token.TokenType... types){
         if(input.length != types.length){ return false; }
         return IntStream.range(0, input.length).allMatch(i -> input[i].equals(types[i]));
