@@ -28,6 +28,7 @@ public class HadesInterpreter {
     public HashMap<String, File> functions = new HashMap<String, File>();
     public int[] memory = new int[65536];
     public int[] stack = new int[256];
+    public Label heldLabel;
     public int stackPtr = 0;
     public int ptr = 0;
     public int ptrVal = 0;
@@ -129,6 +130,43 @@ public class HadesInterpreter {
             case LOOP:
                 LoopCommand loop = (LoopCommand) cmd;
                 return this.loop(loop);
+            case HOLD:
+                UnaryCommand hold = (UnaryCommand) cmd;
+                return this.hold(hold);
+            case DROP:
+                return this.drop();
+            case MOVEHELDLABELPOSITION:
+                UnaryCommand mlb = (UnaryCommand) cmd;
+                return this.moveHeldLabelPosition(mlb);
+            case READTOHELDLABELPOSITION:
+                return this.readToHeldLabelPosition();
+            case SETHELDLABELVALUE:
+                UnaryCommand slb = (UnaryCommand) cmd;
+                return this.setHeldLabelValue(slb);
+            case READTOHELDLABELVALUE:
+                return this.readToHeldLabelValue();
+            case FUNCTIONMACRO:
+                BinaryCommand func = (BinaryCommand) cmd;
+                return Result.Error(Result.Errors.NONEXISTENT_FUNCTION, "The instruction: FUNC [] [] at position: " + pos + " is not yet implemented.");
+            case OUTNUMBER:
+                System.out.print(memory[ptr]);
+                return Result.Success();
+            case OUTVALUE:
+                UnaryCommand outValue = (UnaryCommand) cmd;
+                System.out.print((char) Integer.parseInt(outValue.getField()[1].getLiteral()));
+                return Result.Success();
+            case OUTRANGE:
+                UnaryCommand outRange = (UnaryCommand) cmd;
+                try{
+                    int start = Integer.parseInt(outRange.getField()[1].getLiteral());
+                    int end = Integer.parseInt(outRange.getField()[2].getLiteral());
+                    for(int i = start; i <= end; i++){ System.out.print((char) memory[i]); }
+                    return Result.Success();
+                } catch(Exception e){
+                    return Result.Error(Result.Errors.INVALID_VALUE, outRange.getField()[1].getLiteral() + " or " + outRange.getField()[2].getLiteral() + " at position: " + pos);
+                }
+            case INVALUE:
+                return Result.Error(Result.Errors.INVALID_COMMAND, "The instruction: INV at position: " + pos + " is not yet implemented.");
             case COMMENT:
             case END:
             case EOF:
@@ -377,5 +415,51 @@ public class HadesInterpreter {
             Result r = this.interpretCommand(c);
             if(!r.getSuccess()){ r.handleError(); }
         }
+    }
+
+    private Result hold(UnaryCommand cmd){
+        if(!labels.containsKey(cmd.getField()[1].getLiteral())){
+            return Result.Error(Result.Errors.NONEXISTENT_LABEL, cmd.getField()[1].getLiteral() + Constants.ANSI_ERROR + " at position: " + Constants.ANSI_INFO + pos);
+        }
+        String label = cmd.getField()[1].getLiteral();
+        heldLabel = new Label(label, labels.get(label));
+        return Result.Success();
+    }
+
+    private Result drop(){
+        heldLabel = null;
+        return Result.Success();
+    }
+
+    private Result moveHeldLabelPosition(UnaryCommand cmd){
+        if(heldLabel == null){
+            return Result.Error(Result.Errors.NO_HELD_LABEL, Constants.ANSI_ERROR + " at position: " + Constants.ANSI_INFO + pos);
+        }
+        heldLabel.address = Integer.parseInt(cmd.getField()[1].getLiteral());
+        return Result.Success();
+    }
+
+    private Result readToHeldLabelPosition(){
+        if(heldLabel == null){
+            return Result.Error(Result.Errors.NO_HELD_LABEL, Constants.ANSI_ERROR + " at position: " + Constants.ANSI_INFO + pos);
+        }
+        heldLabel.address = memory[ptr];
+        return Result.Success();
+    }
+
+    private Result setHeldLabelValue(UnaryCommand cmd){
+        if(heldLabel == null){
+            return Result.Error(Result.Errors.NO_HELD_LABEL, Constants.ANSI_ERROR + " at position: " + Constants.ANSI_INFO + pos);
+        }
+        memory[heldLabel.address] = Integer.parseInt(cmd.getField()[1].getLiteral());
+        return Result.Success();
+    }
+
+    private Result readToHeldLabelValue(){
+        if(heldLabel == null){
+            return Result.Error(Result.Errors.NO_HELD_LABEL, Constants.ANSI_ERROR + " at position: " + Constants.ANSI_INFO + pos);
+        }
+        memory[heldLabel.address] = memory[ptr];
+        return Result.Success();
     }
 }

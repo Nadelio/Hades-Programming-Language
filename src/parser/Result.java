@@ -15,7 +15,8 @@ public class Result {
         INVALID_FILE(Constants.ANSI_ERROR + "Invalid file:" + Constants.ANSI_RESET),
         FILE_NOT_FOUND(Constants.ANSI_ERROR + "Cannot find file:" + Constants.ANSI_RESET),
         SYNTAX_ERROR(Constants.ANSI_ERROR + "Syntax error:" + Constants.ANSI_RESET),
-        LOOPED_DEPENDENCY_SET(Constants.ANSI_ERROR + "Looped dependency set:" + Constants.ANSI_RESET);
+        LOOPED_DEPENDENCY_SET(Constants.ANSI_ERROR + "Looped dependency set:" + Constants.ANSI_RESET),
+        NO_HELD_LABEL(Constants.ANSI_ERROR + "No held label:" + Constants.ANSI_RESET);
 
         private String errmsg;
         private Errors(String errmsg) { this.errmsg = errmsg; }
