@@ -1,6 +1,3 @@
 WDD ["Hello, World!"]
-LOOP [
-    OUT
-    INCP
-]
+OUTR[0 12]
 HLT
