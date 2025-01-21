@@ -85,9 +85,15 @@ HLT
 Using functions in Hades:
 ```nasm
 CDP [someFile.eBin] [foo] ; create function from file "someFile.eBin" and call it "foo" ;
-; for ePU development ;
-CDP [0 0] [foo] ; create function from position in ROM, follows [X Y] format;
+
+CDP [0 0] [baz] ; create function from position in ROM, follows [X Y] format (ePU branch only) ;
+
+FUNC [bar] [ ; create a function in current program called "bar" ;
+  ; something here ;
+]
 CALL [foo] ; run "foo" function ;
+CALL [baz] ; run "baz" function ;
+CALL [bar] ; run "bar" function ;
 ; end program ;
 HLT
 ```
@@ -96,11 +102,9 @@ Using Syscalls in Hades (ePU only):
 ; syscalls always need 5 parameters, they can be labels or numbers ;
 SYS [14 0 0 0 0] ; print to terminal syscall ;
 
-CLB[zero]
-INCP
-CLB [foo]
+CLB [print]
 WRT [14]
-SYS [foo zero zero zero zero] ; print to terminal syscall but using labels called "foo" and "zero" ;
+SYS [print 0 0 0 0] ; print to terminal syscall but using label called "print" ;
 
 ; check the ePUx32 syscall documentation for help on the syscall arguments ;
 
