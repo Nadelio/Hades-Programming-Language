@@ -168,12 +168,12 @@ public class Parser {
                 return new UnaryCommand(Token.TokenType.WRITEDATADUMP, field1);
             case FILESTREAMCLOSE:
                 patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARG, Token.BuilderTypes.SINGLE};
-                pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.STRING, Token.TokenType.ALIAS, Token.TokenType.RBRACKET};
+                pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.STRING, Token.TokenType.RBRACKET};
                 field1 = this.buildPatternedField(patternSemantics, pattern);
                 return new UnaryCommand(Token.TokenType.FILESTREAMCLOSE, field1);
             case FILESTREAMOPEN:
                 patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARG, Token.BuilderTypes.SINGLE};
-                pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.STRING, Token.TokenType.ALIAS, Token.TokenType.RBRACKET};
+                pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.STRING, Token.TokenType.RBRACKET};
                 field1 = this.buildPatternedField(patternSemantics, pattern);
                 pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.ALIAS, Token.TokenType.NUMBER, Token.TokenType.RBRACKET};
                 field2 = this.buildPatternedField(patternSemantics, pattern);
@@ -185,14 +185,14 @@ public class Parser {
                 return new UnaryCommand(Token.TokenType.SETWRITEMODE, field1);
             case READFROMFILE:
                 patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARG, Token.BuilderTypes.SINGLE};
-                pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.STRING, Token.TokenType.ALIAS, Token.TokenType.RBRACKET};
+                pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.STRING, Token.TokenType.RBRACKET};
                 field1 = this.buildPatternedField(patternSemantics, pattern);
                 pattern = new TokenType[]{Token.TokenType.LBRACKET, Token.TokenType.ALIAS, Token.TokenType.NUMBER, Token.TokenType.RBRACKET};
                 field2 = this.buildPatternedField(patternSemantics, pattern);
                 return new BinaryCommand(Token.TokenType.READFROMFILE, field1, field2);
             case WRITETOFILE: // binary instruction // takes in string/struct alias and a label/int
                 patternSemantics = new Token.BuilderTypes[]{Token.BuilderTypes.SINGLE, Token.BuilderTypes.BIVARARG, Token.BuilderTypes.SINGLE};
-                pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.STRING, Token.TokenType.ALIAS, Token.TokenType.RBRACKET};
+                pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.STRING, Token.TokenType.RBRACKET};
                 field1 = this.buildPatternedField(patternSemantics, pattern);
                 pattern = new Token.TokenType[] {Token.TokenType.LBRACKET, Token.TokenType.ALIAS, Token.TokenType.NUMBER, Token.TokenType.RBRACKET};
                 field2 = this.buildPatternedField(patternSemantics, pattern);

@@ -37,18 +37,18 @@ public class Token {
         READTOHELDLABELVALUE,
         FUNCTIONMACRO, // binary
         OUTNUMBER, 
-        OUTVALUE, // unary
-        OUTRANGE, // unary (double arg)
+        OUTVALUE,
+        OUTRANGE,
         INVALUE,
         INSTRING,
-        SETWRITEMODE, // unary
-        // can take in STRING or STRUCT ALIAS type
-        WRITEDATADUMP, // unary
-        CREATEDATASTRUCTURE, // unary
-        FILESTREAMOPEN, // takes in a string/struct alias and a int/label
-        FILESTREAMCLOSE, // takes in string/struct alias and a label/int
-        READFROMFILE, // takes in string/struct alias and a label/int
-        WRITETOFILE,  // takes in string/struct alias and a label/int
+        SETWRITEMODE,
+        // can take in STRING type
+        WRITEDATADUMP,
+        CREATEDATASTRUCTURE, 
+        FILESTREAMOPEN,
+        FILESTREAMCLOSE, // takes in string and a label/int
+        READFROMFILE, // takes in string and a label/int
+        WRITETOFILE,  // takes in string and a label/int
         
         // non-instructions
         ALIAS,

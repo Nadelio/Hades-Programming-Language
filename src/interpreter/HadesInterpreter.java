@@ -1,6 +1,8 @@
 package src.interpreter;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -26,12 +28,17 @@ public class HadesInterpreter {
     // interpreter variables
     public HashMap<String, Integer> labels = new HashMap<String, Integer>();
     public HashMap<String, File> functions = new HashMap<String, File>();
+    public HashMap<String, Token[]> structures = new HashMap<String, Token[]>();
     public int[] memory = new int[65536];
     public int[] stack = new int[256];
     public Label heldLabel;
     public int stackPtr = 0;
     public int ptr = 0;
     public int ptrVal = 0;
+    private Scanner sc;
+    private boolean writemode = false;
+    private FileInputStream fileinputstream;
+    private FileOutputStream fileoutputstream;
 
     public HadesInterpreter(ASTC ast) {
         this.ast = ast;
@@ -81,7 +88,7 @@ public class HadesInterpreter {
                 System.out.print((char) memory[ptr]);
                 return Result.Success();
             case IN:
-                Scanner sc = new Scanner(System.in);
+                sc = new Scanner(System.in);
                 int val = (int) sc.next().charAt(0);
                 sc.close();
                 this.memory[ptr] = val;
@@ -166,7 +173,61 @@ public class HadesInterpreter {
                     return Result.Error(Result.Errors.INVALID_VALUE, outRange.getField()[1].getLiteral() + " or " + outRange.getField()[2].getLiteral() + " at position: " + pos);
                 }
             case INVALUE:
-                return Result.Error(Result.Errors.INVALID_COMMAND, "The instruction: INV at position: " + pos + " is not yet implemented.");
+                sc = new Scanner(System.in);
+                memory[ptr] = sc.nextInt();
+                sc.close();
+                return Result.Success();
+            case INSTRING:
+                sc = new Scanner(System.in);
+                String str = sc.nextLine();
+                for(int i = 0; i < str.length(); i++){
+                    memory[ptr + i] = (int) str.charAt(i);
+                }
+                sc.close();
+                return Result.Success();
+            case SETWRITEMODE:
+                UnaryCommand swm = (UnaryCommand) cmd;
+                if(swm.getField()[1].getLiteral().equals("0")){
+                    writemode = false;
+                    return Result.Success();
+                } else {
+                    writemode = true;
+                    return Result.Success();
+                }
+            case WRITEDATADUMP:
+                UnaryCommand wdd = (UnaryCommand) cmd;
+                return writeDataDump(wdd);
+            case CREATEDATASTRUCTURE:
+                UnaryCommand cds = (UnaryCommand) cmd;
+                return createDataStructure(cds);
+            case FILESTREAMOPEN:
+                BinaryCommand fso = (BinaryCommand) cmd;
+                boolean mode = false;
+                switch(fso.getField2()[1].getType()){
+                    case NUMBER:
+                        mode = Integer.parseInt(fso.getField2()[1].getLiteral()) >= 1 ? true : false;
+                        break;
+                    case ALIAS:
+                        mode = memory[labels.get(fso.getField2()[1].getLiteral())] >= 1 ? true : false;
+                        break;
+                    default:
+                        return Result.Error(Result.Errors.INVALID_VALUE, "Invalid input: " + fso.getField2()[1].getLiteral() + " at position: " + pos + " is not yet implemented.");
+                }
+                if(mode){
+                    try{fileoutputstream = new FileOutputStream(fso.getField1()[1].getLiteral());}catch(Exception e){return Result.Error(Result.Errors.FILE_NOT_FOUND, fso.getField1()[1].getLiteral() + " at position: " + pos);}
+                } else {
+                    try{fileinputstream = new FileInputStream(fso.getField1()[1].getLiteral());}catch(Exception e){return Result.Error(Result.Errors.FILE_NOT_FOUND, fso.getField1()[1].getLiteral() + " at position: " + pos);}
+                }
+                return Result.Success();
+            case FILESTREAMCLOSE:
+                BinaryCommand fsc = (BinaryCommand) cmd;
+                return Result.Error(Result.Errors.INVALID_COMMAND, "The instruction: FSC at position: " + pos + " is not yet implemented.");
+            case READFROMFILE:
+                BinaryCommand rff = (BinaryCommand) cmd;
+                return Result.Error(Result.Errors.INVALID_COMMAND, "The instruction: RFF at position: " + pos + " is not yet implemented.");
+            case WRITETOFILE:
+                BinaryCommand wtf = (BinaryCommand) cmd;
+                return Result.Error(Result.Errors.INVALID_COMMAND, "The instruction: WTF at position: " + pos + " is not yet implemented.");
             case COMMENT:
             case END:
             case EOF:
@@ -460,6 +521,73 @@ public class HadesInterpreter {
             return Result.Error(Result.Errors.NO_HELD_LABEL, Constants.ANSI_ERROR + " at position: " + Constants.ANSI_INFO + pos);
         }
         memory[heldLabel.address] = memory[ptr];
+        return Result.Success();
+    }
+
+    private Result writeDataDump(UnaryCommand cmd){
+        Token[] field = cmd.getField();
+        Token[] field1 = new Token[field.length - 2];
+        for(int i = 1; i < field.length - 1; i++){ field1[i - 1] = field[i]; }
+        int origin = ptr;
+        int writeIndex = 0;
+        for(int i = 0; i < field1.length; i++){
+            switch(field1[i].getType()){
+                case NUMBER:
+                    memory[origin + writeIndex++] = Integer.parseInt(field1[i].getLiteral());
+                    break;
+                case STRING:
+                    for(int j = 0; j < field1[i].getLiteral().length(); j++){
+                        memory[origin + writeIndex++] = (int) field1[i].getLiteral().charAt(j);
+                    }
+                    break;
+                case ALIAS:
+                    if(structures.containsKey(field1[i].getLiteral())){
+                        writeIndex = writeDataStructure(field1[i].getLiteral(), writeIndex, origin);
+                    } else if(labels.containsKey(field1[i].getLiteral())){
+                        memory[origin + writeIndex++] = memory[labels.get(field1[i].getLiteral())];
+                    } else {
+                        return Result.Error(Result.Errors.NONEXISTENT_LABEL, field1[i].getLiteral() + " at position: " + pos);
+                    }
+                    break;
+                default:
+                    return Result.Error(Result.Errors.INVALID_VALUE, field1[i].getLiteral() + " at position: " + pos);
+            }
+        }
+        return Result.Success();
+    }
+
+    private int writeDataStructure(String alias, int offset, int origin){
+        Token[] data = structures.get(alias);
+        for(Token t : data){
+            switch(t.getType()){
+                case NUMBER:
+                    memory[origin + offset++] = Integer.parseInt(t.getLiteral());
+                    break;
+                case STRING:
+                    for(int j = 0; j < t.getLiteral().length(); j++){
+                        memory[origin + offset++] = (int) t.getLiteral().charAt(j);
+                    }
+                    break;
+                case ALIAS:
+                    if(structures.containsKey(t.getLiteral())){
+                        offset = writeDataStructure(t.getLiteral(), offset, origin);
+                    } else if(labels.containsKey(t.getLiteral())){
+                        memory[origin + offset++] = memory[labels.get(t.getLiteral())];
+                    } else {
+                        throw new IllegalArgumentException("Non-existent label in data structure: " + t.getLiteral());
+                    }
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid token type in data structure: " + t.getLiteral());
+            }
+        }
+        return offset;
+    }
+
+    private Result createDataStructure(UnaryCommand cmd){
+        Token[] field = new Token[cmd.getField().length - 2];
+        for(int i = 1; i < cmd.getField().length - 1; i++){ field[i - 1] = cmd.getField()[i]; }
+        structures.put(cmd.getField()[1].getLiteral(), field);
         return Result.Success();
     }
 }
