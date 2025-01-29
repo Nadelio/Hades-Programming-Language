@@ -123,7 +123,7 @@ public class eBinInterpreter {
                     return Result.Success();
                 case 10: // CDP [F]
                     this.progPos++;
-                    if (this.eBinCommands[this.progPos] instanceof eBinFile) {
+                    if (this.eBinCommands[this.progPos] instanceof eBinString) {
                         File f = new File(this.eBinCommands[this.progPos].getLiteral());
                         if (!f.exists()) {
                             return Result.Error(Result.Errors.FILE_NOT_FOUND, this.eBinCommands[this.progPos].getLiteral() + " at position: " + this.progPos);
@@ -299,8 +299,11 @@ public class eBinInterpreter {
                     new eBinNumber(command.substring(1));
             case 'C' -> // comparisons
                     new eBinComparison(command.substring(1));
-            case 'D' -> // files //! Delete this and replace with eBinString
-                    new eBinFile(command.substring(1));
+            case 'S' -> { // strings
+                    int length = Integer.parseInt(command.substring(1));
+                    String str = eBinString.buildString(commands, progPos + 1, length);
+                    yield new eBinString(length, str);
+            }
             default -> // instructions
                     new eBinInstruction(command);
         };
