@@ -17,6 +17,7 @@ import src.parser.Result;
 import src.parser.Token;
 import src.parser.UnaryCommand;
 import src.util.Constants;
+import src.util.HadesFileStream;
 
 public class HadesInterpreter {
     // ast tree variables
@@ -36,9 +37,8 @@ public class HadesInterpreter {
     public int ptr = 0;
     public int ptrVal = 0;
     private Scanner sc;
-    private boolean writemode = false;
-    private FileInputStream fileinputstream;
-    private FileOutputStream fileoutputstream;
+    private HashMap<String, HadesFileStream> fsmap = new HashMap<String, HadesFileStream>();
+    public boolean writeMode = false;
 
     public HadesInterpreter(ASTC ast) {
         this.ast = ast;
@@ -188,10 +188,10 @@ public class HadesInterpreter {
             case SETWRITEMODE:
                 UnaryCommand swm = (UnaryCommand) cmd;
                 if(swm.getField()[1].getLiteral().equals("0")){
-                    writemode = false;
+                    writeMode = false;
                     return Result.Success();
                 } else {
-                    writemode = true;
+                    writeMode = true;
                     return Result.Success();
                 }
             case WRITEDATADUMP:
@@ -211,23 +211,93 @@ public class HadesInterpreter {
                         mode = memory[labels.get(fso.getField2()[1].getLiteral())] >= 1 ? true : false;
                         break;
                     default:
-                        return Result.Error(Result.Errors.INVALID_VALUE, "Invalid input: " + fso.getField2()[1].getLiteral() + " at position: " + pos + " is not yet implemented.");
+                        return Result.Error(Result.Errors.INVALID_VALUE, "Invalid input: " + fso.getField2()[1].getLiteral() + " at position: " + pos + ".");
                 }
-                if(mode){
-                    try{fileoutputstream = new FileOutputStream(fso.getField1()[1].getLiteral());}catch(Exception e){return Result.Error(Result.Errors.FILE_NOT_FOUND, fso.getField1()[1].getLiteral() + " at position: " + pos);}
-                } else {
-                    try{fileinputstream = new FileInputStream(fso.getField1()[1].getLiteral());}catch(Exception e){return Result.Error(Result.Errors.FILE_NOT_FOUND, fso.getField1()[1].getLiteral() + " at position: " + pos);}
-                }
+                fsmap.put(fso.getField1()[1].getLiteral(), new HadesFileStream(fso.getField1()[1].getLiteral(), mode));
                 return Result.Success();
             case FILESTREAMCLOSE:
-                BinaryCommand fsc = (BinaryCommand) cmd;
-                return Result.Error(Result.Errors.INVALID_COMMAND, "The instruction: FSC at position: " + pos + " is not yet implemented.");
+                UnaryCommand fsc = (UnaryCommand) cmd;
+                if(fsmap.containsKey(fsc.getField()[1].getLiteral())){
+                    fsmap.remove(fsc.getField()[1].getLiteral());
+                    return Result.Success();
+                } else {
+                    return Result.Error(Result.Errors.FILE_NOT_FOUND, fsc.getField()[1].getLiteral() + " at position: " + pos);
+                }
             case READFROMFILE:
                 BinaryCommand rff = (BinaryCommand) cmd;
-                return Result.Error(Result.Errors.INVALID_COMMAND, "The instruction: RFF at position: " + pos + " is not yet implemented.");
+                if(fsmap.containsKey(rff.getField1()[1].getLiteral())){
+                    HadesFileStream fs = fsmap.get(rff.getField1()[1].getLiteral());
+                    
+                    if(fs.getMode()){
+                        return Result.Error(Result.Errors.INVALID_FILE_STREAM_MODE, rff.getField1()[1].getLiteral() + " at position: " + pos);
+                    }
+
+                    int readIndex;
+                    int dist;
+
+                    if(rff.getField2()[1].getType().equals(Token.TokenType.NUMBER)){
+                        readIndex = Integer.parseInt(rff.getField2()[1].getLiteral());
+                    } else if(rff.getField2()[1].getType().equals(Token.TokenType.ALIAS)){
+                        readIndex = memory[labels.get(rff.getField2()[1].getLiteral())];
+                    } else {
+                        return Result.Error(Result.Errors.INVALID_VALUE, rff.getField2()[1].getLiteral() + " or " + rff.getField2()[2].getLiteral() + " at position: " + pos);
+                    }
+
+                    if(rff.getField2()[2].getType().equals(Token.TokenType.NUMBER)){
+                        dist = Integer.parseInt(rff.getField2()[2].getLiteral());
+                    } else if(rff.getField2()[2].getType().equals(Token.TokenType.ALIAS)){
+                        dist = memory[labels.get(rff.getField2()[2].getLiteral())];
+                    } else {
+                        return Result.Error(Result.Errors.INVALID_VALUE, rff.getField2()[1].getLiteral() + " or " + rff.getField2()[2].getLiteral() + " at position: " + pos);
+                    }
+                    
+                    memory[readIndex] = (int) fs.readCharAtPosition(dist);
+
+                    fs = null;
+                } else {
+                    return Result.Error(Result.Errors.FILE_NOT_FOUND, rff.getField1()[1].getLiteral() + " at position: " + pos);
+                }
+
+                return Result.Success();
             case WRITETOFILE:
                 BinaryCommand wtf = (BinaryCommand) cmd;
-                return Result.Error(Result.Errors.INVALID_COMMAND, "The instruction: WTF at position: " + pos + " is not yet implemented.");
+                if(fsmap.containsKey(wtf.getField1()[1].getLiteral())){
+                    HadesFileStream fs = fsmap.get(wtf.getField1()[1].getLiteral());
+
+                    if(!fs.getMode()){
+                        return Result.Error(Result.Errors.INVALID_FILE_STREAM_MODE, wtf.getField1()[1].getLiteral() + " at position: " + pos);
+                    }
+
+                    int writeIndex;
+                    int value;
+
+                    if(wtf.getField2()[1].getType().equals(Token.TokenType.NUMBER)){
+                        writeIndex = Integer.parseInt(wtf.getField2()[1].getLiteral());
+                    } else if(wtf.getField2()[1].getType().equals(Token.TokenType.ALIAS)){
+                        writeIndex = memory[labels.get(wtf.getField2()[1].getLiteral())];
+                    } else {
+                        return Result.Error(Result.Errors.INVALID_VALUE, wtf.getField2()[1].getLiteral() + " at position: " + pos);
+                    }
+
+                    if(wtf.getField2()[2].getType().equals(Token.TokenType.NUMBER)){
+                        value = Integer.parseInt(wtf.getField2()[2].getLiteral());
+                    } else if(wtf.getField2()[2].getType().equals(Token.TokenType.ALIAS)){
+                        value = memory[labels.get(wtf.getField2()[2].getLiteral())];
+                    } else {
+                        return Result.Error(Result.Errors.INVALID_VALUE, wtf.getField2()[2].getLiteral() + " at position: " + pos);
+                    }
+
+                    if(writeMode){
+                        fs.writeCharAtPosition(writeIndex, (char) value);
+                    } else {
+                        fs.writeNumberAtPosition(writeIndex, value);
+                    }
+
+                    fs = null;
+                } else {
+                    return Result.Error(Result.Errors.FILE_NOT_FOUND, wtf.getField1()[1].getLiteral() + " at position: " + pos);
+                }
+                return Result.Success();
             case COMMENT:
             case END:
             case EOF:
