@@ -120,7 +120,7 @@ public class eBFInterpreter {
                 return Result.Success();
             case "DPND":
                 File f = new File(this.commands[this.progPos + 1]);
-                this.caller.functions.put(this.commands[this.progPos + 2], f);
+                this.caller.externalFunctions.put(this.commands[this.progPos + 2], f);
                 this.progPos += 2;
                 return Result.Success();
             case "%":

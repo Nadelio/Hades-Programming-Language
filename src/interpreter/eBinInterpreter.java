@@ -129,7 +129,7 @@ public class eBinInterpreter {
                             return Result.Error(Result.Errors.FILE_NOT_FOUND, this.eBinCommands[this.progPos].getLiteral() + " at position: " + this.progPos);
                         }
                         this.progPos++;
-                        this.caller.functions.put(this.eBinCommands[this.progPos].getLiteral(), f);
+                        this.caller.externalFunctions.put(this.eBinCommands[this.progPos].getLiteral(), f);
                         return Result.Success();
                     } else {
                         return Result.Error(Result.Errors.INVALID_COMMAND, this.eBinCommands[this.progPos] + " at position: " + this.progPos);
@@ -222,7 +222,7 @@ public class eBinInterpreter {
                     }
                     this.progPos++;
                     if (this.eBinCommands[this.progPos] instanceof eBinFunction) {
-                        if (this.caller.functions.containsKey(this.eBinCommands[this.progPos].getLiteral())) {
+                        if (this.caller.externalFunctions.containsKey(this.eBinCommands[this.progPos].getLiteral())) {
                             switch (comparison) {
                                 case 0:
                                     if (firstVal != secondVal) {

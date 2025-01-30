@@ -1,21 +1,11 @@
 package src.interpreter;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Scanner;
 
 import src.Main;
-import src.parser.ASTC;
-import src.parser.BinaryCommand;
-import src.parser.Command;
-import src.parser.Lexer;
-import src.parser.LoopCommand;
-import src.parser.Parser;
-import src.parser.Result;
-import src.parser.Token;
-import src.parser.UnaryCommand;
+import src.parser.*;
 import src.util.Constants;
 import src.util.HadesFileStream;
 
@@ -28,7 +18,8 @@ public class HadesInterpreter {
 
     // interpreter variables
     public HashMap<String, Integer> labels = new HashMap<String, Integer>();
-    public HashMap<String, File> functions = new HashMap<String, File>();
+    public HashMap<String, File> externalFunctions = new HashMap<String, File>();
+    public HashMap<String, Command[]> functions = new HashMap<String, Command[]>();
     public HashMap<String, Token[]> structures = new HashMap<String, Token[]>();
     public int[] memory = new int[65536];
     public int[] stack = new int[256];
@@ -153,10 +144,9 @@ public class HadesInterpreter {
             case READTOHELDLABELVALUE:
                 return this.readToHeldLabelValue();
             case FUNCTIONMACRO:
-                BinaryCommand func = (BinaryCommand) cmd;
-                //! NEED TO DO
-                //TODO: pls implement
-                return Result.Error(Result.Errors.NONEXISTENT_FUNCTION, "The instruction: FUNC [] [] at position: " + pos + " is not yet implemented.");
+                FunctionMacroCommand func = (FunctionMacroCommand) cmd;
+                functions.put(func.getName()[1].getLiteral(), func.getBody());
+                return Result.Success();
             case OUTNUMBER:
                 System.out.print(memory[ptr]);
                 return Result.Success();
@@ -167,8 +157,8 @@ public class HadesInterpreter {
             case OUTRANGE:
                 UnaryCommand outRange = (UnaryCommand) cmd;
                 try{
-                    int start = Integer.parseInt(outRange.getField()[1].getLiteral());
-                    int end = Integer.parseInt(outRange.getField()[2].getLiteral());
+                    int start = valueFromLabelOrNumber(outRange.getField()[1]);
+                    int end = valueFromLabelOrNumber(outRange.getField()[2]);
                     for(int i = start; i <= end; i++){ System.out.print((char) memory[i]); }
                     return Result.Success();
                 } catch(Exception e){
@@ -189,7 +179,8 @@ public class HadesInterpreter {
                 return Result.Success();
             case SETWRITEMODE:
                 UnaryCommand swm = (UnaryCommand) cmd;
-                if(swm.getField()[1].getLiteral().equals("0")){
+                int value = valueFromLabelOrNumber(swm.getField()[1]);
+                if(value == 0){
                     writeMode = false;
                     return Result.Success();
                 } else {
@@ -271,7 +262,7 @@ public class HadesInterpreter {
                     }
 
                     int writeIndex;
-                    int value;
+                    int writeValue;
 
                     if(wtf.getField2()[1].getType().equals(Token.TokenType.NUMBER)){
                         writeIndex = Integer.parseInt(wtf.getField2()[1].getLiteral());
@@ -282,17 +273,17 @@ public class HadesInterpreter {
                     }
 
                     if(wtf.getField2()[2].getType().equals(Token.TokenType.NUMBER)){
-                        value = Integer.parseInt(wtf.getField2()[2].getLiteral());
+                        writeValue = Integer.parseInt(wtf.getField2()[2].getLiteral());
                     } else if(wtf.getField2()[2].getType().equals(Token.TokenType.ALIAS)){
-                        value = memory[labels.get(wtf.getField2()[2].getLiteral())];
+                        writeValue = memory[labels.get(wtf.getField2()[2].getLiteral())];
                     } else {
                         return Result.Error(Result.Errors.INVALID_VALUE, wtf.getField2()[2].getLiteral() + " at position: " + pos);
                     }
 
                     if(writeMode){
-                        fs.writeCharAtPosition(writeIndex, (char) value);
+                        fs.writeCharAtPosition(writeIndex, (char) writeValue);
                     } else {
-                        fs.writeNumberAtPosition(writeIndex, value);
+                        fs.writeNumberAtPosition(writeIndex, writeValue);
                     }
 
                     fs = null;
@@ -311,7 +302,7 @@ public class HadesInterpreter {
 
     private Result move(UnaryCommand cmd){
         try{
-            int val = Integer.parseInt(cmd.getField()[1].getLiteral());
+            int val = valueFromLabelOrNumber(cmd.getField()[1]);
             this.ptr = val;
             return Result.Success();
         } catch(Exception e){
@@ -321,7 +312,7 @@ public class HadesInterpreter {
 
     private Result set(UnaryCommand cmd){
         try{
-            int val = Integer.parseInt(cmd.getField()[1].getLiteral());
+            int val = valueFromLabelOrNumber(cmd.getField()[1]);
             this.ptrVal = val;
             return Result.Success();
         } catch(Exception e){
@@ -331,7 +322,7 @@ public class HadesInterpreter {
 
     private Result write(UnaryCommand cmd){
         try{
-            int val = Integer.parseInt(cmd.getField()[1].getLiteral());
+            int val = valueFromLabelOrNumber(cmd.getField()[1]);
             this.memory[ptr] = val;
             return Result.Success();
         } catch(Exception e){
@@ -404,8 +395,8 @@ public class HadesInterpreter {
     }
 
     public Result callFunction(String funcName){
-        if(this.functions.containsKey(funcName)){
-            File file = this.functions.get(funcName);
+        if(this.externalFunctions.containsKey(funcName)){
+            File file = this.externalFunctions.get(funcName);
 
             if(file.getName().endsWith(".hds")){
                 String fileData = "";
@@ -438,6 +429,10 @@ public class HadesInterpreter {
                 return Result.Error(Result.Errors.INVALID_FILE, file.getName() + " at position: " + pos);
             }
 
+        } else if(this.functions.containsKey(funcName)){
+            Command[] body = this.functions.get(funcName);
+            this.subinterpret(body);
+            return Result.Success();
         } else {
             return Result.Error(Result.Errors.NONEXISTENT_FUNCTION, funcName + " at position: " + pos);
         }
@@ -526,7 +521,7 @@ public class HadesInterpreter {
         File f = new File(cmd.getField1()[1].getLiteral() + cmd.getField1()[2].getLiteral() + cmd.getField1()[3].getLiteral());
         if(!f.exists()){return Result.Error(Result.Errors.FILE_NOT_FOUND, cmd.getField1()[1].getLiteral() + cmd.getField1()[2].getLiteral() + cmd.getField1()[3].getLiteral() + Constants.ANSI_ERROR + " at position: " + Constants.ANSI_INFO + pos);}
         String alias = cmd.getField2()[1].getLiteral();
-        functions.put(alias, f);
+        externalFunctions.put(alias, f);
         return Result.Success();
     }
 
@@ -568,7 +563,8 @@ public class HadesInterpreter {
         if(heldLabel == null){
             return Result.Error(Result.Errors.NO_HELD_LABEL, Constants.ANSI_ERROR + " at position: " + Constants.ANSI_INFO + pos);
         }
-        heldLabel.address = Integer.parseInt(cmd.getField()[1].getLiteral());
+        int value = valueFromLabelOrNumber(cmd.getField()[1]);
+        heldLabel.address = value;
         return Result.Success();
     }
 
@@ -584,7 +580,8 @@ public class HadesInterpreter {
         if(heldLabel == null){
             return Result.Error(Result.Errors.NO_HELD_LABEL, Constants.ANSI_ERROR + " at position: " + Constants.ANSI_INFO + pos);
         }
-        memory[heldLabel.address] = Integer.parseInt(cmd.getField()[1].getLiteral());
+        int value = valueFromLabelOrNumber(cmd.getField()[1]);
+        memory[heldLabel.address] = value;
         return Result.Success();
     }
 
@@ -661,5 +658,19 @@ public class HadesInterpreter {
         for(int i = 1; i < cmd.getField().length - 1; i++){ field[i - 1] = cmd.getField()[i]; }
         structures.put(cmd.getField()[1].getLiteral(), field);
         return Result.Success();
+    }
+
+    private int valueFromLabelOrNumber(Token t){
+        if(t.getType() == Token.TokenType.NUMBER){
+            return Integer.parseInt(t.getLiteral());
+        } else if(t.getType() == Token.TokenType.ALIAS){
+            if(labels.containsKey(t.getLiteral())){
+                return memory[labels.get(t.getLiteral())];
+            } else {
+                throw new IllegalArgumentException("Non-existent label: " + t.getLiteral());
+            }
+        } else {
+            throw new IllegalArgumentException("Invalid token type: " + t.getLiteral());
+        }
     }
 }
