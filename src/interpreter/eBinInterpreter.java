@@ -2,6 +2,7 @@ package src.interpreter;
 
 import src.interpreter.eBin.*;
 import src.parser.Result;
+import src.parser.UnaryCommand;
 import src.util.Constants;
 
 import java.io.File;
@@ -47,7 +48,7 @@ public class eBinInterpreter {
     }
 
     private Result interpretCommand(eBinCommand command){
-        
+        Scanner sc;
         if (Objects.requireNonNull(command.getType()) == eBinCommand.Types.INSTRUCTION) {
             switch (command.getData()) {
                 case 0: // INCV
@@ -107,7 +108,7 @@ public class eBinInterpreter {
                     this.caller.memory[this.caller.ptr] = this.caller.ptrVal;
                     return Result.Success();
                 case 7: // IN
-                    Scanner sc = new Scanner(System.in);
+                    sc = new Scanner(System.in);
                     int val = (int) sc.next().charAt(0);
                     sc.close();
                     this.caller.memory[this.caller.ptr] = val;
@@ -309,14 +310,47 @@ public class eBinInterpreter {
                     System.out.print(this.caller.memory[this.caller.ptr]);
                     return Result.Success();
                 case 36: // OUTV [N/L]
+                    this.progPos++;
+                    System.out.print((char) valueFromLabelOrNumber(this.eBinCommands[this.progPos]));
+                    return Result.Success();
                 case 37: // OUTR [N/L N/L]
+                    this.progPos++;
+                    int start = valueFromLabelOrNumber(this.eBinCommands[this.progPos]);
+                    this.progPos++;
+                    int end = valueFromLabelOrNumber(this.eBinCommands[this.progPos]);
+                    for(int i = start; i <= end; i++){ System.out.print((char) this.caller.memory[i]); }
+                    return Result.Success();
                 case 38: // INV
+                    sc = new Scanner(System.in);
+                    this.caller.memory[this.caller.ptr] = sc.nextInt();
+                    sc.close();
+                    return Result.Success();
                 case 39: // INS
+                    sc = new Scanner(System.in);
+                    String str = sc.nextLine();
+                    for(int i = 0; i < str.length(); i++){
+                        this.caller.memory[this.caller.ptr + i] = (int) str.charAt(i);
+                    }
+                    sc.close();
+                    return Result.Success();
                 case 40: // SWM [N/L]
+                    this.progPos++;
+                    int mode = valueFromLabelOrNumber(this.eBinCommands[this.progPos]);
+                    if(mode == 0){
+                        this.caller.writeMode = false;
+                        return Result.Success();
+                    } else {
+                        this.caller.writeMode = true;
+                        return Result.Success();
+                    }
                 case 41: // WDD [
+                    //TODO: implement this pls
                 case 42: // ]
+                    // idk do some shit ig (probably just break/return Result.Success())
                 case 43: // DS [
+                    //TODO: implement this pls
                 case 44: // ] [L]
+                    // idk do some shit ig (probably just break/return Result.Success())
                 case 45: // FSO [S] [N/L]
                 case 46: // FSC [S]
                 case 47: // RFF [S] [N/L N/L]
