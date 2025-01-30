@@ -154,6 +154,8 @@ public class HadesInterpreter {
                 return this.readToHeldLabelValue();
             case FUNCTIONMACRO:
                 BinaryCommand func = (BinaryCommand) cmd;
+                //! NEED TO DO
+                //TODO: pls implement
                 return Result.Error(Result.Errors.NONEXISTENT_FUNCTION, "The instruction: FUNC [] [] at position: " + pos + " is not yet implemented.");
             case OUTNUMBER:
                 System.out.print(memory[ptr]);
