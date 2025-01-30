@@ -16,20 +16,22 @@ public class HadesInterpreter {
     private int readPos;
     private Command cmd;
 
-    // interpreter variables
+    // runtime variables
     public HashMap<String, Integer> labels = new HashMap<String, Integer>();
     public HashMap<String, File> externalFunctions = new HashMap<String, File>();
     public HashMap<String, Command[]> functions = new HashMap<String, Command[]>();
     public HashMap<String, Token[]> structures = new HashMap<String, Token[]>();
-    public int[] memory = new int[65536];
-    public int[] stack = new int[256];
+    private HashMap<String, HadesFileStream> fsmap = new HashMap<String, HadesFileStream>();
+    public int[] memory = new int[Integer.MAX_VALUE];
+    public int[] stack = new int[512];
     public Label heldLabel;
     public int stackPtr = 0;
     public int ptr = 0;
     public int ptrVal = 0;
-    private Scanner sc;
-    private HashMap<String, HadesFileStream> fsmap = new HashMap<String, HadesFileStream>();
     public boolean writeMode = false;
+
+    // interpreter variables
+    private Scanner sc;
 
     public HadesInterpreter(ASTC ast) {
         this.ast = ast;

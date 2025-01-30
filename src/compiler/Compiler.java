@@ -55,10 +55,10 @@ public class Compiler {
         "38", // INV
         "39", // INS
         "40", // SWM
-        "41", // WDD
+        "41", // WDD [
         "42", // ] (for WDD)
-        "43", // DS
-        "44", // ] (for DS)
+        "43", // DS [
+        "44", // ] [] (for DS)
         "45", // FSO
         "46", // FSC
         "47", // RFF

@@ -2,6 +2,7 @@ package src.interpreter;
 
 import src.interpreter.eBin.*;
 import src.parser.Result;
+import src.util.Constants;
 
 import java.io.File;
 import java.io.IOException;
@@ -166,9 +167,10 @@ public class eBinInterpreter {
                 case 18: // RDP
                     this.caller.ptrVal = this.caller.ptr;
                     return Result.Success();
-                case 19: // SET [N]
+                case 19: // SET [N/L]
                     this.progPos++;
-                    this.caller.ptrVal = this.eBinCommands[this.progPos].getData();
+                    int value = valueFromLabelOrNumber(this.eBinCommands[this.progPos]);
+                    this.caller.ptrVal = value;
                     return Result.Success();
                 case 20: // MOVDN
                     this.caller.ptr -= 255;
@@ -182,9 +184,9 @@ public class eBinInterpreter {
                         this.caller.ptr = this.caller.ptr - this.caller.memory.length;
                     }
                     return Result.Success();
-                case 22: // MOV [N]
+                case 22: // MOV [N/L]
                     this.progPos++;
-                    this.caller.ptr = this.eBinCommands[this.progPos].getData();
+                    this.caller.ptr = valueFromLabelOrNumber(this.eBinCommands[this.progPos]);
                     return Result.Success();
                 case 23: // INT [N/L C N/L] [F]
                     int firstVal;
@@ -267,13 +269,58 @@ public class eBinInterpreter {
                 case 24: // NOP
                     try { Thread.sleep(10); } catch (Exception e) { }
                     return Result.Success();
-                case 25: // WRT [N]
+                case 25: // WRT [N/L]
                     this.progPos++;
-                    this.caller.memory[this.caller.ptr] = this.eBinCommands[this.progPos].getData();
+                    this.caller.memory[this.caller.ptr] = valueFromLabelOrNumber(this.eBinCommands[this.progPos]);
                     return Result.Success();
                 case 26: // OUT
                     System.out.print((char) this.caller.memory[this.caller.ptr]);
                     return Result.Success();
+                case 27: // HOLD [L]
+                    this.progPos++;
+                    if(!this.caller.labels.containsKey(this.eBinCommands[this.progPos].getLiteral())){
+                        return Result.Error(Result.Errors.NONEXISTENT_LABEL, this.eBinCommands[this.progPos].getLiteral() + Constants.ANSI_ERROR + " at position: " + Constants.ANSI_INFO + this.progPos);
+                    }
+                    String label = this.eBinCommands[this.progPos].getLiteral();
+                    this.caller.heldLabel = new Label(label, this.caller.labels.get(label));
+                    return Result.Success();
+                case 28: // DROP
+                    this.caller.heldLabel = null;
+                    return Result.Success();
+                case 29: // MLB [N/L]
+                    this.progPos++;
+                    this.caller.heldLabel.address = valueFromLabelOrNumber(this.eBinCommands[this.progPos]);
+                    return Result.Success();
+                case 30: // MLP
+                    this.caller.heldLabel.address = this.caller.memory[this.caller.ptr];
+                    return Result.Success();
+                case 31: // SLB [N/L]
+                    this.progPos++;
+                    this.caller.heldLabel.address = valueFromLabelOrNumber(this.eBinCommands[this.progPos]);
+                    return Result.Success();
+                case 32: // SLV
+                    this.caller.heldLabel.address = this.caller.memory[this.caller.ptr];
+                    return Result.Success();
+                case 33: // FUNC [
+                    //TODO: build function body and alias, then add to map
+                case 34: // ]
+                    // idk do some shit ig (probably just break/return Result.Success())
+                case 35: // OUTN
+                    System.out.print(this.caller.memory[this.caller.ptr]);
+                    return Result.Success();
+                case 36: // OUTV [N/L]
+                case 37: // OUTR [N/L N/L]
+                case 38: // INV
+                case 39: // INS
+                case 40: // SWM [N/L]
+                case 41: // WDD [
+                case 42: // ]
+                case 43: // DS [
+                case 44: // ] [L]
+                case 45: // FSO [S] [N/L]
+                case 46: // FSC [S]
+                case 47: // RFF [S] [N/L N/L]
+                case 48: // WTF [S] [N/L N/L]
                 default:
                     return Result.Error(Result.Errors.INVALID_COMMAND, command + " at position: " + progPos);
             }
@@ -307,5 +354,19 @@ public class eBinInterpreter {
             default -> // instructions
                     new eBinInstruction(command);
         };
+    }
+
+    private int valueFromLabelOrNumber(eBinCommand command){
+        if(command instanceof eBinLabel){
+            if(this.caller.labels.containsKey(command.getLiteral())){
+                return this.caller.labels.get(command.getLiteral());
+            } else {
+                throw new IllegalArgumentException("Label " + command.getLiteral() + " does not exist.");
+            }
+        } else if(command instanceof eBinNumber){
+            return command.getData();
+        } else {
+            throw new IllegalArgumentException("Invalid command " + command + " at position: " + progPos);
+        }
     }
 }
