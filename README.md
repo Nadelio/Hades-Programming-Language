@@ -33,11 +33,11 @@ Hades is a programming language built for easier development within the [ePUx32 
   - `FUNC [alias] [ body ]` (QoL change), `CDP [file] [alias]` will still exist
   - `OUTN`, `OUTV [num]`, and `OUTR [startPos endPos]` for different I/O choices. `OUTV [num]` outputs the character related to the given number, `OUTN` outputs the raw number at `Tape[Pointer]`, and `OUTR [startPos endPos]` outputs a range of the Tape.
   - `INV` and `INS` for more I/O choices. `INV` for taking in a raw number, `INS` for taking in a string (that will then be split into characters and converted into integers and stored)
-  - `FSO` and `FSC` for opening file streams for reading in/writing out file contents, `FSO` takes in a file path or a data structure alias, and 0 or 1 for read or write mode. `FSC` closes a file stream connected to the given file path/data structure alias
-  - `RFF` and `WTF` to read/write from/to a file, `RFF` takes in a data structure alias/string and a destination address, `RFF` reads in the character at an index and stores it in the destination address, `WTF` writes the given value to the given file at the given index (`WTF/RFF [file] [index value/dist]`)
+  - `FSO` and `FSC` for opening file streams for reading in/writing out file contents, `FSO` takes in a file path, and 0 or 1 for read or write mode. `FSC` closes a file stream connected to the given file path
+  - `RFF` and `WTF` to read/write from/to a file, `RFF` takes in a string and a destination address, `RFF` reads in the character at an index and stores it in the destination address, `WTF` writes the given value to the given file at the given index (`WTF/RFF [file] [index value/dist]`)
   - `SWM` to set the write mode, 0 indicates writing a character, 1 indicates writing the raw integer value
   - String literals `"..."`, these can be used as input for the `DS` instruction and the `WDD` instruction, as well as any instruction that takes in a file path
-- [ ] v1.2.0: Add ability to use labels in place of numbers in all instructions that can take in a number
+- [X] v1.2.0: Add ability to use labels in place of numbers in all instructions that can take in a number
 - [ ] v2.0.0: Add `package` system which adds new systems for defining types, defining instructions, defining instruction arguments, and defining instruction behaviors using a mix of Java and Hades
   - Add new file type: `*.pkg.hds`
   - Add new instructions `DPKG [package]`, `UPKG [package]`, `INST [instruction name] [args] [args]`, `TYPE [type name] [body]`
