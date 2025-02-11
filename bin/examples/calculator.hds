@@ -1,0 +1,158 @@
+; first num ;
+; second num ;
+; arithmetic ;
+
+; first and second -> stack ;
+; if/elif statements ;
+
+FUNC [findStrEnd] [
+    ; find end of string and store in label "end" ;
+    LOOP [
+        INCP
+        CLB [end]
+    ]
+    JLB [end]
+    RDP
+]
+
+FUNC [add] [
+    POP WTV ; second num ;
+    INCP
+    POP WTV ; first num ;
+    LOOP [
+        DECP
+        
+        RDV ; add to second num ;
+        INCV
+        WTV
+
+        INCP
+        
+        RDV ; subtract from first num ;
+        DECV
+        WTV
+    ]
+    DECP
+]
+
+FUNC [multiply] [
+    POP WTV ; second num ;
+    INCP
+    POP WTV ; first num ;
+    INCP INCP WTV ; copy of first num ;
+    DECP DECP DECP ; move to 2nd ;
+    LOOP [
+        PUSH ; push copy ;
+        INCP ; move to non copy ;
+        RDV PUSH ; push non copy ;
+        CALL [add]
+        DECP RDV DECV WTV INCP ; dec 2nd ;
+        INCP INCP RDV ; move to copy and read ;
+        DECP DECP DECP ; move to 2nd for check ;
+    ]
+    INCP INCP INCP WRT [0] DECP DECP DECP ; zero out copy ;
+    INCP RDV WRT [0] DECP WTV ; move final value to initial position ;
+]
+
+FUNC [subtract] [
+    INCP
+    POP WTV ; second num ;
+
+    DECP
+    POP WTV ; first num
+
+    LOOP [
+        DECP ; move to first num ;
+
+        RDV DECV WTV ; subtract from first num ;
+
+        INCP ; move to second num ;
+        
+        RDV DECV WTV ; subtract from second num ;
+    ]
+    DECP
+]
+
+FUNC [intdiv] [
+
+]
+
+
+FUNC [modulo] [
+
+]
+
+; write string ;
+WDD ["type first number"]
+
+CALL [findStrEnd]
+
+; print string ;
+OUTR[0 end]
+
+; free "end" ;
+DLB [end]
+
+; zero out memory ;
+MOV [0]
+LOOP [
+    WRT [0]
+    INCP
+]
+MOV [0]
+
+INV ; first num ;
+RDV
+PUSH
+
+INCP
+
+; write and print string ;
+WDD ["type second num"]
+CALL [findStrEnd]
+OUTR [1 end]
+DLB [end]
+
+; free string ;
+MOV [1]
+LOOP [
+    WRT [0]
+    INCP
+]
+MOV [1]
+
+INV ; second num ;
+RDV
+PUSH
+
+; stack -> [second, first] ;
+
+INCP
+
+WDD ["type operation symbol"]
+CALL [findStrEnd]
+OUTR [2 end]
+DLB [end]
+
+MOV [2]
+LOOP [
+    WRT [0]
+    INCP
+]
+MOV [2]
+
+IN ; get math op ;
+CLB [op]
+
+; move into operation space ;
+INCP
+
+INT [op == 37] [modulo]
+INT [op == 42] [multiply]
+INT [op == 43] [add]
+INT [op == 45] [subtract]
+INT [op == 47] [intdiv]
+
+OUTN ; output the resulting integer ;
+
+HLT
