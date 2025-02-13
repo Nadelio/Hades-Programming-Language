@@ -38,7 +38,7 @@ FUNC [add] [
 ]
 
 FUNC [multiply] [
-    POP WTV ; second num ;
+    POP DECV WTV ; second num, decrement to get rid of additional add ;
     INCP
     POP WTV ; first num ;
     INCP INCP WTV ; copy of first num ;
