@@ -73,13 +73,55 @@ FUNC [subtract] [
     DECP
 ]
 
-FUNC [intdiv] [
-
+FUNC [takeTopTwo] [
+    POP
+    POP
 ]
 
+FUNC [div] [
+    INCP
+    POP WTV ; second num ;
+    CLB [second]
+
+    DECP
+    POP WTV ; first num ;
+    CLB [first]
+
+    INCP RDV INCP INCP WTV ; write copy of 2nd num ;
+
+    DECP DECP DECP ; move back to first num ;
+    LOOP [
+        RDV PUSH ; push first num to stack ;
+        INCP RDV PUSH ; push second num to stack ;
+        DECP ; move to first ;
+        INT [first >= second] [subtract]
+        INT [first < second] [takeTopTwo]
+        INCP INCP RDV INCV WTV ; increment result ; 
+        INCP RDV DECP DECP WTV ; copy second num back ;
+        DECP ; move back to first num ;
+    ]
+]
+
+FUNC [zeroOutdiv] [
+    ; zero out old params ;
+    INCP WRT [0]
+    INCP WRT [0]
+    INCP WRT [0]
+    DECP DECP DECP
+    DLB [first]
+    DLB [second]
+    SET [0]
+]
+
+FUNC [intdiv] [
+    CALL [div]
+    INCP INCP RDV DECP DECP WTV ; write result to initial position ;
+    CALL [zeroOutdiv]
+]
 
 FUNC [modulo] [
-
+    CALL [div]
+    CALL [zeroOutdiv]
 ]
 
 ; write string ;
