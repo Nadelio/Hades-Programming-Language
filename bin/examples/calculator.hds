@@ -13,6 +13,8 @@ FUNC [findStrEnd] [
     ]
     JLB [end]
     RDP
+    DECV
+    WTV
 ]
 
 FUNC [add] [
@@ -59,7 +61,9 @@ FUNC [subtract] [
     POP WTV ; second num ;
 
     DECP
-    POP WTV ; first num
+    POP WTV ; first num ;
+
+    INCP ; move to second num ;
 
     LOOP [
         DECP ; move to first num ;
@@ -96,7 +100,7 @@ FUNC [div] [
         DECP ; move to first ;
         INT [first >= second] [subtract]
         INT [first < second] [takeTopTwo]
-        INCP INCP RDV INCV WTV ; increment result ; 
+        INCP INCP RDV INCV WTV ; increment result ;
         INCP RDV DECP DECP WTV ; copy second num back ;
         DECP ; move back to first num ;
     ]
@@ -125,7 +129,7 @@ FUNC [modulo] [
 ]
 
 ; write string ;
-WDD ["type first number"]
+WDD ["Type first number: "]
 
 CALL [findStrEnd]
 
@@ -150,7 +154,7 @@ PUSH
 INCP
 
 ; write and print string ;
-WDD ["type second num"]
+WDD ["Type second number: "]
 CALL [findStrEnd]
 OUTR [1 end]
 DLB [end]
@@ -171,7 +175,7 @@ PUSH
 
 INCP
 
-WDD ["type operation symbol"]
+WDD ["Type operation symbol: "]
 CALL [findStrEnd]
 OUTR [2 end]
 DLB [end]
@@ -194,6 +198,19 @@ INT [op == 42] [multiply]
 INT [op == 43] [add]
 INT [op == 45] [subtract]
 INT [op == 47] [intdiv]
+
+INCP
+WDD ["The result is: "]
+CALL [findStrEnd]
+OUTR [4 end]
+DLB [end]
+
+MOV [4]
+LOOP [
+    WRT [0]
+    INCP
+]
+MOV [3]
 
 OUTN ; output the resulting integer ;
 

@@ -22,7 +22,7 @@ public class HadesInterpreter {
     public HashMap<String, Command[]> functions = new HashMap<String, Command[]>();
     public HashMap<String, Token[]> structures = new HashMap<String, Token[]>();
     private HashMap<String, HadesFileStream> fsmap = new HashMap<String, HadesFileStream>();
-    public int[] memory = new int[Integer.MAX_VALUE];
+    public int[] memory = new int[Integer.MAX_VALUE - 2];
     public int[] stack = new int[512];
     public Label heldLabel;
     public int stackPtr = 0;
@@ -39,6 +39,7 @@ public class HadesInterpreter {
         this.readPos = 0;
         this.cmd = null;
         this.readCommand();
+        this.sc = new Scanner(System.in);
     }
 
     public void interpret(){
@@ -49,6 +50,7 @@ public class HadesInterpreter {
             }
             this.readCommand();
         }
+        this.sc.close();
     }
 
     public void readCommand(){
@@ -81,9 +83,7 @@ public class HadesInterpreter {
                 System.out.print((char) memory[ptr]);
                 return Result.Success();
             case IN:
-                sc = new Scanner(System.in);
                 int val = (int) sc.next().charAt(0);
-                sc.close();
                 this.memory[ptr] = val;
                 return Result.Success();
             case NOP:
@@ -161,23 +161,25 @@ public class HadesInterpreter {
                 try{
                     int start = valueFromLabelOrNumber(outRange.getField()[1]);
                     int end = valueFromLabelOrNumber(outRange.getField()[2]);
-                    for(int i = start; i <= end; i++){ System.out.print((char) memory[i]); }
+                    if(Main.DEBUG_FLAG){ System.out.println("Printing section of memory: " + start + " to " + end); }
+                    for(int i = start; i <= end; i++){
+                        if(Main.DEBUG_FLAG){ System.out.println("Printing section of memory: " + i); }
+                        System.out.print((char) memory[i]);
+                    }
                     return Result.Success();
                 } catch(Exception e){
                     return Result.Error(Result.Errors.INVALID_VALUE, outRange.getField()[1].getLiteral() + " or " + outRange.getField()[2].getLiteral() + " at position: " + pos);
                 }
             case INVALUE:
-                sc = new Scanner(System.in);
-                memory[ptr] = sc.nextInt();
-                sc.close();
+                int input = sc.nextInt(); sc.nextLine(); // flush
+                if(Main.DEBUG_FLAG){ System.out.println(input); }
+                memory[ptr] = input;
                 return Result.Success();
             case INSTRING:
-                sc = new Scanner(System.in);
                 String str = sc.nextLine();
                 for(int i = 0; i < str.length(); i++){
                     memory[ptr + i] = (int) str.charAt(i);
                 }
-                sc.close();
                 return Result.Success();
             case SETWRITEMODE:
                 UnaryCommand swm = (UnaryCommand) cmd;
@@ -491,14 +493,16 @@ public class HadesInterpreter {
     }
 
     private Result pop(){
+        stackPtr--;
         ptrVal = stack[stackPtr];
         stack[stackPtr] = 0;
-        stackPtr--;
         return Result.Success();
     }
 
     private Result createLabel(UnaryCommand cmd){
         labels.put(cmd.getField()[1].getLiteral(), ptr);
+        if(Main.DEBUG_FLAG){ System.out.println("Creating label: " + cmd.getField()[1].getLiteral() + " at position: " + ptr); }
+        if(Main.DEBUG_FLAG){ System.out.println("Current value at label: " + memory[ptr]); }
         return Result.Success();
     }
 
@@ -605,17 +609,24 @@ public class HadesInterpreter {
             switch(field1[i].getType()){
                 case NUMBER:
                     memory[origin + writeIndex++] = Integer.parseInt(field1[i].getLiteral());
+                    if(Main.DEBUG_FLAG){ System.out.println("Writing number: " + Integer.parseInt(field1[i].getLiteral())); }
+                    writeIndex++;
                     break;
                 case STRING:
                     for(int j = 0; j < field1[i].getLiteral().length(); j++){
-                        memory[origin + writeIndex++] = (int) field1[i].getLiteral().charAt(j);
+                        memory[origin + writeIndex] = (int) field1[i].getLiteral().charAt(j);
+                        if(Main.DEBUG_FLAG){ System.out.println("Writing character: " + field1[i].getLiteral().charAt(j)); }
+                        writeIndex++;
+
                     }
                     break;
                 case ALIAS:
                     if(structures.containsKey(field1[i].getLiteral())){
                         writeIndex = writeDataStructure(field1[i].getLiteral(), writeIndex, origin);
                     } else if(labels.containsKey(field1[i].getLiteral())){
-                        memory[origin + writeIndex++] = memory[labels.get(field1[i].getLiteral())];
+                        memory[origin + writeIndex] = memory[labels.get(field1[i].getLiteral())];
+                        if(Main.DEBUG_FLAG){ System.out.println("Writing label: " + labels.get(field1[i].getLiteral())); }
+                        writeIndex++;
                     } else {
                         return Result.Error(Result.Errors.NONEXISTENT_LABEL, field1[i].getLiteral() + " at position: " + pos);
                     }
@@ -632,18 +643,24 @@ public class HadesInterpreter {
         for(Token t : data){
             switch(t.getType()){
                 case NUMBER:
-                    memory[origin + offset++] = Integer.parseInt(t.getLiteral());
+                    memory[origin + offset] = Integer.parseInt(t.getLiteral());
+                    if(Main.DEBUG_FLAG){ System.out.println("Writing number: " + Integer.parseInt(t.getLiteral())); }
+                    offset++;
                     break;
                 case STRING:
                     for(int j = 0; j < t.getLiteral().length(); j++){
-                        memory[origin + offset++] = (int) t.getLiteral().charAt(j);
+                        memory[origin + offset] = (int) t.getLiteral().charAt(j);
+                        if(Main.DEBUG_FLAG){ System.out.println("Writing character: " + t.getLiteral().charAt(j)); }
+                        offset++;
                     }
                     break;
                 case ALIAS:
                     if(structures.containsKey(t.getLiteral())){
                         offset = writeDataStructure(t.getLiteral(), offset, origin);
                     } else if(labels.containsKey(t.getLiteral())){
-                        memory[origin + offset++] = memory[labels.get(t.getLiteral())];
+                        memory[origin + offset] = memory[labels.get(t.getLiteral())];
+                        if(Main.DEBUG_FLAG){ System.out.println("Writing label: " + labels.get(t.getLiteral())); }
+                        offset++;
                     } else {
                         throw new IllegalArgumentException("Non-existent label in data structure: " + t.getLiteral());
                     }
@@ -667,6 +684,7 @@ public class HadesInterpreter {
             return Integer.parseInt(t.getLiteral());
         } else if(t.getType() == Token.TokenType.ALIAS){
             if(labels.containsKey(t.getLiteral())){
+                if(Main.DEBUG_FLAG){ System.out.println("Value of: " + t.getLiteral() +" is : " + memory[labels.get(t.getLiteral())]); }
                 return memory[labels.get(t.getLiteral())];
             } else {
                 throw new IllegalArgumentException("Non-existent label: " + t.getLiteral());

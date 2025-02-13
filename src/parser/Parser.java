@@ -220,7 +220,7 @@ public class Parser {
                 }
                 this.readToken();
                 return new UnaryCommand(Token.TokenType.COMMENT, content.toArray(new Token[content.size()]));
-            case CREATEDEPENDENCY: //! need to update interpreter and compiler to handle STRING argument
+            case CREATEDEPENDENCY:
                 field2 = new Token[3];
                 
                 if(!Main.EPU_FLAG){
@@ -245,13 +245,13 @@ public class Parser {
                 if(this.peekToken().getType().equals(Token.TokenType.LBRACKET)){
                     this.readToken();
                     field1[0] = tok;
-                    if(this.peekToken().getType().equals(Token.TokenType.ALIAS)){
+                    if(this.peekToken().getType().equals(Token.TokenType.ALIAS) || this.peekToken().getType().equals(Token.TokenType.NUMBER)){
                         this.readToken();
                         field1[1] = tok;
                         if(this.isComparison(this.peekToken().getType())){
                             this.readToken();
                             field1[2] = tok;
-                            if(this.peekToken().getType().equals(Token.TokenType.ALIAS)){
+                            if(this.peekToken().getType().equals(Token.TokenType.ALIAS) || this.peekToken().getType().equals(Token.TokenType.NUMBER)){
                                 this.readToken();
                                 field1[3] = tok;
                                 if(this.peekToken().getType().equals(Token.TokenType.RBRACKET)){
@@ -261,13 +261,13 @@ public class Parser {
                                     exitWithError(Token.TokenType.RBRACKET);
                                 }
                             } else {
-                                exitWithError(Token.TokenType.ALIAS);
+                                exitWithError(Token.TokenType.ALIAS, Token.TokenType.NUMBER);
                             }
                         } else {
                             exitWithError("Comparision");
                         }
                     } else {
-                        exitWithError(Token.TokenType.ALIAS);
+                        exitWithError(Token.TokenType.ALIAS, Token.TokenType.NUMBER);
                     }
                 } else {
                     exitWithError(Token.TokenType.LBRACKET);

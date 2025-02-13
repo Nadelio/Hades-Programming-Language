@@ -1,1 +1,1 @@
-java -jar --enable-preview HadesLanguage.jar %1 %2
+java -jar --enable-preview -Xmx9g HadesLanguage.jar %1 %2
