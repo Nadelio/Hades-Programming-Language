@@ -255,7 +255,7 @@ public class Lexer {
     }
 
     private void skipWhitespace(){while(isWhitespace(this.ch)){this.readChar();}}
-    private static boolean isWhitespace(char ch){return ch == ' ' || ch == '\t';}
+    private static boolean isWhitespace(char ch){return ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r';}
     private static boolean isLetter(char ch){return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z';}
     private static boolean isNumber(char ch){return '0' <= ch && ch <= '9';}
 }
