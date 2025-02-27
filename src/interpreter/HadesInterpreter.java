@@ -296,8 +296,6 @@ public class HadesInterpreter {
                 }
                 return Result.Success();
             case COMMENT:
-            case NEWLINE:
-            case RETURN:
             case END:
             case EOF:
                 return Result.Success();

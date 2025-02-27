@@ -69,12 +69,6 @@ public class Lexer {
             case '\u0000':
                 tok = new Token(Token.TokenType.EOF, this.ch);
                 break;
-            case '\n':
-                tok = new Token(Token.TokenType.NEWLINE, this.ch);
-                break;
-            case '\r':
-                tok = new Token(Token.TokenType.RETURN, this.ch);
-                break;
             case '<':
                 if(this.peekChar() == '='){
                     this.readChar();

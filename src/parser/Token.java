@@ -66,8 +66,6 @@ public class Token {
         END,
         INVALID,
         COMMENT,
-        NEWLINE,
-        RETURN,
 
         // v1.1.0
         STRING

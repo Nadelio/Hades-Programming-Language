@@ -2,6 +2,7 @@ package src;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Scanner;
 
 import src.compiler.Compiler;
 import src.interpreter.HadesInterpreter;
@@ -33,12 +34,14 @@ public class Main{
                         System.exit(1);
                     }
 
-                    hadesCode = Files.readString(file.toPath());
+                    Scanner sc = new Scanner(file);
+                    while(sc.hasNextLine()){
+                        hadesCode += sc.nextLine() + " ";
+                    }
+                    sc.close();
                 } catch(java.io.FileNotFoundException e){
                     System.out.println("\u001B[31mGiven file not found.\u001B[0m");
                     System.exit(1);
-                } catch (IOException e){
-                    e.printStackTrace();
                 }
             }
 
