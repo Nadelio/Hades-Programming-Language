@@ -42,7 +42,7 @@ public class Lexer {
         java.util.ArrayList<Token> tokens = new java.util.ArrayList<Token>();
         while(this.ch != '\u0000'){
             Token tok = this.nextToken();
-            if(Main.DEBUG_FLAG){System.out.println(Constants.ANSI_MSG + "Completed Command: " + Constants.ANSI_INFO + tok.toString() + Constants.ANSI_RESET);}
+            if(Main.DEBUG_FLAG){System.out.println(Constants.ANSI_MSG + "Completed Token: " + Constants.ANSI_INFO + tok.toString() + Constants.ANSI_RESET);}
             tokens.add(tok);
             this.readChar();
         }
@@ -68,6 +68,12 @@ public class Lexer {
                 break;
             case '\u0000':
                 tok = new Token(Token.TokenType.EOF, this.ch);
+                break;
+            case '\n':
+                tok = new Token(Token.TokenType.NEWLINE, this.ch);
+                break;
+            case '\r':
+                tok = new Token(Token.TokenType.RETURN, this.ch);
                 break;
             case '<':
                 if(this.peekChar() == '='){
@@ -255,7 +261,7 @@ public class Lexer {
     }
 
     private void skipWhitespace(){while(isWhitespace(this.ch)){this.readChar();}}
-    private static boolean isWhitespace(char ch){return ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r';}
+    private static boolean isWhitespace(char ch){return ch == ' ' || ch == '\t';}
     private static boolean isLetter(char ch){return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z';}
     private static boolean isNumber(char ch){return '0' <= ch && ch <= '9';}
 }

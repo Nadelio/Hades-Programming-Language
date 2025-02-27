@@ -87,6 +87,10 @@ public class Parser {
         switch(this.tok.getType()){
             case NOP:
                 return new Command(Token.TokenType.NOP);
+            case NEWLINE:
+                return new Command(Token.TokenType.NEWLINE);
+            case RETURN:
+                return new Command(Token.TokenType.RETURN);
             case END:
                 return new Command(Token.TokenType.END);
             case OUT:
@@ -214,7 +218,7 @@ public class Parser {
                 return new UnaryCommand(Token.TokenType.SYSCALL, field1);
             case COMMENT:
                 ArrayList<Token> content = new ArrayList<Token>();
-                while((!this.peekToken().getType().equals(Token.TokenType.COMMENT)) && (this.position < this.ast.getTree().length)){
+                while(!isCommentSyntax(this.peekToken().getType()) && (this.position < this.ast.getTree().length)){
                     this.readToken();
                     content.add(this.tok);
                 }
@@ -315,6 +319,7 @@ public class Parser {
             default: break;
         }
         return new Command(Token.TokenType.INVALID);
+        
     }
 
     private void exitWithError(Token.TokenType type){
@@ -539,6 +544,10 @@ public class Parser {
     private boolean matchPattern(Token.TokenType[] input, Token.TokenType... types){
         if(input.length != types.length){ return false; }
         return IntStream.range(0, input.length).allMatch(i -> input[i].equals(types[i]));
+    }
+
+    private boolean isCommentSyntax(Token.TokenType type){
+        return type.equals(Token.TokenType.COMMENT) || type.equals(Token.TokenType.NEWLINE) || type.equals(Token.TokenType.RETURN) || type.equals(Token.TokenType.EOF);
     }
 
     @SuppressWarnings("unused")
