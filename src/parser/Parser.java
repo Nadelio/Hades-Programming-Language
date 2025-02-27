@@ -319,25 +319,25 @@ public class Parser {
     }
 
     private void exitWithError(Token.TokenType type){
-        System.out.println(Constants.ANSI_ERROR + "Syntax error: expected " + Constants.ANSI_INFO + type + Constants.ANSI_ERROR + " @ " + Constants.ANSI_INFO + (this.readPosition) + Constants.ANSI_RESET);
+        System.out.println(Constants.ANSI_ERROR + "Syntax error: expected " + Constants.ANSI_INFO + type + Constants.ANSI_ERROR + " at " + Constants.ANSI_INFO + (this.readPosition) + Constants.ANSI_RESET);
         System.out.println(Constants.ANSI_ERROR + "Recieved: " + Constants.ANSI_INFO + this.peekToken().getType() + Constants.ANSI_RESET);
         System.exit(1);
     }
 
     private void exitWithError(String type){
-        System.out.println(Constants.ANSI_ERROR + "Syntax error: expected " + Constants.ANSI_INFO + type + Constants.ANSI_ERROR + " @ " + Constants.ANSI_INFO + (this.readPosition) + Constants.ANSI_RESET);
+        System.out.println(Constants.ANSI_ERROR + "Syntax error: expected " + Constants.ANSI_INFO + type + Constants.ANSI_ERROR + " at " + Constants.ANSI_INFO + (this.readPosition) + Constants.ANSI_RESET);
         System.out.println(Constants.ANSI_ERROR + "Recieved: " + Constants.ANSI_INFO + this.peekToken().getType() + Constants.ANSI_RESET);
         System.exit(1);
     }
 
     private void exitWithError(Token.TokenType type1, Token.TokenType type2){
-        System.out.println(Constants.ANSI_ERROR + "Syntax error: expected " + Constants.ANSI_INFO + type1 + Constants.ANSI_ERROR + " or " + Constants.ANSI_INFO + type2 + Constants.ANSI_ERROR + " @ " + Constants.ANSI_INFO + (this.readPosition) + Constants.ANSI_RESET);
+        System.out.println(Constants.ANSI_ERROR + "Syntax error: expected " + Constants.ANSI_INFO + type1 + Constants.ANSI_ERROR + " or " + Constants.ANSI_INFO + type2 + Constants.ANSI_ERROR + " at " + Constants.ANSI_INFO + (this.readPosition) + Constants.ANSI_RESET);
         System.out.println(Constants.ANSI_ERROR + "Recieved: " + Constants.ANSI_INFO + this.peekToken().getType() + Constants.ANSI_RESET);
         System.exit(1);
     }
 
     private void exitWithError(Token.TokenType type1, Token.TokenType type2, Token.TokenType type3){
-        System.out.println(Constants.ANSI_ERROR + "Syntax error: expected " + Constants.ANSI_INFO + type1 + Constants.ANSI_ERROR + ", " + Constants.ANSI_INFO + type2 + Constants.ANSI_ERROR + ", or " + Constants.ANSI_INFO + type3 + Constants.ANSI_ERROR + " @ " + Constants.ANSI_INFO + (this.readPosition) + Constants.ANSI_RESET);
+        System.out.println(Constants.ANSI_ERROR + "Syntax error: expected " + Constants.ANSI_INFO + type1 + Constants.ANSI_ERROR + ", " + Constants.ANSI_INFO + type2 + Constants.ANSI_ERROR + ", or " + Constants.ANSI_INFO + type3 + Constants.ANSI_ERROR + " at " + Constants.ANSI_INFO + (this.readPosition) + Constants.ANSI_RESET);
         System.out.println(Constants.ANSI_ERROR + "Recieved: " + Constants.ANSI_INFO + this.peekToken().getType() + Constants.ANSI_RESET);
         System.exit(1);
     }
