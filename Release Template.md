@@ -1,6 +1,7 @@
 # Hades v1.X.X
 <!-- Major updates are fundamental changes to the overall behavior of Hades, they will be denoted by the first number in the version code -->
 <!-- Instruction changes/additions/removals will all be denoted in the second number -->
+<!-- Small changes like visual changes, debug tooling, etc, will also be denoted by the second number -->
 <!-- Bug fixes and Hotfixes will be denoted in the last number -->
 <!-- Hot fixes are any bugfixes that happen within 2 weeks of the most recent Major/Minor release -->
 

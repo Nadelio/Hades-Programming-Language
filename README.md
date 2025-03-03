@@ -38,6 +38,7 @@ Hades is a programming language built for easier development within the [ePUx32 
   - `SWM` to set the write mode, 0 indicates writing a character, 1 indicates writing the raw integer value
   - String literals `"..."`, these can be used as input for the `DS` instruction and the `WDD` instruction, as well as any instruction that takes in a file path
 - [X] v1.2.0: Add ability to use labels in place of numbers in all instructions that can take in a number
+- [ ] v1.3.0: Update documentation, improve current debug messages (using [BlueGummi's](https://github.com/BlueGummi) pretty print tooling), add CLI for debugging, add sandbox CLI for testing small programs
 - [ ] v2.0.0: Add `package` system which adds new systems for defining types, defining instructions, defining instruction arguments, and defining instruction behaviors using a mix of Java and Hades
   - Add new file type: `*.pkg.hds`
   - Add new instructions `DPKG [package]`, `UPKG [package]`, `INST [instruction name] [args] [args]`, `TYPE [type name] [body]`
