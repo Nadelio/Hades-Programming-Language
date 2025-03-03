@@ -2,6 +2,7 @@ package src.parser;
 
 import src.Main;
 import src.util.Constants;
+import src.util.LoadingBar;
 
 public class Lexer {
     
@@ -45,7 +46,9 @@ public class Lexer {
             if(Main.DEBUG_FLAG){System.out.println(Constants.ANSI_MSG + "Completed Token: " + Constants.ANSI_INFO + tok.toString() + Constants.ANSI_RESET);}
             tokens.add(tok);
             this.readChar();
+            Main.loadingBar.lerp((int) Math.round((this.position / (double) this.input.length()) * 100));
         }
+        System.out.print(LoadingBar.DOWN + "");
         return tokens.toArray(new Token[tokens.size()]);
     }
 
@@ -258,4 +261,5 @@ public class Lexer {
     private static boolean isWhitespace(char ch){return ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r';}
     private static boolean isLetter(char ch){return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z';}
     private static boolean isNumber(char ch){return '0' <= ch && ch <= '9';}
+    public int calculateLoadTime(){ return this.input.length() % 50; }
 }

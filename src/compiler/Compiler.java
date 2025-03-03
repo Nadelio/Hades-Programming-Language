@@ -10,6 +10,7 @@ import src.parser.FunctionMacroCommand;
 import src.parser.LoopCommand;
 import src.parser.Token;
 import src.parser.UnaryCommand;
+import src.util.LoadingBar;
 
 public class Compiler {
     private static final String[] bytecode = {
@@ -96,8 +97,10 @@ public class Compiler {
             String compiledCommand = this.compileCommand(this.cmd);
             compiledCode += compiledCommand;
             this.readCommand();
+            Main.loadingBar.lerp((int) Math.round((this.position / (double) this.ast.getTree().length) * 100));
         }
         compiledCode += bytecode[14]; // HLT
+        System.out.print(LoadingBar.DOWN + "");
         return compiledCode;
     }
 
@@ -490,4 +493,6 @@ public class Compiler {
         }
         return s;
     }
+
+    public int calculateLoadTime(){ return this.ast.getTree().length % 50; }
 }

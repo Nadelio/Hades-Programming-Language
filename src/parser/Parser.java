@@ -8,6 +8,7 @@ import src.Main;
 import src.parser.Token.BuilderTypes;
 import src.parser.Token.TokenType;
 import src.util.Constants;
+import src.util.LoadingBar;
 
 public class Parser {
 
@@ -70,7 +71,9 @@ public class Parser {
             if(Main.DEBUG_FLAG){System.out.println(Constants.ANSI_MSG + "Completed Command: " + Constants.ANSI_INFO + cmd.toString() + Constants.ANSI_RESET);}
             commands.add(cmd);
             this.readToken();
+            Main.loadingBar.lerp((int) Math.round((this.position / (double) this.ast.getTree().length) * 100));
         }
+        System.out.print(LoadingBar.DOWN + "");
         return new ASTC(commands.toArray(new Command[commands.size()]));
     }
 
@@ -558,4 +561,6 @@ public class Parser {
         }
         System.out.println("\n]");
     }
+
+    public int calculateLoadTime(){ return this.ast.getTree().length % 50; }
 }

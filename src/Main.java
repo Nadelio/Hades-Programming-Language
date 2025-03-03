@@ -1,7 +1,5 @@
 package src;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Scanner;
 
 import src.compiler.Compiler;
@@ -10,6 +8,7 @@ import src.parser.ASTC;
 import src.parser.Lexer;
 import src.parser.Parser;
 import src.parser.Token;
+import src.util.LoadingBar;
 
 public class Main{
 
@@ -18,6 +17,9 @@ public class Main{
     public static boolean COMPILE_FLAG = false;
     public static boolean RUN_FLAG = false;
     public static final String COMPILER_VERSION = "v1.1.0";
+
+    public static String loadingPattern = "║" + LoadingBar.RED + "%s" + LoadingBar.CYAN + "%s" + LoadingBar.RESET + "║";
+    public static LoadingBar loadingBar;
 
     public static void main(String[] args) {
 
@@ -94,17 +96,26 @@ public class Main{
                 // lex Hades code
                 System.out.println("\u001B[34mLexing Hades code...\u001B[0m");
                 Lexer lexer = new Lexer(hadesCode);
+                int loadingBarWidth = lexer.calculateLoadTime();
+                loadingBar = new LoadingBar(loadingBarWidth - 2, loadingPattern, '=', '>', '═', "╔%s╗\n", "\n╚%s╝");
                 Token[] tokens = lexer.lex();
+                System.out.print(LoadingBar.CLEAR);
                 
                 // parse Hades code
                 System.out.println("\u001B[34mParsing Hades code...\u001B[0m");
                 Parser parser = new Parser(tokens);
+                loadingBarWidth = parser.calculateLoadTime();
+                loadingBar = new LoadingBar(loadingBarWidth - 2, loadingPattern, '=', '>', '═', "╔%s╗\n", "\n╚%s╝");
                 ASTC ast = parser.parse();
+                System.out.print(LoadingBar.CLEAR);
     
                 // compile Hades code
                 System.out.println("\u001B[34mCompiling Hades code...\u001B[0m");
                 Compiler compiler = new Compiler(ast);
+                loadingBarWidth = compiler.calculateLoadTime();
+                loadingBar = new LoadingBar(loadingBarWidth - 2, loadingPattern, '=', '>', '═', "╔%s╗\n", "\n╚%s╝");
                 String eBinCode = compiler.compile();
+                System.out.print(LoadingBar.CLEAR);
     
                 // write eBin code to file
                 File inputFile = new File(args[1]);
@@ -120,12 +131,18 @@ public class Main{
             // lex Hades code
             System.out.println("\u001B[34mLexing Hades code...\u001B[0m");
             Lexer lexer = new Lexer(hadesCode);
+            int loadingBarWidth = lexer.calculateLoadTime();
+            loadingBar = new LoadingBar(loadingBarWidth - 2, loadingPattern, '=', '>', '═', "╔%s╗\n", "\n╚%s╝");
             Token[] tokens = lexer.lex();
-
+            System.out.print(LoadingBar.CLEAR);
+            
             // parse Hades code
             System.out.println("\u001B[34mParsing Hades code...\u001B[0m");
             Parser parser = new Parser(tokens);
+            loadingBarWidth = parser.calculateLoadTime();
+            loadingBar = new LoadingBar(loadingBarWidth - 2, loadingPattern, '=', '>', '═', "╔%s╗\n", "\n╚%s╝");
             ASTC ast = parser.parse();
+            System.out.print(LoadingBar.CLEAR);
 
             // interpreter Hades code
             System.out.println("\u001B[34mInterpreting Hades code...\u001B[0m");
