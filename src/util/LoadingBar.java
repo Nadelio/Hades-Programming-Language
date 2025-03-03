@@ -17,6 +17,8 @@ public class LoadingBar {
     public static final String LEFT = "\033[D";
     public static final String CLEAR = "\033[H\033[J";
     public static final String RESET_CURSOR = "\033[H";
+    public static final String HIDE_CURSOR = "\033[?25l";
+    public static final String SHOW_CURSOR = "\033[?25h";
 
     private int width;
     private String loadingGraphic;

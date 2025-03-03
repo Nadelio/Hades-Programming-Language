@@ -93,6 +93,8 @@ public class Main{
         
         if(COMPILE_FLAG){
             try {
+                System.out.print(LoadingBar.HIDE_CURSOR);
+
                 // lex Hades code
                 System.out.println("\u001B[34mLexing Hades code...\u001B[0m");
                 Lexer lexer = new Lexer(hadesCode);
@@ -125,9 +127,11 @@ public class Main{
                 fw.write(eBinCode);
                 fw.close();
                 System.out.println("\u001B[34mCompleted writing eBin code to \u001B[33m" + outputFile.getName() + "\u001B[0m");
-    
+                System.out.print(LoadingBar.SHOW_CURSOR);
             } catch(Exception e) { e.printStackTrace(); }
         } else if(RUN_FLAG){
+            System.out.print(LoadingBar.HIDE_CURSOR);
+
             // lex Hades code
             System.out.println("\u001B[34mLexing Hades code...\u001B[0m");
             Lexer lexer = new Lexer(hadesCode);
@@ -143,6 +147,8 @@ public class Main{
             loadingBar = new LoadingBar(loadingBarWidth - 2, loadingPattern, '=', '>', '═', "╔%s╗\n", "\n╚%s╝");
             ASTC ast = parser.parse();
             System.out.print(LoadingBar.CLEAR);
+
+            System.out.print(LoadingBar.SHOW_CURSOR);
 
             // interpreter Hades code
             System.out.println("\u001B[34mInterpreting Hades code...\u001B[0m");
