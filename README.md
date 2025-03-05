@@ -1,7 +1,7 @@
 # Hades Programming Language
 ### Overview
-Hades is an Assembly mimic intended to target the eBin Bytecode.\
-Hades is a programming language built for easier development within the [ePUx32 Computer Simulator](https://github.com/Nadelio/ePU)
+Hades is an Assembly mimic intended to target the Gaia Bytecode.\
+Hades is a programming language built for easier development within the [Chronos VM x32 Computer Simulator](https://github.com/Nadelio/ePU)
 
 ### Getting Started
 1. Download the newest release of the `Hades-Language.jar` file (check the Github release page)
@@ -11,15 +11,15 @@ Hades is a programming language built for easier development within the [ePUx32 
 \
 **For Linux Systems:**
 4. Run the `hades` file using the `./hades -[flags] [file]` format
-  - Use `-fc` flag to compile the given file to eBin
+  - Use `-fc` flag to compile the given file to Gaia
   - Use `-fr` flag to run the given file
-  - Use `-fce` flag to compile a ePU formatted Hades file to relevant eBin\
+  - Use `-fce` flag to compile a Chronos VM formatted Hades file to relevant Gaia\
 \
 **For Windows Systems:**
 4. Run the bat script using the `./hades.bat -[flags] [file]` format
-  - Use `-fc` flag to compile the given file to eBin
+  - Use `-fc` flag to compile the given file to Gaia
   - Use `-fr` flag to run the given file
-  - Use `-fce` flag to compile a ePU formatted Hades file to relevant eBin
+  - Use `-fce` flag to compile a Chronos VM formatted Hades file to relevant Gaia
 5. Profit
 
 ### Roadmap
@@ -85,9 +85,9 @@ HLT
 ```
 Using functions in Hades:
 ```nasm
-CDP [someFile.eBin] [foo] ; create function from file "someFile.eBin" and call it "foo" ;
+CDP [someFile.Gaia] [foo] ; create function from file "someFile.Gaia" and call it "foo" ;
 
-CDP [0 0] [baz] ; create function from position in ROM, follows [X Y] format (ePU branch only) ;
+CDP [0 0] [baz] ; create function from position in ROM, follows [X Y] format (Chronos VM branch only) ;
 
 FUNC [bar] [ ; create a function in current program called "bar" ;
   ; something here ;
@@ -98,7 +98,7 @@ CALL [bar] ; run "bar" function ;
 ; end program ;
 HLT
 ```
-Using Syscalls in Hades (ePU only):
+Using Syscalls in Hades (Chronos VM only):
 ```nasm
 ; syscalls always need 5 parameters, they can be labels or numbers ;
 SYS [14 0 0 0 0] ; print to terminal syscall ;
@@ -107,7 +107,7 @@ CLB [print]
 WRT [14]
 SYS [print 0 0 0 0] ; print to terminal syscall but using label called "print" ;
 
-; check the ePUx32 syscall documentation for help on the syscall arguments ;
+; check the Chronos VM x32 syscall documentation for help on the syscall arguments ;
 
 ; end program ;
 HLT
