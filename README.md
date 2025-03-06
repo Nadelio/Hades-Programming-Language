@@ -1,7 +1,7 @@
 # Hades Programming Language
 ### Overview
 Hades is an Assembly mimic intended to target the Gaia Bytecode.\
-Hades is a programming language built for easier development within the [Chronos VM x32 Computer Simulator](https://github.com/Nadelio/ePU)
+Hades is a programming language built for easier development within the [Chronos VM x32 Computer Simulator](https://github.com/Nadelio/Chronos-VM)
 
 ### Getting Started
 1. Download the newest release of the `Hades-Language.jar` file (check the Github release page)
