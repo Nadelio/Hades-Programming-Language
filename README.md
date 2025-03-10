@@ -37,6 +37,7 @@ Hades is a programming language built for easier development within the [Chronos
   - `RFF` and `WTF` to read/write from/to a file, `RFF` takes in a string and a destination address, `RFF` reads in the character at an index and stores it in the destination address, `WTF` writes the given value to the given file at the given index (`WTF/RFF [file] [index value/dist]`)
   - `SWM` to set the write mode, 0 indicates writing a character, 1 indicates writing the raw integer value
   - String literals `"..."`, these can be used as input for the `DS` instruction and the `WDD` instruction, as well as any instruction that takes in a file path
+  - `ADD [num num]`, `SUB [num num]`, `MUL [num num]`, `DIV [num num]`, `MOD [num num]`, basic integer arithmetic instructions
 - [X] v1.2.0: Add ability to use labels in place of numbers in all instructions that can take in a number
 - [ ] v1.3.0: Update documentation, improve current debug messages (using [BlueGummi's](https://github.com/BlueGummi) pretty print tooling), add CLI for debugging, add sandbox CLI for testing small programs
 - [ ] v2.0.0: Add `package` system which adds new systems for defining types, defining instructions, defining instruction arguments, and defining instruction behaviors using a mix of Java and Hades
